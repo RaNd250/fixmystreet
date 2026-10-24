@@ -633,6 +633,9 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
     .nav-menu--main a.report-a-problem-btn:hover { color: var(--gr-ink); }
     .nav-menu--main a, .nav-menu--main span { white-space: nowrap; }
     .nav-wrapper #main-nav { float: none; display: flex; justify-content: center; align-items: center; min-height: 60px; padding-left: 200px; box-sizing: border-box; }
+    /* The menu's wrappers span the header, over the logo: only the menu's links take clicks. */
+    .nav-wrapper .container, .nav-wrapper #main-nav { pointer-events: none; }
+    .nav-wrapper #main-nav .nav-menu--main, .nav-wrapper #main-nav .nav-menu--main * { pointer-events: auto; }
     .nav-wrapper #main-nav .nav-menu--main { float: none; display: flex; align-items: center; margin: 0; }
     .nav-wrapper #main-nav .nav-menu--main li { float: none; }
 }
@@ -664,4 +667,29 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 @media (min-width: 48em) {
     .nav-menu--main .nav-menu__item--lang a { border: 1px solid rgba(255, 255, 255, 0.35); padding-top: 0.35em; padding-bottom: 0.35em; margin-left: 6px; }
 }
+
+/* Report form: tighter spacing, so a step fits on the screen without scrolling. */
+#map_sidebar h1 { margin: 0.2em 0 0.3em; }
+#map_sidebar .change_location { margin: 0 0 0.5em; }
+#map_sidebar .change_location li { margin: 0; padding-top: 0; padding-bottom: 0.15em; font-size: 0.875rem; line-height: 1.35; }
+#map_sidebar .form-section-heading { margin: 0.5em 0 0.2em; font-size: 1.125rem; }
+#map_sidebar .form-section-description { font-size: 0.875rem; line-height: 1.4; margin-bottom: 0.25em; }
+#map_sidebar .form-section-description p { margin: 0 0 0.3em; }
+#map_sidebar .js-reporting-page label, #map_sidebar .js-reporting-page .label { margin-top: 0.6em; margin-bottom: 0.25em; }
+#map_sidebar .js-reporting-page .form-hint { margin: -0.15em 0 0.35em; font-size: 0.875rem; line-height: 1.35; }
+#map_sidebar .dropzone { min-height: 0; padding: 14px; margin-bottom: 4px; }
+#map_sidebar .dropzone .dz-message { margin: 0.4em 0; }
+#map_sidebar .gr-photo-actions { margin: 6px 0 2px; }
+#map_sidebar #form_detail { height: 7.5em; min-height: 5em; resize: vertical; }
+#map_sidebar .js-reporting-page .form-control { margin-bottom: 4px; }
+@media (min-width: 48em) {
+    #map_sidebar .gr-photo-actions .btn { padding-top: 0.4em; padding-bottom: 0.4em; }
+}
+
+/* Steps of the report form fade into each other (step-fade.js): a copy of the step being left, with
+   the panel's background, fades out over the new one while that fades in. */
+.gr-step-ghost { position: absolute; z-index: 3; margin: 0; pointer-events: none; animation: gr-step-out 0.22s ease forwards; }
+.js-reporting-page--active { animation: gr-step-fade-in 0.3s ease backwards; }
+@keyframes gr-step-out { to { opacity: 0; } }
+@keyframes gr-step-fade-in { from { opacity: 0; } }
 

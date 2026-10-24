@@ -5,6 +5,7 @@
 [% IF bodyclass.match('mappage');
     scripts.push(version('/cobrands/fixmystreet/assets.js'));
     scripts.push(version('/cobrands/greece/camera.js'));
+    scripts.push(version('/cobrands/greece/step-fade.js'));
 END ~%]
 [%# form-draft.js keeps the report form's text if the reporter leaves it by mistake, and forgets
     it on the confirmation page, so it is on every page. ~%]
