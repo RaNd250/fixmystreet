@@ -1,0 +1,15 @@
+[%# For a police complaint, a button that opens the reporter's SMS app with the complaint
+    written out, to send to the police from their own phone (Problem::greece_sms). ~%]
+[% IF sms_report; gr_sms = sms_report.greece_sms(c.cobrand); END %]
+[% IF gr_sms.number %]
+<section class="gr-sms" aria-labelledby="gr-sms-title">
+  <h2 id="gr-sms-title" class="gr-sms__title">Στείλε την καταγγελία και με SMS στο [% gr_sms.number %]</h2>
+  <p class="gr-sms__intro">Το κουμπί ανοίγει την εφαρμογή μηνυμάτων του κινητού σου με έτοιμο το κείμενο. Το μήνυμα το στέλνεις εσύ, από τον αριθμό σου.</p>
+  <a class="btn btn--primary btn--block gr-sms__btn" href="sms:[% gr_sms.number %]?&amp;body=[% gr_sms.body | uri %]">Άνοιγμα SMS προς [% gr_sms.number %]</a>
+  <p class="gr-sms__desktop">Από υπολογιστή, άνοιξε αυτή τη σελίδα στο κινητό σου ή στείλε το κείμενο από εκεί.</p>
+  <details class="gr-sms__text">
+    <summary>Το κείμενο του μηνύματος</summary>
+    <pre>[% gr_sms.body | html %]</pre>
+  </details>
+</section>
+[% END %]

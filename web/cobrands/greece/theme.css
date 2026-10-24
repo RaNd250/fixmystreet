@@ -1,0 +1,561 @@
+/*
+ * Greece theme, loaded after the default cobrand's base.css/layout.css (header/css.html).
+ * Light surfaces with rounded cards, a dark glass header, softer controls, and short
+ * transitions between pages, report steps and the mobile menu. Motion is dropped for
+ * prefers-reduced-motion.
+ */
+
+:root {
+    --gr-bg: #f3f5fa;
+    --gr-surface: #ffffff;
+    --gr-surface-2: #f7f9fc;
+    --gr-ink: #0f172a;
+    --gr-ink-2: #475569;
+    --gr-ink-3: #64748b;
+    --gr-line: #e3e8f0;
+    --gr-line-2: #cfd7e3;
+    --gr-header: rgba(12, 27, 51, 0.94);
+    --gr-accent: #1f5fd6;
+    --gr-accent-hover: #184bb0;
+    --gr-accent-soft: #e9f0ff;
+    --gr-accent-ink: #123f99;
+    --gr-warm: #ffb21e;
+    --gr-danger: #dc2626;
+    --gr-radius-s: 10px;
+    --gr-radius: 16px;
+    --gr-radius-l: 24px;
+    --gr-pill: 999px;
+    --gr-shadow-1: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.07);
+    --gr-shadow-2: 0 6px 16px -4px rgba(15, 23, 42, 0.10), 0 2px 6px rgba(15, 23, 42, 0.05);
+    --gr-shadow-3: 0 24px 48px -16px rgba(15, 23, 42, 0.28);
+    --gr-ring: 0 0 0 3px rgba(31, 95, 214, 0.28);
+    --gr-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --gr-fast: 0.16s;
+    --gr-med: 0.28s;
+    --gr-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+    color-scheme: light;
+}
+
+/* Page */
+
+html { -webkit-tap-highlight-color: transparent; }
+body, button, input, select, textarea { font-family: var(--gr-font); }
+body {
+    color: var(--gr-ink);
+    background: var(--gr-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+h1, h2, h3 { color: var(--gr-ink); letter-spacing: -0.015em; }
+h1 { font-weight: 700; line-height: 1.15; }
+h2 { font-weight: 650; }
+a { color: var(--gr-accent); text-underline-offset: 0.18em; transition: color var(--gr-fast) ease; }
+a:hover { color: var(--gr-accent-hover); }
+::selection { background: rgba(31, 95, 214, 0.18); }
+
+:focus-visible { outline: 2px solid var(--gr-accent); outline-offset: 2px; }
+
+/* The staging notice: a small badge instead of a ribbon across the logo. */
+.dev-site-notice {
+    position: fixed;
+    top: auto;
+    left: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    transform: none;
+    padding: 0.35em 0.85em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #fff;
+    background: var(--gr-danger);
+    border-radius: var(--gr-pill);
+    box-shadow: var(--gr-shadow-2);
+    z-index: 9999;
+    opacity: 0.92;
+}
+
+/* Header */
+
+#site-header {
+    border-top: 0;
+    background: var(--gr-header);
+    -webkit-backdrop-filter: saturate(1.6) blur(14px);
+    backdrop-filter: saturate(1.6) blur(14px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+#report-cta {
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: var(--gr-pill);
+    padding: 0.5em 0.95em;
+    transition: background-color var(--gr-fast) ease, border-color var(--gr-fast) ease, transform var(--gr-fast) ease;
+}
+#report-cta:hover, #report-cta:focus { color: var(--gr-ink); background: #fff; border-color: #fff; }
+#report-cta:active { transform: translateY(-50%) scale(0.97); }
+#nav-link { border-radius: var(--gr-radius-s); transition: background-color var(--gr-fast) ease; }
+#nav-link:hover { background-color: rgba(255, 255, 255, 0.1); }
+
+/* Mobile menu: a sheet that fades and slides in, over a fading backdrop. */
+@media (max-width: 47.99em) {
+    #main-nav {
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(-10px) scale(0.98);
+        transform-origin: top center;
+        pointer-events: none;
+        margin: 0 10px;
+        left: 0;
+        right: 0;
+        background: var(--gr-surface);
+        border-radius: 0 0 var(--gr-radius-l) var(--gr-radius-l);
+        box-shadow: var(--gr-shadow-3);
+        max-height: calc(100vh - 80px);
+        transition: opacity var(--gr-med) var(--gr-ease), transform var(--gr-med) var(--gr-ease), visibility 0s linear var(--gr-med);
+    }
+    #main-nav-btn:checked ~ #main-nav {
+        visibility: visible;
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        transition: opacity var(--gr-med) var(--gr-ease), transform var(--gr-med) var(--gr-ease), visibility 0s;
+    }
+    #main-nav .nav-menu--main { padding: 6px; margin: 0; }
+    #main-nav .nav-menu--main li { border: 0; }
+    #main-nav .nav-menu--main a, #main-nav .nav-menu--main span {
+        border: 0;
+        border-radius: var(--gr-radius);
+        padding: 0.6em 0.9em;
+        font-size: 1.15em;
+        color: var(--gr-ink);
+        background: transparent;
+        transition: background-color var(--gr-fast) ease, transform var(--gr-fast) ease;
+    }
+    #main-nav .nav-menu--main a:hover, #main-nav .nav-menu--main a:focus { background: var(--gr-surface-2); text-decoration: none; }
+    #main-nav .nav-menu--main a:active { transform: scale(0.985); }
+    #main-nav .nav-menu--main span { background: var(--gr-accent-soft); color: var(--gr-accent-ink); font-weight: 600; }
+    html.mobile.js-nav-open #js-menu-open-modal {
+        background-color: rgba(15, 23, 42, 0.35);
+        -webkit-backdrop-filter: blur(2px);
+        backdrop-filter: blur(2px);
+        animation: gr-fade-in var(--gr-med) ease both;
+    }
+}
+
+/* Desktop navigation: pills. */
+@media (min-width: 48em) {
+    .nav-menu--main a, .nav-menu--main span {
+        color: rgba(255, 255, 255, 0.86);
+        border-radius: var(--gr-pill);
+        margin: 0 2px;
+        padding: 0.55em 0.95em;
+        transition: background-color var(--gr-fast) ease, color var(--gr-fast) ease;
+    }
+    .nav-menu--main a:hover, .nav-menu--main a:focus { color: #fff; background-color: rgba(255, 255, 255, 0.12); text-decoration: none; }
+    .nav-menu--main span { color: #fff; background-color: rgba(255, 255, 255, 0.16); }
+    .nav-menu--main a.report-a-problem-btn {
+        color: var(--gr-ink);
+        background: var(--gr-warm);
+        font-weight: 650;
+        padding: 0.55em 1.05em;
+        margin: 0 6px 0 0;
+        box-shadow: 0 6px 16px -6px rgba(255, 178, 30, 0.7);
+        transition: background-color var(--gr-fast) ease, transform var(--gr-fast) ease, box-shadow var(--gr-fast) ease;
+    }
+    .nav-menu--main a.report-a-problem-btn:hover { color: var(--gr-ink); background: #ffc24d; transform: translateY(-1px); }
+    .nav-menu--main a.report-a-problem-btn:active { transform: translateY(0) scale(0.98); }
+
+    body { background: var(--gr-bg); }
+    .content {
+        margin-top: 1.5em;
+        padding: 1.5em 1.75em;
+        background: var(--gr-surface);
+        border-radius: var(--gr-radius-l);
+        box-shadow: var(--gr-shadow-2);
+        color: var(--gr-ink);
+    }
+    body.mappage .content { border-radius: 0; box-shadow: none; background: transparent; }
+    body.authpage .content { margin-top: 3em; padding: 2em; }
+}
+
+/* Buttons */
+
+.btn, .skiplink {
+    border-radius: var(--gr-radius);
+    border: 1px solid var(--gr-line-2);
+    background: var(--gr-surface);
+    color: var(--gr-ink);
+    font-weight: 650;
+    padding: 0.85em 1.15em;
+    box-shadow: var(--gr-shadow-1);
+    transition: background-color var(--gr-fast) ease, border-color var(--gr-fast) ease, box-shadow var(--gr-fast) ease, transform var(--gr-fast) ease, color var(--gr-fast) ease;
+}
+.btn:hover, .skiplink:hover { background: var(--gr-surface-2); border-color: var(--gr-line-2); box-shadow: var(--gr-shadow-2); }
+.btn:focus, .skiplink:focus { color: var(--gr-ink) !important; background: var(--gr-surface); border-color: var(--gr-accent); }
+.btn:focus-visible { box-shadow: var(--gr-ring); outline: none; }
+.btn:active { transform: scale(0.98); box-shadow: var(--gr-shadow-1); }
+.btn:disabled { box-shadow: none; transform: none; }
+
+.btn--primary {
+    color: #fff !important;
+    background: var(--gr-accent);
+    border-color: var(--gr-accent);
+    box-shadow: 0 8px 20px -10px rgba(31, 95, 214, 0.75);
+}
+.btn--primary:hover { color: #fff !important; background: var(--gr-accent-hover); border-color: var(--gr-accent-hover); }
+.btn--primary:focus { color: #fff !important; background: var(--gr-accent); border-color: var(--gr-accent-hover); }
+.btn--primary:disabled { color: rgba(15, 23, 42, 0.5) !important; background: var(--gr-line); border-color: var(--gr-line); box-shadow: none; }
+
+/* Form controls */
+
+.form-control, .govuk-select, select.form-control, textarea.form-control {
+    border: 1.5px solid var(--gr-line-2);
+    border-radius: var(--gr-radius-s);
+    box-shadow: none;
+    background-color: var(--gr-surface);
+    color: var(--gr-ink);
+    padding: 0.6em 0.75em;
+    transition: border-color var(--gr-fast) ease, box-shadow var(--gr-fast) ease, background-color var(--gr-fast) ease;
+}
+.multi-select-button {
+    border: 1.5px solid var(--gr-line-2);
+    border-radius: var(--gr-radius-s);
+    background-color: var(--gr-surface);
+    transition: border-color var(--gr-fast) ease, box-shadow var(--gr-fast) ease;
+}
+.multi-select-button:focus, .govuk-select:focus { outline: none; box-shadow: var(--gr-ring); border-color: var(--gr-accent); }
+.multi-select-menu { border-radius: var(--gr-radius); border: 1px solid var(--gr-line); box-shadow: var(--gr-shadow-3); overflow: hidden; animation: gr-step-in 0.2s var(--gr-ease) backwards; }
+.form-control:hover, .govuk-select:hover, .multi-select-button:hover { border-color: #b4bfcf; }
+.form-control:focus, .govuk-select:focus { border-color: var(--gr-accent); box-shadow: var(--gr-ring); outline: none; }
+.form-box, .alerts__cta-box { background: var(--gr-surface-2); border-radius: var(--gr-radius); }
+
+/* Category choices as tiles. */
+.govuk-radios--small .govuk-radios__item {
+    position: relative;
+    float: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 48px;
+    margin: 0 0 8px;
+    padding: 2px 14px 2px 50px;
+    border: 1.5px solid var(--gr-line);
+    border-radius: var(--gr-radius);
+    background: var(--gr-surface);
+    transition: border-color var(--gr-fast) ease, background-color var(--gr-fast) ease, box-shadow var(--gr-fast) ease, transform var(--gr-fast) ease;
+}
+.govuk-radios--small .govuk-radios__item:hover { border-color: var(--gr-line-2); box-shadow: var(--gr-shadow-1); }
+.govuk-radios--small .govuk-radios__item:active { transform: scale(0.99); }
+.govuk-radios--small .govuk-radios__item:has(.govuk-radios__input:checked) {
+    border-color: var(--gr-accent);
+    background: var(--gr-accent-soft);
+    box-shadow: 0 0 0 1px var(--gr-accent) inset;
+}
+.govuk-radios--small .govuk-radios__item:has(.govuk-radios__input:checked) .govuk-radios__label { color: var(--gr-accent-ink); font-weight: 600; }
+.govuk-radios__label:before, .govuk-radios__label:after { transition: opacity var(--gr-fast) ease, border-color var(--gr-fast) ease; }
+.govuk-radios__input:checked + .govuk-radios__label:before { border-color: var(--gr-accent); }
+.govuk-radios__input:checked + .govuk-radios__label:after { border-color: var(--gr-accent); background: var(--gr-accent); }
+.govuk-radios__input:focus + .govuk-radios__label:before { box-shadow: var(--gr-ring); }
+.govuk-radios--small .govuk-radios__item:after { display: none; }
+.govuk-radios--small .govuk-radios__item.js-filter-disabled { padding-left: 14px; }
+.govuk-radios--small .govuk-radios__label { float: none; flex: 1 1 auto; margin: 0; padding: 11px 0; }
+.govuk-radios--small .govuk-radios__label:before { left: 14px; top: 50%; margin-top: -12px; }
+.govuk-radios--small .govuk-radios__label:after { left: 21px; top: 50%; margin-top: -5px; }
+.govuk-radios--small .govuk-radios__input { left: 4px; top: 50%; margin-top: -22px; }
+.govuk-radios--small .govuk-radios__hint, .govuk-radios--small .govuk-radios__conditional { flex-basis: 100%; }
+
+/* Report steps and side panels: each one eases in when shown. */
+.js-reporting-page--active { animation: gr-step-in 0.34s var(--gr-ease) backwards; }
+#side, #side-form, #side-report { animation: gr-fade-in 0.3s ease backwards; }
+
+/* Front page */
+
+#front-main {
+    margin: 0;
+    padding-top: 1em;
+    color: var(--gr-ink);
+    background:
+        radial-gradient(1200px 420px at 15% -10%, rgba(31, 95, 214, 0.16), transparent 60%),
+        radial-gradient(900px 380px at 95% 0%, rgba(255, 178, 30, 0.18), transparent 60%),
+        var(--gr-bg);
+}
+#front-main h1 { font-size: clamp(1.9rem, 1.2rem + 2.6vw, 2.9rem); margin-bottom: 0.25em; }
+#front-main h2 { color: var(--gr-ink-2); font-style: normal; font-weight: 450; }
+.gr-minimap__frame { border-radius: var(--gr-radius-l); box-shadow: var(--gr-shadow-3); border: 1px solid rgba(15, 23, 42, 0.06); }
+.gr-minimap__map { background: #eef1f6; }
+.gr-minimap__actions .btn { border-radius: var(--gr-radius); }
+.gr-dimos { border-left: 0; border-radius: var(--gr-radius); background: var(--gr-surface); box-shadow: var(--gr-shadow-1); border: 1px solid var(--gr-line); }
+
+.postcode-form-box { background: transparent; color: var(--gr-ink); }
+.postcode-form-box .form-hint { color: var(--gr-ink-3); }
+.postcode-form-box div {
+    background: var(--gr-surface);
+    border: 1.5px solid var(--gr-line-2);
+    border-radius: var(--gr-pill);
+    overflow: hidden;
+    padding: 4px;
+    box-shadow: var(--gr-shadow-2);
+    transition: border-color var(--gr-fast) ease, box-shadow var(--gr-fast) ease;
+}
+.postcode-form-box div:focus-within { border-color: var(--gr-accent); box-shadow: var(--gr-ring), var(--gr-shadow-2); }
+.postcode-form-box input#pc { padding: 0.55em 1em; outline: none; box-shadow: none; }
+.postcode-form-box input#sub {
+    border-radius: var(--gr-pill);
+    background: var(--gr-accent);
+    color: #fff;
+    padding: 0.6em 1.3em;
+    font-weight: 650;
+    transition: background-color var(--gr-fast) ease, transform var(--gr-fast) ease;
+}
+.postcode-form-box input#sub:hover, .postcode-form-box input#sub:focus { background: var(--gr-accent-hover); }
+.postcode-form-box input#sub:active { transform: scale(0.97); }
+
+ol.big-numbers > li:before { color: var(--gr-accent); opacity: 0.85; font-family: var(--gr-font); font-weight: 750; }
+#front_stats {
+    display: flex;
+    gap: 10px;
+    background: none;
+    border-top: 0;
+    padding-top: 0;
+    color: var(--gr-ink);
+    font-family: var(--gr-font);
+}
+#front_stats div {
+    display: block;
+    flex: 1 1 0;
+    padding: 1em 0.75em;
+    background: var(--gr-surface-2);
+    border: 1px solid var(--gr-line);
+    border-radius: var(--gr-radius);
+    color: var(--gr-ink-2);
+    font-weight: 600;
+}
+#front_stats big { color: var(--gr-accent); font-weight: 750; letter-spacing: -0.02em; }
+
+.content footer .tablewrapper, .footer-marketing { background: transparent; color: var(--gr-ink-2); }
+.bordered { border-top: 1px solid var(--gr-line); }
+a.platform-logo { filter: invert(0.72); }
+
+/* The default cobrand's orange accents, in the theme colours. */
+.item-list { border-bottom: 1px solid var(--gr-line); }
+#key-tools { border-top: 1px solid var(--gr-line); box-shadow: 0 -8px 24px 4px rgba(255, 255, 255, 0.95); }
+#key-tools a, #key-tools button { background-color: var(--gr-surface-2); transition: background-color var(--gr-fast) ease, color var(--gr-fast) ease; }
+#key-tools a:hover, #key-tools a:focus, #key-tools button:hover, #key-tools button:focus { background-color: var(--gr-ink); }
+h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); background: var(--gr-surface-2); }
+.dropzone { background-color: var(--gr-accent-soft); border-color: #9db8ee; border-radius: var(--gr-radius); }
+.dropzone:hover, .dropzone.dz-drag-hover { background-color: #dde7fd; border-color: var(--gr-accent); }
+.dz-clickable .dz-message u { background: var(--gr-accent); color: #fff; border-color: var(--gr-accent); border-radius: var(--gr-radius-s); }
+.dz-clickable .dz-message u:hover, .dz-clickable .dz-message u:focus { background: var(--gr-accent-hover); color: #fff; border-color: var(--gr-accent-hover); }
+.segmented-control--radio input:checked + label { background: var(--gr-accent-soft); border-color: var(--gr-accent); color: var(--gr-accent-ink) !important; box-shadow: none; }
+.skiplink:focus { background-color: var(--gr-warm); border-radius: var(--gr-radius-s); }
+.content footer .tablewrapper a:link, .content footer .tablewrapper a:visited { color: var(--gr-accent); }
+
+@media (max-width: 47.99em) {
+    #front-howto, #front_stats { margin-top: 0.5em; }
+    #front_stats { padding: 0 1em 1em; gap: 8px; }
+    #front_stats div { padding: 0.8em 0.4em; }
+    .postcode-form-box { margin: 0.5em 0 0; padding: 1em 0; }
+}
+
+/* Map pages */
+
+@media (min-width: 48em) {
+    #map_sidebar { background: var(--gr-surface); box-shadow: 8px 0 28px -12px rgba(15, 23, 42, 0.22); }
+    .big-green-banner {
+        margin: 0 0 0.75em;
+        padding: 1em 3em 1em 1.1em;
+        font-size: 1.05em;
+        font-weight: 650;
+        text-transform: none;
+        text-align: left;
+        border-radius: var(--gr-radius);
+        background-color: var(--gr-accent);
+        background-position: right 1em center;
+        background-size: 1.2em auto;
+        box-shadow: 0 12px 28px -14px rgba(31, 95, 214, 0.8);
+    }
+}
+.big-green-banner { background-color: var(--gr-accent); }
+
+.item-list__item { border-radius: var(--gr-radius); }
+.js .item-list__item--expandable:hover, .js .item-list__item--expandable.hovered { background-color: var(--gr-surface-2); }
+.item-list__item--indented { border-top: 0; margin: 0 0 6px; border-radius: var(--gr-radius); overflow: hidden; }
+.item-list__item--indented a { border-radius: var(--gr-radius); transition: background-color var(--gr-fast) ease; }
+.item-list__item--indented:hover a { background-color: var(--gr-surface-2); }
+
+#ns_fms_pan_zoom_panup, #ns_fms_pan_zoom_pandown, #ns_fms_pan_zoom_panleft, #ns_fms_pan_zoom_panright,
+#ns_fms_pan_zoom_zoomin, #ns_fms_pan_zoom_zoomout,
+#fms_pan_zoom_panup, #fms_pan_zoom_pandown, #fms_pan_zoom_panleft, #fms_pan_zoom_panright,
+#fms_pan_zoom_zoomin, #fms_pan_zoom_zoomout {
+    background-color: rgba(15, 23, 42, 0.86);
+    border-radius: 12px;
+    box-shadow: var(--gr-shadow-2);
+    transition: background-color var(--gr-fast) ease, transform var(--gr-fast) ease, opacity var(--gr-fast) ease;
+}
+#ns_fms_pan_zoom_zoomin:active, #ns_fms_pan_zoom_zoomout:active, #fms_pan_zoom_zoomin:active, #fms_pan_zoom_zoomout:active { transform: scale(0.94); }
+.olControlAttribution { border-radius: var(--gr-pill) 0 0 0; }
+
+/* Phone map screen: floating, rounded bars over the map. */
+@media (max-width: 47.99em) {
+    .dev-site-notice { left: auto; right: 10px; bottom: calc(76px + env(safe-area-inset-bottom)); font-size: 0.68rem; }
+    .mobile-map-banner {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        border-radius: var(--gr-pill);
+        background-color: rgba(12, 27, 51, 0.82);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        box-shadow: var(--gr-shadow-2);
+        animation: gr-step-in 0.3s var(--gr-ease) backwards;
+    }
+    .map-fullscreen .sub-map-links {
+        left: 10px;
+        right: 10px;
+        bottom: calc(10px + env(safe-area-inset-bottom));
+        padding-bottom: 0;
+        border-radius: var(--gr-radius-l);
+        overflow: hidden;
+        background-color: rgba(12, 27, 51, 0.88);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        box-shadow: var(--gr-shadow-3);
+    }
+    .sub-map-links #mob_ok { background: var(--gr-accent); color: #fff; font-weight: 650; }
+    .map-mobile-report-button { border-radius: var(--gr-pill); background-color: var(--gr-accent); box-shadow: 0 12px 28px -12px rgba(31, 95, 214, 0.9); }
+    .map-mobile-report-button:hover, .map-mobile-report-button:focus { background-color: var(--gr-accent-hover); }
+    .map-fullscreen .olControlAttribution { bottom: calc(74px + env(safe-area-inset-bottom)) !important; }
+}
+
+/* Page-to-page transitions where the browser supports them (cross-document view
+   transitions); the header stays still while the page underneath changes. */
+@view-transition { navigation: auto; }
+#site-header { view-transition-name: gr-header; }
+::view-transition-old(root) { animation: gr-vt-out 0.18s ease both; }
+::view-transition-new(root) { animation: gr-vt-in 0.32s var(--gr-ease) both; }
+
+@keyframes gr-fade-in { from { opacity: 0; } }
+@keyframes gr-step-in { from { opacity: 0; transform: translateY(8px); } }
+@keyframes gr-vt-out { to { opacity: 0; transform: translateY(-4px); } }
+@keyframes gr-vt-in { from { opacity: 0; transform: translateY(10px); } }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    @view-transition { navigation: none; }
+}
+
+/* SMS to the police, on the confirmation and report pages (report/_greece_sms.html). */
+.gr-sms {
+    margin: 1.5em 0;
+    padding: 1.25em 1.25em 1em;
+    border-radius: var(--gr-radius-l);
+    background: linear-gradient(180deg, var(--gr-accent-soft), var(--gr-surface));
+    border: 1px solid #cfdcf8;
+    box-shadow: var(--gr-shadow-1);
+    text-align: left;
+    animation: gr-step-in 0.36s var(--gr-ease) backwards;
+}
+.gr-sms__title { margin: 0 0 0.35em; font-size: 1.15rem; line-height: 1.3; }
+.gr-sms__intro { margin: 0 0 1em; font-size: 1rem; line-height: 1.5; color: var(--gr-ink-2); }
+.gr-sms__btn { margin: 0; }
+.gr-sms__desktop { display: none; margin: 0.75em 0 0; font-size: 0.9em; color: var(--gr-ink-3); }
+@media (hover: hover) and (pointer: fine) { html:not(.mobile) .gr-sms__desktop { display: block; } }
+.gr-sms__text { margin-top: 0.75em; }
+.gr-sms__text summary { cursor: pointer; color: var(--gr-accent); font-weight: 600; }
+.gr-sms__text pre {
+    margin: 0.5em 0 0;
+    padding: 0.75em 1em;
+    white-space: pre-wrap;
+    font-family: var(--gr-font);
+    font-size: 0.95em;
+    background: var(--gr-surface);
+    border: 1px solid var(--gr-line);
+    border-radius: var(--gr-radius-s);
+}
+
+/* "Τράβηξε φωτογραφία" and "Από τη συλλογή" under the photo upload box (camera.js) */
+
+.gr-photo-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    margin: 0.75em 0 0.25em;
+}
+.gr-photo-actions .btn {
+    display: inline-flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    margin: 0;
+}
+.gr-photo-actions svg, .gr-camera__shutter svg { flex: none; }
+.gr-camera {
+    width: min(760px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    padding: 12px;
+    border: 0;
+    border-radius: var(--gr-radius-l);
+    background: var(--gr-surface);
+    color: var(--gr-ink);
+    box-shadow: var(--gr-shadow-3);
+}
+.gr-camera::backdrop { background: rgba(8, 15, 30, 0.6); backdrop-filter: blur(3px); }
+.gr-camera__frame {
+    overflow: hidden;
+    border-radius: var(--gr-radius);
+    background: #0b1220;
+    aspect-ratio: 16 / 9;
+}
+.gr-camera__video { display: block; width: 100%; height: 100%; object-fit: contain; }
+.gr-camera__status { margin: 0.75em 0.25em 0; color: var(--gr-ink-2); line-height: 1.5; }
+.gr-camera__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5em;
+    margin-top: 12px;
+}
+.gr-camera__actions .btn { margin: 0; }
+.gr-camera [hidden] { display: none !important; }
+.gr-camera__shutter { display: inline-flex; align-items: center; gap: 0.5em; }
+
+/* Suggestions under the address box (place-search.js) */
+
+.gr-places-wrap { position: relative; }
+.gr-places {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    max-height: min(60vh, 22em);
+    overflow-y: auto;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    text-align: left;
+    background: var(--gr-surface);
+    border: 1px solid var(--gr-line);
+    border-radius: var(--gr-radius);
+    box-shadow: var(--gr-shadow-3);
+}
+.gr-places[hidden] { display: none; }
+.gr-places__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0.6em 0.8em;
+    border-radius: var(--gr-radius-s);
+    color: var(--gr-ink);
+    cursor: pointer;
+}
+.gr-places__item:hover, .gr-places__item[aria-selected="true"] { background: var(--gr-accent-soft); }
+.gr-places__main { font-weight: 600; }
+.gr-places__context { font-size: 0.875em; color: var(--gr-ink-3); }
+.gr-places__credit { margin: 0; padding: 0.35em 0.8em 0.1em; font-size: 0.75em; color: var(--gr-ink-3); text-align: right; }

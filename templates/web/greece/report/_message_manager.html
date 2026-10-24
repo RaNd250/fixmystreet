@@ -1,0 +1,4 @@
+[%# Shown on the report page; the SMS is for the reporter only. ~%]
+[% IF c.user_exists AND c.user.id == problem.user_id %]
+  [% INCLUDE 'report/_greece_sms.html' sms_report = problem %]
+[% END %]

@@ -1,0 +1,4 @@
+[%# Photo upload boxes on the report and update forms get "take a photo" and gallery buttons;
+    the address box gets suggestions while typing (it only acts where there is one). ~%]
+[% IF bodyclass.match('mappage'); scripts.push(version('/cobrands/greece/camera.js')); END ~%]
+[% scripts.push(version('/cobrands/greece/place-search.js')) ~%]

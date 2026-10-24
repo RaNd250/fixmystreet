@@ -1,0 +1,9 @@
+[%# The public reference (DDMMYYYY-N) is shown in report/_report_meta_info.html, so this only adds
+    the municipality's own reference when it has sent one back. %]
+[% SET duration_clause = problem.duration_string %]
+<p class="council_sent_info">
+    [% duration_clause %][% IF duration_clause %]. [% END %]
+    [%- IF problem.can_display_external_id %]
+    <strong>[% tprintf(loc('Council ref:&nbsp;%s'), problem.external_id) %].</strong>
+    [%- END %]
+</p>

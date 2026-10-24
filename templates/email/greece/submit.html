@@ -1,0 +1,83 @@
+[%# A category can name its own template (see munge_sendreport_params in Greece.pm). ~%]
+[% IF email_template; PROCESS "submit-${email_template}.html"; ELSE ~%]
+[%
+
+email_summary = "Χρήστης του " _ site_name _ " ανέφερε ένα νέο πρόβλημα στην περιοχή σας.";
+email_footer = "Το μήνυμα στάλθηκε αυτόματα από το " _ site_name _ ".";
+email_columns = 2;
+correction_subject = "MAIL ΔΗΜΟΥ " _ report.greece_ref _ " " _ bodies_name;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Νέο πρόβλημα στην περιοχή&nbsp;σας</h1>
+  <p style="[% p_style %]">[% missing %][% multiple %]Χρήστης του [% site_name %] υπέβαλε την παρακάτω αναφορά για ένα
+τοπικό πρόβλημα που πιστεύει ότι χρειάζεται την προσοχή σας.</p>
+  <p style="[% p_style %]"><strong>Αριθμός αναφοράς: [% report.greece_ref | html %]</strong></p>
+
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% url %]">Δείτε ολόκληρη την αναφορά</a>
+  </p>
+  <h2 style="[% h2_style %] margin: 30px 0 10px 0">Υποβλήθηκε από:</h2>
+  <table [% table_reset | safe %]>
+    <tr>
+      <th style="[% contact_th_style %]">Όνομα</th>
+      <td style="[% contact_td_style %]">[% report.name | html %]</td>
+    </tr>
+    <tr>
+      <th style="[% contact_th_style %]">Email</th>
+      <td style="[% contact_td_style %]">
+        [%~ IF report.user.email ~%]
+          <a href="mailto:[% report.user.email | html %]">[% report.user.email | html %]</a>
+        [%~ ELSE ~%]
+          <strong>Δεν δόθηκε email, μόνο αριθμός τηλεφώνου</strong>
+        [%~ END ~%]
+      </td>
+    </tr>
+    [%~ IF report.user.phone %]
+      <tr>
+        <th style="[% contact_th_style %]">Τηλέφωνο</th>
+        <td style="[% contact_td_style %]"><a href="tel:[% report.user.phone | html %]">[% report.user.phone | html %]</a></td>
+      </tr>
+    [%~ END %]
+  </table>
+  <p style="[% p_style %] margin-top: 0.5em;">Οι απαντήσεις σε αυτό το μήνυμα θα πάνε απευθείας στον/στην [% report.name | html %], που ανέφερε το πρόβλημα.</p>
+  <div style="margin: 30px 0 0 0; padding: 12px 16px; border: 1px solid #d8cfe9; border-radius: 4px; background-color: #f6f3fb;">
+    <p style="[% p_style %]">
+      [%~ IF sent_to %]Η αναφορά στάλθηκε [% sent_to.match(',') ? 'στις διευθύνσεις' : 'στη διεύθυνση' %] <strong>[% sent_to | html %]</strong>. [% END ~%]
+      Αν δεν είναι η σωστή διεύθυνση του Δήμου για αναφορές πολιτών, στείλτε μας τη σωστή με νέο email προς
+      <a href="mailto:[% cobrand.contact_email | html %]?subject=[% correction_subject | uri %]&amp;body=[% 'MAIL ΔΗΜΟΥ:' | uri %]">[% cobrand.contact_email | html %]</a>
+      (όχι με απάντηση σε αυτό, γιατί η απάντηση πηγαίνει στον πολίτη), γράφοντας:</p>
+    <p style="[% p_style %] font-family: monospace; font-size: 16px;"><strong>MAIL ΔΗΜΟΥ:ΧΧΧ@ΥΥΥ.ΖΖΖ</strong></p>
+    <p style="[% p_style %] margin-bottom: 0;">όπου ΧΧΧ@ΥΥΥ.ΖΖΖ η σωστή διεύθυνση. Τα μηνύματα αυτά τα επεξεργαζόμαστε, ώστε οι επόμενες αναφορές να πηγαίνουν στη σωστή διεύθυνση.</p>
+  </div>
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    <p style="[% secondary_p_style %]">[% report.category | html %]</p>
+    [% report.detail | html_para_email(secondary_p_style) %]
+  [% IF report.get_extra_fields %]
+    <p style="[% secondary_p_style %]">
+      [%~ FOR field IN report.get_extra_fields %][% IF field.value %]
+      [% field.description OR field.name %]: [% field.value %]
+      [% IF NOT loop.last %]<br>[% END %]
+      [%~ END %][% END %]
+    </p>
+  [% END %]
+    <p style="[% secondary_p_style %]">
+      <strong>Τοποθεσία:</strong>
+      <a href="[% osm_url %]" title="Η τοποθεσία στον χάρτη OpenStreetMap">
+        [%~ report.latitude %], [% report.longitude ~%]
+      </a>
+      [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
+    </p>
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]
+[%~ END %]

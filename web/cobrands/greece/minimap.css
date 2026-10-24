@@ -1,0 +1,67 @@
+.gr-minimap { margin: 0 0 1em; }
+.gr-minimap[hidden], .gr-minimap-or[hidden], .gr-minimap [hidden] { display: none !important; }
+
+.gr-minimap__frame {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+.gr-minimap__map { width: 100%; height: 260px; background: #e8e8e8; }
+
+/* Teardrop pin whose tip sits exactly on the map centre. */
+.gr-minimap__pin {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 26px;
+    height: 26px;
+    margin: -31px 0 0 -13px;
+    border-radius: 50% 50% 50% 0;
+    background: #d6312b;
+    transform: rotate(-45deg);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+    z-index: 1000;
+}
+.gr-minimap__pin::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff;
+}
+
+/* Device position (blue dot), distinct from the red pin that marks the report spot. */
+.gr-minimap__gps {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #1a73e8;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 0 0 8px rgba(26, 115, 232, 0.18);
+}
+
+.gr-dimos {
+    margin: 0.8em 0 0;
+    padding: 0.7em 0.9em;
+    border-left: 4px solid #6733c0;
+    background: #f5f2fb;
+    border-radius: 0 8px 8px 0;
+}
+.gr-dimos__name { display: block; margin-bottom: 0.3em; }
+.gr-dimos__contacts { margin: 0; padding: 0; list-style: none; font-size: 0.95em; }
+.gr-dimos__contacts li { margin: 0.15em 0; padding: 0; list-style: none; overflow-wrap: anywhere; }
+.gr-dimos__contacts li::before { content: none; }
+
+.gr-minimap__status { margin: 0.6em 0; font-size: 0.95em; }
+.gr-minimap__actions { display: flex; flex-wrap: wrap; gap: 0.5em; }
+.gr-minimap__actions .btn { flex: 1 1 12em; margin: 0; text-align: center; }
+.gr-minimap-or { margin: 1em 0 0.5em; text-align: center; font-weight: bold; }
+
+@media (min-width: 48em) {
+    .gr-minimap__map { height: 320px; }
+}

@@ -1,0 +1,45 @@
+[%# Shared by submit-amea.txt and submit-amea.html: the complaint to the police about a
+    disabled (ΑμεΑ) or EV-charging bay, built from the category's questions. ~%]
+[%
+paravasi = report.get_extra_field_value('paravasi');
+syxnotita = report.get_extra_field_value('syxnotita');
+oxima = report.get_extra_field_value('oxima');
+pinakida = report.greece_plate;
+
+ev = paravasi == 'fortistis';
+paravasi_texts = {
+    xoris_karta => 'Στάθμευση οχήματος σε θέση ΑμεΑ χωρίς την ειδική Μπλε Κάρτα',
+    rampa => 'Στάθμευση οχήματος σε ράμπα ΑμεΑ, που εμποδίζει τη διέλευση',
+    fortistis => 'Στάθμευση οχήματος σε θέση φόρτισης ηλεκτρικών οχημάτων χωρίς να φορτίζει',
+    empodia => 'Τοποθέτηση παράνομων εμποδίων ή κώνων από κατάστημα',
+    p72 => 'Ύπαρξη αυθαίρετης ή μη εγκεκριμένης διαγράμμισης και πινακίδας P-72',
+};
+paravasi_text = paravasi ? paravasi_texts.$paravasi : '';
+syxnotita_texts = { epanalamvanomeni => 'επαναλαμβανόμενη ', monimi => 'μόνιμη ' };
+syxnotita_text = syxnotita ? syxnotita_texts.$syxnotita : '';
+
+street = closest_address ? closest_address.parts.street : '';
+number = closest_address ? closest_address.parts.number : '';
+place = '';
+IF closest_address;
+    addr = closest_address.address;
+    place = addr.suburb OR addr.neighbourhood OR addr.city OR addr.town OR addr.village OR '';
+END;
+area = [];
+area.push(place) IF place;
+area.push(dimos_name) IF dimos_name;
+
+subject_place = street ? 'επί της οδού ' _ street : 'στην περιοχή ' _ (area.join(', ') OR 'που φαίνεται στον χάρτη');
+IF ev;
+    subject = 'Καταγγελία για Παράνομη Κατάληψη Θέσης Φόρτισης Ηλεκτρικών Οχημάτων ' _ subject_place;
+    purpose = 'τη φόρτιση ηλεκτρικών οχημάτων';
+ELSE;
+    subject = 'Καταγγελία για Παράνομη Κατάληψη / Σήμανση Θέσης Στάθμευσης ΑμεΑ ' _ subject_place;
+    purpose = 'τη στάθμευση οχημάτων ΑμεΑ (ή τη διέλευση αυτών)';
+END;
+
+location = street ? 'Επί της οδού ' _ street _ (number ? ' ' _ number : '') : 'Στο σημείο του χάρτη';
+location = location _ (area.size ? ', στην περιοχή ' _ area.join(', ') : '');
+
+photos = report.greece_photos;
+~%]

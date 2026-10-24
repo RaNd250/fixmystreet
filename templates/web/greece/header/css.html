@@ -1,0 +1,11 @@
+[%# As base/header/css.html, plus the Greece theme last, so that it overrides the default
+    cobrand's CSS and the page's extra_css. ~%]
+[% SET base_css = version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]
+[% SET layout_css = version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]
+
+<link rel="stylesheet" href="[% base_css %]">
+<link rel="stylesheet" href="[% layout_css %]" media="screen and (min-width:48em)">
+<link rel="stylesheet" href="[% version('/vendor/OpenLayers/theme/default/style.css') %]">
+
+[% extra_css | safe %]
+<link rel="stylesheet" href="[% version('/cobrands/greece/theme.css') %]">

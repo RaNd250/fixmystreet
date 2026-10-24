@@ -1,0 +1,61 @@
+[%# A category can name its own template (see munge_sendreport_params in Greece.pm). ~%]
+[% IF email_template; PROCESS "submit-${email_template}.txt"; ELSE ~%]
+Subject: Αναφορά προβλήματος [% report.greece_ref %]: [% report.title %]
+
+Προς: [% bodies_name %]
+
+[% missing %][% multiple %]Χρήστης του [% site_name %] υπέβαλε την παρακάτω αναφορά για ένα
+τοπικό πρόβλημα που πιστεύει ότι χρειάζεται την προσοχή σας.
+
+[% fuzzy %], ή για να δώσετε ενημέρωση για το πρόβλημα,
+επισκεφθείτε τον παρακάτω σύνδεσμο:
+
+    [% url %]
+
+[% has_photo %]----------
+
+Αριθμός αναφοράς: [% report.greece_ref %]
+
+Όνομα: [% report.name %]
+
+Email: [% report.user.email OR "Δεν δόθηκε" %]
+
+Τηλέφωνο: [% report.user.phone OR "Δεν δόθηκε" %]
+
+Κατηγορία: [% report.category %]
+
+Θέμα: [% report.title %]
+
+Λεπτομέρειες: [% report.detail %]
+
+[% FOR field IN report.get_extra_fields %][% IF field.value ~%]
+[% field.description OR field.name %]: [% field.value %]
+
+[% END %][% END ~%]
+
+Γεωγραφικό πλάτος: [% report.latitude %]
+
+Γεωγραφικό μήκος: [% report.longitude %]
+
+Η τοποθεσία στον χάρτη OpenStreetMap: [% osm_url %]
+
+[% closest_address %]----------
+
+Οι απαντήσεις σε αυτό το email θα πάνε απευθείας στον χρήστη που υπέβαλε την αναφορά.
+
+----------
+
+[% IF sent_to %]Η αναφορά στάλθηκε [% sent_to.match(',') ? 'στις διευθύνσεις' : 'στη διεύθυνση' %]: [% sent_to %]
+
+[% END %]Αν αυτή δεν είναι η σωστή διεύθυνση του Δήμου για αναφορές πολιτών,
+στείλτε μας τη σωστή με νέο email προς [% cobrand.contact_email %]
+(όχι με απάντηση σε αυτό, γιατί η απάντηση πηγαίνει στον πολίτη), γράφοντας:
+
+    MAIL ΔΗΜΟΥ:ΧΧΧ@ΥΥΥ.ΖΖΖ
+
+όπου ΧΧΧ@ΥΥΥ.ΖΖΖ η σωστή διεύθυνση, με θέμα τον αριθμό αναφοράς
+[% report.greece_ref %]. Τα μηνύματα αυτά τα επεξεργαζόμαστε, ώστε οι
+επόμενες αναφορές να πηγαίνουν στη σωστή διεύθυνση.
+
+[% signature %]
+[%~ END %]
