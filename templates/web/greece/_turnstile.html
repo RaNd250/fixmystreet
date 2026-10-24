@@ -1,0 +1,8 @@
+[%# Cloudflare Turnstile check for visitors who are not signed in (Greece.pm greece_turnstile_ok);
+    turnstile.js renders it, also in forms loaded later. Usually it needs no action. ~%]
+[% IF NOT c.user_exists AND c.cobrand.greece_turnstile_sitekey %]
+<div class="gr-turnstile" data-sitekey="[% c.cobrand.greece_turnstile_sitekey | html %]"></div>
+[% IF field_errors.turnstile %]
+<p class="form-error">[% field_errors.turnstile %]</p>
+[% END %]
+[% END %]

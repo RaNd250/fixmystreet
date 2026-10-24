@@ -1,0 +1,16 @@
+[%# To the site's contact address: an update held for a moderator because of bad words (Greece.pm). ~%]
+Subject: Ενημέρωση στην αναφορά [% report.greece_ref %] σε έλεγχο: ακατάλληλες λέξεις
+
+Μια ενημέρωση στην αναφορά [% report.greece_ref %] ([% report.category %]) είχε [% update.get_extra_metadata('greece_bad_words') %] ακατάλληλες λέξεις και κρατήθηκε κρυφή: δεν φαίνεται στον ιστότοπο και δεν αλλάζει την κατάσταση της αναφοράς.
+
+Κείμενο, με *** στη θέση τους:
+
+[% update.text %]
+
+Όνομα: [% update.name %]
+
+Έλεγχος στο admin:
+
+[% admin_url %]
+
+Για να δημοσιευτεί, άλλαξε την κατάσταση σε «Επιβεβαιωμένη». Αλλιώς άφησέ την κρυφή.

@@ -4439,7 +4439,7 @@ msgstr "Κατάσταση αναφοράς"
 
 #: templates/web/base/report/new/form_heading.html:1
 msgid "Report your problem"
-msgstr "Ανάφερε το πρόβλημά σου"
+msgstr "Αναφορά προβλήματος"
 
 #: templates/web/base/header_opengraph.html:4
 msgid "Report, view, and discuss local street-related problems."
@@ -5435,7 +5435,7 @@ msgstr "Αποτελέσματα έρευνας"
 #: templates/web/base/report/form/private_details.html:2
 #: templates/web/base/report/form/user.html:9
 msgid "Tell us about you"
-msgstr "Πες μας για σένα"
+msgstr "Προσωπικά στοιχεία"
 
 #: templates/web/zurich/admin/templates/edit.html:7
 msgid "Template &laquo;%s&raquo;"

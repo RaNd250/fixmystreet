@@ -18,9 +18,9 @@ Subject: Αναφορά προβλήματος [% report.greece_ref %]: [% repor
 
 Όνομα: [% report.name %]
 
-Email: [% report.user.email OR "Δεν δόθηκε" %]
+Email: [% reporter_email OR "Δεν δόθηκε" %]
 
-Τηλέφωνο: [% report.user.phone OR "Δεν δόθηκε" %]
+Τηλέφωνο: [% reporter_phone OR "Δεν δόθηκε" %]
 
 Κατηγορία: [% report.category %]
 
@@ -37,7 +37,7 @@ Email: [% report.user.email OR "Δεν δόθηκε" %]
 
 [% closest_address %]----------
 
-Οι απαντήσεις σε αυτό το email θα πάνε απευθείας στον χρήστη που υπέβαλε την αναφορά.
+[% IF reporter_email %]Οι απαντήσεις σε αυτό το email θα πάνε απευθείας στον χρήστη που υπέβαλε την αναφορά.[% ELSE %]Ο/Η πολίτης δεν έδωσε email· οι απαντήσεις σε αυτό το email πηγαίνουν στην ομάδα του [% site_name %].[% END %]
 
 ----------
 

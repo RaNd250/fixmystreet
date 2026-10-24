@@ -7,7 +7,9 @@
 [% IF report.state != 'hidden' AND report.get_extra_metadata('greece_bad_words') %]
 <p>Κάποιες ακατάλληλες λέξεις της περιγραφής αντικαταστάθηκαν με ***.</p>
 [% END %]
-[% UNLESS c.user_exists %]
+[% IF c.cobrand.greece_anonymous_report(report) %]
+<p>Η αναφορά έγινε χωρίς email, οπότε δεν θα λαμβάνεις ενημερώσεις γι' αυτή.</p>
+[% ELSIF NOT c.user_exists %]
 <p>Στο email που δήλωσες σου στείλαμε έναν προσωπικό σύνδεσμο, για να δημιουργήσεις λογαριασμό αν θέλεις
 και να παρακολουθείς τις αναφορές σου. Ισχύει 24 ώρες.</p>
 [% END %]

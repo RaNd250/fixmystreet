@@ -32,21 +32,21 @@ INCLUDE '_email_top.html';
     <tr>
       <th style="[% contact_th_style %]">Email</th>
       <td style="[% contact_td_style %]">
-        [%~ IF report.user.email ~%]
-          <a href="mailto:[% report.user.email | html %]">[% report.user.email | html %]</a>
+        [%~ IF reporter_email ~%]
+          <a href="mailto:[% reporter_email | html %]">[% reporter_email | html %]</a>
         [%~ ELSE ~%]
-          <strong>Δεν δόθηκε email, μόνο αριθμός τηλεφώνου</strong>
+          <strong>Δεν δόθηκε</strong>
         [%~ END ~%]
       </td>
     </tr>
-    [%~ IF report.user.phone %]
+    [%~ IF reporter_phone %]
       <tr>
         <th style="[% contact_th_style %]">Τηλέφωνο</th>
-        <td style="[% contact_td_style %]"><a href="tel:[% report.user.phone | html %]">[% report.user.phone | html %]</a></td>
+        <td style="[% contact_td_style %]"><a href="tel:[% reporter_phone | html %]">[% reporter_phone | html %]</a></td>
       </tr>
     [%~ END %]
   </table>
-  <p style="[% p_style %] margin-top: 0.5em;">Οι απαντήσεις σε αυτό το μήνυμα θα πάνε απευθείας στον/στην [% report.name | html %], που ανέφερε το πρόβλημα.</p>
+  <p style="[% p_style %] margin-top: 0.5em;">[% IF reporter_email %]Οι απαντήσεις σε αυτό το μήνυμα θα πάνε απευθείας στον/στην [% report.name | html %], που ανέφερε το πρόβλημα.[% ELSE %]Ο/Η πολίτης δεν έδωσε email· οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν στην ομάδα του [% site_name %].[% END %]</p>
   <div style="margin: 30px 0 0 0; padding: 12px 16px; border: 1px solid #d8cfe9; border-radius: 4px; background-color: #f6f3fb;">
     <p style="[% p_style %]">
       [%~ IF sent_to %]Η αναφορά στάλθηκε [% sent_to.match(',') ? 'στις διευθύνσεις' : 'στη διεύθυνση' %] <strong>[% sent_to | html %]</strong>. [% END ~%]

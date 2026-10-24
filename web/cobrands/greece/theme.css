@@ -618,3 +618,32 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 
 /* "Συμπληρώθηκε από τη φωτογραφία· έλεγξέ το." under the plate filled in from a photo (camera.js) */
 .gr-plate-note { margin: 0.25em 0 0.75em; font-size: 0.875em; color: #5b6475; }
+
+/* Logo «FixMyStreets»: FixMyStreet's logo with a blue final s (site-logo.svg). */
+#site-logo { width: 188px; background-size: 188px 35px; background-image: url("site-logo.svg"); }
+
+/* Desktop menu. base.css colours visited menu links #333/#000 (.nav-menu a:visited), which on the
+   dark header made them black on dark blue: keep them light. The menu is centred in the space to
+   the right of the logo, vertically too; below 1024px the report button would not fit beside the
+   rest and is left out (the page has its own way to report). */
+@media (min-width: 48em) {
+    .nav-menu--main a:link, .nav-menu--main a:visited { color: rgba(255, 255, 255, 0.86); }
+    .nav-menu--main a:hover, .nav-menu--main a:focus { color: #fff; }
+    .nav-menu--main a.report-a-problem-btn:link, .nav-menu--main a.report-a-problem-btn:visited,
+    .nav-menu--main a.report-a-problem-btn:hover { color: var(--gr-ink); }
+    .nav-menu--main a, .nav-menu--main span { white-space: nowrap; }
+    .nav-wrapper #main-nav { float: none; display: flex; justify-content: center; align-items: center; min-height: 60px; padding-left: 200px; box-sizing: border-box; }
+    .nav-wrapper #main-nav .nav-menu--main { float: none; display: flex; align-items: center; margin: 0; }
+    .nav-wrapper #main-nav .nav-menu--main li { float: none; }
+}
+@media (min-width: 48em) and (max-width: 63.99em) {
+    .nav-menu--main a.report-a-problem-btn { display: none; }
+}
+
+/* Reports without an email are made from the same form (email left empty), so FixMyStreet's separate
+   «Ανώνυμη αναφορά» button is not used. */
+.js-show-if-anonymous { display: none !important; }
+
+/* Cloudflare Turnstile (turnstile.js): usually invisible; when it asks for a click, it gets room. */
+.gr-turnstile:not(:empty) { margin: 0.75em 0; }
+

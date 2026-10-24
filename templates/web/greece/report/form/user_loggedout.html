@@ -1,9 +1,12 @@
 <!-- user_loggedout.html (greece) -->
 [%# Reports need no account: name, email and phone, then send. The account comes afterwards, from a
-    one-off link emailed to the address given (Greece.pm). Updates keep FixMyStreet's own form. ~%]
+    one-off link emailed to the address given (Greece.pm). The email is optional unless the name is to
+    be shown publicly (anon-email.js marks it required then; Greece.pm checks it too). Updates keep
+    FixMyStreet's own form. ~%]
 <div id="form_sign_in">
     [% PROCESS 'report/form/private_details.html' %]
   [% IF type == 'update' %]
+    [% INCLUDE '_turnstile.html' %]
     <h2 class="hidden-js">[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name) %]</h2>
     [% PROCESS 'report/form/user_loggedout_password.html' %]
     [% PROCESS 'report/form/user_loggedout_by_email.html' %]
@@ -13,7 +16,12 @@
         [% PROCESS 'user/_anonymity.html' anonymous = object.anonymous %]
         [% INCLUDE 'report/form/user_name.html' %]
         [% INCLUDE 'report/_show_name_label.html' %]
-        [% PROCESS 'report/form/user_loggedout_email.html' name='username_register' %]
+        <label for="form_username_register">[% loc('Your email') %]<span id="js-optional-email"> [% loc('(optional)') %]</span></label>
+        [% IF field_errors.username_register %]
+          <p class='form-error'>[% field_errors.username_register %]</p>
+        [% END %]
+        <input type="email" name="username_register" id="form_username_register" value="[% c.get_param('username_register') | html %]"
+            class="form-control" autocomplete="email" data-msg-required="Για να φαίνεται δημόσια το όνομά σου, γράψε και το email σου.">
         <label for="form_phone">[% loc('Phone number') %]<span id="js-optional-phone"> [% loc('(optional)') %]</span></label>
         [% IF field_errors.phone %]
           <p class='form-error'>[% field_errors.phone %]</p>
@@ -21,9 +29,10 @@
         <input class="form-control" type="text" value="[% phone | html %]" name="phone" id="form_phone" autocomplete="tel">
         <div class="general-notes gr-reporter__note">
             <p>Δεν χρειάζεται λογαριασμός ούτε επιβεβαίωση: η αναφορά στέλνεται μόλις πατήσεις «[% loc('Submit') %]».
-            Μετά θα σου στείλουμε στο email σου έναν προσωπικό σύνδεσμο, για να δημιουργήσεις λογαριασμό αν θέλεις
-            και να παρακολουθείς τις αναφορές σου.</p>
+            Αν γράψεις email, θα σου στείλουμε έναν προσωπικό σύνδεσμο, για να δημιουργήσεις λογαριασμό αν θέλεις
+            και να παρακολουθείς τις αναφορές σου. Χωρίς email η αναφορά γίνεται ανώνυμα, αλλά δεν θα μαθαίνεις τι έγινε.</p>
         </div>
+        [% INCLUDE '_turnstile.html' %]
         [% PROCESS 'report/form/submit.html' %]
     </div>
   [% END %]
