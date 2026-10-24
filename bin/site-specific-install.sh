@@ -33,6 +33,7 @@ misuse() {
 add_locale cy_GB
 add_locale sv_SE
 add_locale de_CH
+add_locale el_GR
 
 if [ $INSTALL_POSTFIX = true ]; then
     install_postfix
