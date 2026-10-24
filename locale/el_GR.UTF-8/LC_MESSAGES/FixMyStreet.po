@@ -29,7 +29,7 @@ msgstr " -- Επιλογή cobrand -- "
 #: perllib/FixMyStreet/DB/Result/Problem.pm:863
 #: perllib/FixMyStreet/Queue/Item/Report.pm:229
 msgid " and "
-msgstr "και"
+msgstr " και "
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:50
@@ -40,7 +40,7 @@ msgstr "και"
 #: templates/web/base/report/new/top_message_some.html:10
 #: templates/web/base/report/new/top_message_some.html:12
 msgid " or "
-msgstr "ή"
+msgstr " ή "
 
 #: templates/web/base/report/inspect/_extra_details_field.html:5
 msgid "%d characters maximum"
