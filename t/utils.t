@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use utf8;
 use Test::More;
 
 use mySociety::Locale;
@@ -56,6 +57,8 @@ my @cleanup_tests = (
     [ 'This     is a   report    ', 'This is a report', 'spaces in the middle' ],
     [ 'I AM SHOUTING AT YOU', 'I am shouting at you', 'all shouting' ],
     [ 'I am EMPHASISING something', 'I am EMPHASISING something', 'some shouting' ],
+    [ 'Λακκούβα στην οδό Περραιβού', 'Λακκούβα στην οδό Περραιβού', 'no Latin letters, not shouting' ],
+    [ 'ΛΑΚΚΟΥΒΑ ΣΤΗΝ ΟΔΟ', 'Λακκουβα στην οδο', 'shouting without Latin letters' ],
     [ "This has new\n\n\nlines in it", 'This has new Lines in it', 'no new lines' ],
 );
 
