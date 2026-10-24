@@ -693,3 +693,20 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 @keyframes gr-step-out { to { opacity: 0; } }
 @keyframes gr-step-fade-in { from { opacity: 0; } }
 
+/* Home page address box as an expandable search (xsearch.js): it widens with a spring when focused or
+   filled, on computers; on phones it is always full width. */
+.postcode-form-box .gr-xsearch { display: flex; align-items: center; gap: 2px; padding-left: 12px; cursor: text; }
+.postcode-form-box .gr-xsearch input#pc { flex: 1 1 0%; width: auto; max-width: none; min-width: 0; padding-left: 0.5em; background: transparent; border: 0; }
+.postcode-form-box .gr-xsearch input#sub { flex: 0 0 auto; width: auto; min-width: 0; }
+.gr-xsearch__icon { display: inline-flex; color: var(--gr-ink-3); flex: none; transition: color var(--gr-fast) ease; }
+.gr-xsearch:focus-within .gr-xsearch__icon { color: var(--gr-accent); }
+.gr-xsearch__clear { display: none; flex: none; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; margin: 0 2px; border: 0; border-radius: 50%; background: transparent; color: var(--gr-ink-3); cursor: pointer; }
+.gr-xsearch__clear:hover, .gr-xsearch__clear:focus-visible { background: var(--gr-surface-2); color: var(--gr-ink); }
+.gr-xsearch--filled .gr-xsearch__clear { display: inline-flex; animation: gr-fade-in 0.15s ease; }
+.gr-xsearch__hint { display: none; flex: none; margin: 0 6px; padding: 1px 7px; font: 600 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--gr-ink-3); background: var(--gr-surface-2); border: 1px solid var(--gr-line); border-radius: 6px; }
+@media (min-width: 48em) {
+    .postcode-form-box .gr-xsearch { width: 72%; max-width: 100%; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-color var(--gr-fast) ease, box-shadow var(--gr-fast) ease; }
+    .postcode-form-box .gr-xsearch:focus-within, .postcode-form-box .gr-xsearch.gr-xsearch--filled { width: 100%; }
+    .gr-xsearch:not(:focus-within):not(.gr-xsearch--filled) .gr-xsearch__hint { display: inline-block; }
+}
+

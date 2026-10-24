@@ -1,0 +1,5 @@
+<title>
+    [% IF title %][% tprintf('%s :: ', title) %][% site_name -%]
+    [% ELSIF c.req.uri.path == '/' %][% site_name %] – [% c.cobrand.greece_t('Αναφορά προβλημάτων στον δήμο σου', 'Report problems to your municipality') -%]
+    [% ELSE %][% site_name -%][% END %]
+</title>
