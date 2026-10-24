@@ -41,6 +41,19 @@ sub munge_sendreport_params {
 # from their own phone; see Problem::greece_sms.
 sub greece_sms_number { '100' }
 
+# Installable web app (PWA). Name and colours are the cobrand's manifest theme (admin, or
+# data/greece/manifest-theme.sql); the icons in web/theme/greece/ are drawn to be maskable.
+sub manifest {
+    my @icons = map { { src => "/theme/greece/$_.png", sizes => "${_}x$_", type => 'image/png' } } 192, 512;
+    return {
+        id => '/?pwa',
+        display => 'standalone',
+        description => 'Ανάφερε προβλήματα και εμπόδια στην περιοχή σου: λακκούβες, σκουπίδια, φώτα, πεζοδρόμια, στάθμευση σε θέσεις ΑμεΑ.',
+        categories => [ 'government', 'utilities' ],
+        icons => [ (map { { %$_, purpose => 'any' } } @icons), (map { { %$_, purpose => 'maskable' } } @icons) ],
+    };
+}
+
 package FixMyStreet::DB::Result::Problem;
 
 use strict;
