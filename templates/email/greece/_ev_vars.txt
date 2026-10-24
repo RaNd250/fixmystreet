@@ -3,8 +3,6 @@
     διέλευση», email_template "ev"), built from the category's questions. ~%]
 [%
 paravasi = report.get_extra_field_value('paravasi');
-syxnotita = report.get_extra_field_value('syxnotita');
-oxima = report.get_extra_field_value('oxima');
 pinakida = report.greece_plate;
 
 ev = paravasi == 'fortistis';
@@ -17,8 +15,6 @@ paravasi_texts = {
     p72 => 'Ύπαρξη αυθαίρετης ή μη εγκεκριμένης διαγράμμισης και πινακίδας P-72',
 };
 paravasi_text = paravasi ? paravasi_texts.$paravasi : '';
-syxnotita_texts = { epanalamvanomeni => 'επαναλαμβανόμενη ', monimi => 'μόνιμη ' };
-syxnotita_text = syxnotita ? syxnotita_texts.$syxnotita : '';
 
 street = closest_address ? closest_address.parts.street : '';
 number = closest_address ? closest_address.parts.number : '';

@@ -1,0 +1,101 @@
+[%# Help page (/faq) in English, when the site is switched to English; the Greek one is faq.html. ~%]
+[% INCLUDE 'header.html', title = 'Help', sidebar = 'about/_sidebar.html', bodyclass = 'gr-faq' %]
+
+<h1><a name="faq"></a>Help: frequently asked questions</h1>
+
+<dl>
+    <dt>What is [% site_name %]?</dt>
+    <dd>A site for reporting problems and obstacles in public spaces in Greece: potholes, dumped rubbish and
+    rubble, broken pavements, street lights out, fallen trees, illegal parking. You mark the place on the map
+    and the report is sent to the responsible municipality.</dd>
+
+    <dt>How do I make a report?</dt>
+    <dd>
+    <ol>
+        <li>On the <a href="/">home page</a>, type an address or area (or allow your location) and click the
+            place on the map.</li>
+        <li>Choose the category of the problem.</li>
+        <li>Add one or more photos, from your gallery or with “Take photo”, and describe what is wrong.</li>
+        <li>Fill in your details and press “Submit”.</li>
+    </ol>
+    If you leave the page by mistake, what you wrote is waiting for you when you come back to the form, in the
+    same tab.</dd>
+
+    <dt>Do I need an account?</dt>
+    <dd>No. The report is sent straight away, with no account and no confirmation. If you give an email, we
+    send you a personal link (valid for 24 hours) to create an account, if you wish, and follow your
+    reports.</dd>
+
+    <dt>Can I report anonymously?</dt>
+    <dd>Yes. Your name is not shown on the site unless you tick “Show my name publicly”. The email is optional
+    as long as your name is not shown; without an email, though, you will not hear what happened to the
+    report. Any name and phone number you give go only to the responsible service.</dd>
+
+    <dt>Where does my report go?</dt>
+    <dd>To the municipality where the place is. Exceptions:
+    <ul>
+        <li><strong>Parking at an electric vehicle charger, or blocking the way</strong> (garage entrance,
+            double parking, cones put out by shops, unauthorised P-72 signs): it goes as a complaint to the
+            local police station and traffic police. These complaints are not published on the site. After
+            sending it you can also text it to 100, with the message ready, from your phone.</li>
+        <li><strong>Parking on a disabled ramp or bay, on the pavement or on a crossing</strong>: these are
+            recorded by <a href="https://xorisempodia.gr/reports/new">Χωρίς Εμπόδια (xorisempodia.gr)</a>,
+            and the form takes you there.</li>
+    </ul>
+    </dd>
+
+    <dt>What happens to the photos?</dt>
+    <dd>Number plates and faces are blurred automatically before a photo is stored; that is the copy everyone
+    sees and the one sent to the municipality. Only in complaints to the police does the photo go with the
+    plate readable (faces always blurred), and that copy is deleted as soon as the complaint is sent. If a
+    plate is read in the photo, it is filled in on the form for you; please check it.</dd>
+
+    <dt>What is [% site_name %] not for?</dt>
+    <dd>It is not an emergency service. For anything urgent call <strong>112</strong>, the police on
+    <strong>100</strong>, the fire service on <strong>199</strong> or an ambulance on <strong>166</strong>. It is
+    also not for complaints about people, disputes between neighbours, or anything outside public space.</dd>
+
+    <dt>Who sees my report?</dt>
+    <dd>Reports to municipalities are shown on the map, so that they are not reported again and so that it can
+    be seen where a problem keeps coming back. You can say that you agree (👍) or disagree (👎) with a report,
+    or add an update, e.g. that the problem has been fixed. Complaints to the police are not shown.</dd>
+
+    <dt>What about inappropriate words?</dt>
+    <dd>They are replaced with ***. A report or update with many such words is neither published nor sent until
+    we have checked it.</dd>
+
+    <dt>How much does it cost?</dt>
+    <dd>Nothing. The site is free, with no advertising.</dd>
+
+    <dt>Does it work on my phone?</dt>
+    <dd>Yes, in your phone’s browser. You can also add it to your home screen (“Add to Home screen” or
+    “Install app”) so that it opens like an app.</dd>
+</dl>
+
+<h2><a name="practical"></a>For municipalities and services</h2>
+
+<dl>
+    <dt>Which address do you send reports to?</dt>
+    <dd>The general email address each municipality publishes, or the local police station and traffic police
+    for parking complaints. If it is not the right one, send us the right address from the
+    <a href="/contact">contact page</a> or as described at the end of each message.</dd>
+
+    <dt>How do we reply to the citizen?</dt>
+    <dd>Reply to the email itself: the reply goes straight to the citizen who made the report, or to us if they
+    gave no email.</dd>
+</dl>
+
+<h2><a name="organisation"></a>About the site</h2>
+
+<dl>
+    <dt>Who made [% site_name %]?</dt>
+    <dd>It is built on mySociety’s open source <a href="https://fixmystreet.org/">FixMyStreet</a> platform. This
+    site’s code is open source, under the GNU AGPL v3:
+    <a href="https://github.com/RaNd250/fixmystreet/tree/greece">source code</a>.</dd>
+
+    <dt>How do I contact you?</dt>
+    <dd>From the <a href="/contact">contact page</a>. Please do not send reports from there; the report form is
+    on the <a href="/">home page</a>.</dd>
+</dl>
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

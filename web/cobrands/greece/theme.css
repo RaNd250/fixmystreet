@@ -647,3 +647,21 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 /* Cloudflare Turnstile (turnstile.js): usually invisible; when it asks for a click, it gets room. */
 .gr-turnstile:not(:empty) { margin: 0.75em 0; }
 
+/* Report form on computers: smaller heading and category tiles (they were sized for fingers), and
+   type that follows the screen. Phones keep the larger, touch-friendly sizes above. */
+@media (min-width: 48em) {
+    #map_sidebar h1, #map_sidebar .form-heading { font-size: clamp(1.4rem, 1.1rem + 0.6vw, 1.75rem); margin-bottom: 0.4em; }
+    #map_sidebar .change_location, #map_sidebar .change_location li { font-size: 0.875rem; }
+    .govuk-radios--small .govuk-radios__item { min-height: 36px; margin: 0 0 5px; padding: 0 12px 0 40px; border-width: 1px; }
+    .govuk-radios--small .govuk-radios__label { font-size: clamp(0.875rem, 0.8rem + 0.2vw, 0.95rem); line-height: 1.3; padding: 7px 0; }
+    .govuk-radios--small .govuk-radios__label:before { left: 12px; width: 18px; height: 18px; margin-top: -9px; border-width: 2px; }
+    .govuk-radios--small .govuk-radios__label:after { left: 17px; margin-top: -4px; border-width: 4px; }
+    .govuk-radios--small .govuk-radios__input { left: 2px; width: 36px; height: 36px; margin-top: -18px; }
+    #form_category_fieldset legend, .js-reporting-page legend, #map_sidebar .govuk-fieldset__legend { font-size: 1rem; }
+}
+
+/* Language switch in the menu: set apart from the rest. */
+@media (min-width: 48em) {
+    .nav-menu--main .nav-menu__item--lang a { border: 1px solid rgba(255, 255, 255, 0.35); padding-top: 0.35em; padding-bottom: 0.35em; margin-left: 6px; }
+}
+

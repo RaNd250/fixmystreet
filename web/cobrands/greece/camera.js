@@ -17,6 +17,10 @@
  */
 (function() {
     'use strict';
+    // The page's language (the menu's switch): English texts when it is English.
+    var EN = /^en/i.test(document.documentElement.lang || '');
+    function t(el, en) { return EN ? en : el; }
+
 
     var ICON = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">' +
         '<path fill="currentColor" d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9Zm3 ' +
@@ -36,8 +40,8 @@
         }
     }
 
-    var DROP_TEXT = 'Εισαγωγή φωτογραφίας';
-    var PLATE_NOTE = 'Συμπληρώθηκε από τη φωτογραφία· έλεγξέ το.';
+    var DROP_TEXT = t('Εισαγωγή φωτογραφίας', 'Add a photo');
+    var PLATE_NOTE = t('Συμπληρώθηκε από τη φωτογραφία· έλεγξέ το.', 'Filled in from the photo; please check it.');
     var pendingPlate = null;   // a plate read before the plate question was on the page
 
     function plateField(el) {
@@ -107,7 +111,7 @@
     function startStream() {
         stopStream();
         shutter.disabled = true;
-        showStatus('Άνοιγμα κάμερας…', false);
+        showStatus(t('Άνοιγμα κάμερας…', 'Opening the camera…'), false);
         navigator.mediaDevices.getUserMedia({
             audio: false,
             video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } }
@@ -125,11 +129,11 @@
         }).catch(function(err) {
             var name = err && err.name;
             if (name === 'NotAllowedError' || name === 'SecurityError') {
-                showStatus('Δεν δόθηκε άδεια για την κάμερα. Μπορείς να την επιτρέψεις από τη γραμμή διευθύνσεων του browser ή να επιλέξεις αρχείο.', true);
+                showStatus(t('Δεν δόθηκε άδεια για την κάμερα. Μπορείς να την επιτρέψεις από τη γραμμή διευθύνσεων του browser ή να επιλέξεις αρχείο.', 'No permission for the camera. You can allow it from the browser’s address bar, or choose a file.'), true);
             } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
-                showStatus('Δεν βρέθηκε κάμερα σε αυτή τη συσκευή. Μπορείς να επιλέξεις αρχείο.', true);
+                showStatus(t('Δεν βρέθηκε κάμερα σε αυτή τη συσκευή. Μπορείς να επιλέξεις αρχείο.', 'No camera found on this device. You can choose a file.'), true);
             } else {
-                showStatus('Η κάμερα δεν άνοιξε (είναι ίσως ανοιχτή σε άλλη εφαρμογή). Μπορείς να επιλέξεις αρχείο.', true);
+                showStatus(t('Η κάμερα δεν άνοιξε (είναι ίσως ανοιχτή σε άλλη εφαρμογή). Μπορείς να επιλέξεις αρχείο.', 'The camera did not open (another app may be using it). You can choose a file.'), true);
             }
         });
     }
@@ -150,15 +154,15 @@
     function buildDialog() {
         dialog = document.createElement('dialog');
         dialog.className = 'gr-camera';
-        dialog.setAttribute('aria-label', 'Λήψη φωτογραφίας');
+        dialog.setAttribute('aria-label', t('Λήψη φωτογραφίας', 'Take a photo'));
         dialog.innerHTML =
             '<div class="gr-camera__frame"><video class="gr-camera__video" playsinline muted autoplay></video></div>' +
             '<p class="gr-camera__status" role="status" hidden></p>' +
             '<div class="gr-camera__actions">' +
-              '<button type="button" class="btn gr-camera__cancel">Άκυρο</button>' +
-              '<button type="button" class="btn gr-camera__flip" hidden>Αλλαγή κάμερας</button>' +
-              '<button type="button" class="btn gr-camera__files" hidden>Επιλογή αρχείου</button>' +
-              '<button type="button" class="btn btn--primary gr-camera__shutter" disabled>' + ICON + '<span>Λήψη</span></button>' +
+              '<button type="button" class="btn gr-camera__cancel">' + t('Άκυρο', 'Cancel') + '</button>' +
+              '<button type="button" class="btn gr-camera__flip" hidden>' + t('Αλλαγή κάμερας', 'Switch camera') + '</button>' +
+              '<button type="button" class="btn gr-camera__files" hidden>' + t('Επιλογή αρχείου', 'Choose a file') + '</button>' +
+              '<button type="button" class="btn btn--primary gr-camera__shutter" disabled>' + ICON + '<span>' + t('Λήψη', 'Take photo') + '</span></button>' +
             '</div>';
         document.body.appendChild(dialog);
         video = dialog.querySelector('video');
@@ -221,7 +225,7 @@
             var camera = document.createElement('button');
             camera.type = 'button';   // never submits the report form
             camera.className = 'btn gr-camera-btn';
-            camera.innerHTML = ICON + '<span>Λήψη</span>';
+            camera.innerHTML = ICON + '<span>' + t('Λήψη', 'Take photo') + '</span>';
             camera.addEventListener('click', function() { openCamera(dz, cameraInput); });
 
             actions.appendChild(camera);

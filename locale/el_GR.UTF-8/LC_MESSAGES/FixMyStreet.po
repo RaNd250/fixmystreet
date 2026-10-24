@@ -5028,7 +5028,7 @@ msgstr ""
 #: templates/web/base/auth/general.html:1
 #: templates/web/zurich/auth/general.html:1
 msgid "Sign in or create an account"
-msgstr "Σύνδεση ή δημιουργία λογαριασμού"
+msgstr "Σύνδεση"
 
 #: templates/web/base/auth/general.html:87
 msgid "Sign in with a password"

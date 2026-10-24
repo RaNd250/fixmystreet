@@ -1,15 +1,13 @@
 [%# Confirmation page after a report: reports need no account or email confirmation (Greece.pm). ~%]
-<h2>Ευχαριστούμε για την αναφορά!</h2>
-<p>Αριθμός αναφοράς: <strong>[% report.greece_ref %]</strong>.
-[%~ IF report.state == 'hidden' %] Η περιγραφή είχε ακατάλληλες λέξεις, γι' αυτό η αναφορά θα ελεγχθεί πρώτα από τους
-διαχειριστές και μετά θα δημοσιευτεί και θα σταλεί.
-[%~ ELSIF report.bodies_str %] Στέλνεται τώρα [% report.bodies_str.match(',') ? 'στις αρμόδιες υπηρεσίες' : 'στην αρμόδια υπηρεσία' %]: [% report.body %].[% END %]</p>
+<h2>[% c.cobrand.greece_t('Ευχαριστούμε για την αναφορά!', 'Thank you for your report!') %]</h2>
+<p>[% c.cobrand.greece_t('Αριθμός αναφοράς:', 'Report number:') %] <strong>[% report.greece_ref %]</strong>.
+[%~ IF report.state == 'hidden' %] [% c.cobrand.greece_t('Η περιγραφή είχε ακατάλληλες λέξεις, γι\' αυτό η αναφορά θα ελεγχθεί πρώτα από τους διαχειριστές και μετά θα δημοσιευτεί και θα σταλεί.', 'The description had inappropriate words, so the report will be checked by the moderators before it is published and sent.') %]
+[%~ ELSIF report.bodies_str %] [% report.bodies_str.match(',') ? c.cobrand.greece_t('Στέλνεται τώρα στις αρμόδιες υπηρεσίες', 'It is being sent now to') : c.cobrand.greece_t('Στέλνεται τώρα στην αρμόδια υπηρεσία', 'It is being sent now to') %]: [% report.body %].[% END %]</p>
 [% IF report.state != 'hidden' AND report.get_extra_metadata('greece_bad_words') %]
-<p>Κάποιες ακατάλληλες λέξεις της περιγραφής αντικαταστάθηκαν με ***.</p>
+<p>[% c.cobrand.greece_t('Κάποιες ακατάλληλες λέξεις της περιγραφής αντικαταστάθηκαν με ***.', 'Some inappropriate words in the description were replaced with ***.') %]</p>
 [% END %]
 [% IF c.cobrand.greece_anonymous_report(report) %]
-<p>Η αναφορά έγινε χωρίς email, οπότε δεν θα λαμβάνεις ενημερώσεις γι' αυτή.</p>
+<p>[% c.cobrand.greece_t('Η αναφορά έγινε χωρίς email, οπότε δεν θα λαμβάνεις ενημερώσεις γι\' αυτή.', 'The report was made without an email, so you will not get updates about it.') %]</p>
 [% ELSIF NOT c.user_exists %]
-<p>Στο email που δήλωσες σου στείλαμε έναν προσωπικό σύνδεσμο, για να δημιουργήσεις λογαριασμό αν θέλεις
-και να παρακολουθείς τις αναφορές σου. Ισχύει 24 ώρες.</p>
+<p>[% c.cobrand.greece_t('Στο email που δήλωσες σου στείλαμε έναν προσωπικό σύνδεσμο, για να δημιουργήσεις λογαριασμό αν θέλεις και να παρακολουθείς τις αναφορές σου. Ισχύει 24 ώρες.', 'We have emailed you a personal link to create an account, if you wish, and follow your reports. It works for 24 hours.') %]</p>
 [% END %]

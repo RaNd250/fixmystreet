@@ -3,11 +3,11 @@
 [% UNLESS problem.non_public %]
 [% votes = problem.greece_votes(c) %]
 <div class="gr-votes" data-report="[% problem.id %]">
-  <button type="button" class="gr-vote hidden-nojs" data-dir="up" aria-pressed="[% votes.mine == 1 ? 'true' : 'false' %]" title="Συμφωνώ, είναι πρόβλημα">
-    <span aria-hidden="true">👍</span> <span class="gr-vote__count">[% votes.up %]</span><span class="screen-reader-only"> συμφωνούν</span>
+  <button type="button" class="gr-vote hidden-nojs" data-dir="up" aria-pressed="[% votes.mine == 1 ? 'true' : 'false' %]" title="[% c.cobrand.greece_t('Συμφωνώ, είναι πρόβλημα', 'I agree, this is a problem') %]">
+    <span aria-hidden="true">👍</span> <span class="gr-vote__count">[% votes.up %]</span><span class="screen-reader-only"> [% c.cobrand.greece_t('συμφωνούν', 'agree') %]</span>
   </button>
-  <button type="button" class="gr-vote hidden-nojs" data-dir="down" aria-pressed="[% votes.mine == -1 ? 'true' : 'false' %]" title="Διαφωνώ">
-    <span aria-hidden="true">👎</span> <span class="gr-vote__count">[% votes.down %]</span><span class="screen-reader-only"> διαφωνούν</span>
+  <button type="button" class="gr-vote hidden-nojs" data-dir="down" aria-pressed="[% votes.mine == -1 ? 'true' : 'false' %]" title="[% c.cobrand.greece_t('Διαφωνώ', 'I disagree') %]">
+    <span aria-hidden="true">👎</span> <span class="gr-vote__count">[% votes.down %]</span><span class="screen-reader-only"> [% c.cobrand.greece_t('διαφωνούν', 'disagree') %]</span>
   </button>
   <span class="hidden-js">👍 [% votes.up %] · 👎 [% votes.down %]</span>
   <span class="gr-votes__status" role="status"></span>

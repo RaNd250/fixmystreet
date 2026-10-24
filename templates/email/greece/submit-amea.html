@@ -18,7 +18,7 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]"><strong>Αριθμός αναφοράς: [% report.greece_ref | html %]</strong></p>
   <p style="[% p_style %]">Προς: [% bodies_name | html %]</p>
   <p style="[% p_style %]">Αξιότιμοι κύριοι / κυρίες,</p>
-  <p style="[% p_style %]">Με την παρούσα επιστολή επιθυμώ να καταγγείλω την [% syxnotita_text | html %]παράνομη κατάληψη χώρου που προορίζεται για [% purpose | html %].</p>
+  <p style="[% p_style %]">Με την παρούσα επιστολή επιθυμώ να καταγγείλω την παράνομη κατάληψη χώρου που προορίζεται για [% purpose | html %].</p>
   <p style="[% p_style %]">Συγκεκριμένα:</p>
   <ul style="margin: 0 0 0.8em 0; padding-left: 20px;">
     <li style="[% p_style %]"><strong>Τοποθεσία:</strong> [% location | html %].
@@ -27,9 +27,6 @@ INCLUDE '_email_top.html';
       [%~ IF report.detail %] Σχόλια: «[% report.detail | html %]»[% END %]</li>
     [%~ IF pinakida %]
     <li style="[% p_style %]"><strong>Αριθμός κυκλοφορίας:</strong> [% pinakida | html %]</li>
-    [%~ END %]
-    [%~ IF oxima %]
-    <li style="[% p_style %]"><strong>Στοιχεία οχήματος:</strong> [% oxima | html %]</li>
     [%~ END %]
     <li style="[% p_style %]"><strong>Ημερομηνία και ώρα της αναφοράς:</strong> [% report.greece_local_time | html %]</li>
     [%~ IF photos.size %]

@@ -1,5 +1,9 @@
 (function () {
     'use strict';
+    // The page's language (the menu's switch): English texts when it is English.
+    var EN = /^en/i.test(document.documentElement.lang || '');
+    function t(el, en) { return EN ? en : el; }
+
 
     var box = document.getElementById('gr-minimap-box');
     if (!box || !window.maplibregl || !window.fetch || !window.Promise ||
@@ -58,7 +62,7 @@
 
         var gpsEl = document.createElement('div');
         gpsEl.className = 'gr-minimap__gps';
-        gpsEl.setAttribute('aria-label', 'Η τοποθεσία μου');
+        gpsEl.setAttribute('aria-label', t('Η τοποθεσία μου', 'My location'));
         var gpsMarker = new maplibregl.Marker({ element: gpsEl });
 
         var index = null, cache = {}, current = null, lookupSeq = 0;
@@ -142,13 +146,13 @@
                 if (c.t) { li.appendChild(link('tel:' + c.t.replace(/\s+/g, ''), c.t)); }
             });
             if (!hit.d.c) {
-                item('Δεν έχουμε ακόμα email ή τηλέφωνο για αυτόν τον δήμο.');
+                item(t('Δεν έχουμε ακόμα email ή τηλέφωνο για αυτόν τον δήμο.', 'We do not have an email or phone number for this municipality yet.'));
             }
             if (hit.d.w) {
                 var a = link(hit.d.w, hit.d.w.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''));
                 a.target = '_blank';
                 a.rel = 'noopener';
-                item('Ιστότοπος: ').appendChild(a);
+                item(t('Ιστότοπος: ', 'Website: ')).appendChild(a);
             }
             card.hidden = false;
         }
@@ -168,24 +172,24 @@
         }
 
         var errors = {
-            1: 'Δεν δόθηκε άδεια για την τοποθεσία. Μεγέθυνε τον χάρτη στο σημείο ή γράψε μια διεύθυνση παρακάτω.',
-            2: 'Η θέση σου δεν βρέθηκε. Μεγέθυνε τον χάρτη στο σημείο ή γράψε μια διεύθυνση παρακάτω.',
-            3: 'Η εύρεση της θέσης άργησε πολύ. Δοκίμασε ξανά ή γράψε μια διεύθυνση παρακάτω.'
+            1: t('Δεν δόθηκε άδεια για την τοποθεσία. Μεγέθυνε τον χάρτη στο σημείο ή γράψε μια διεύθυνση παρακάτω.', 'No permission for your location. Zoom the map in on the place, or enter an address below.'),
+            2: t('Η θέση σου δεν βρέθηκε. Μεγέθυνε τον χάρτη στο σημείο ή γράψε μια διεύθυνση παρακάτω.', 'Your location was not found. Zoom the map in on the place, or enter an address below.'),
+            3: t('Η εύρεση της θέσης άργησε πολύ. Δοκίμασε ξανά ή γράψε μια διεύθυνση παρακάτω.', 'Finding your location took too long. Try again, or enter an address below.')
         };
 
         function locate() {
             locateBtn.disabled = true;
-            status.textContent = 'Αναζήτηση της θέσης σου…';
+            status.textContent = t('Αναζήτηση της θέσης σου…', 'Finding your location…');
             navigator.geolocation.getCurrentPosition(function (pos) {
                 var here = [pos.coords.longitude, pos.coords.latitude];
                 gpsMarker.setLngLat(here).addTo(map);
                 map.jumpTo({ center: here, zoom: 17 });
                 locateBtn.disabled = false;
-                locateBtn.textContent = 'Ξανά στη θέση μου';
-                status.textContent = 'Μετακίνησε τον χάρτη ώστε η κόκκινη καρφίτσα να δείχνει ακριβώς το πρόβλημα.';
+                locateBtn.textContent = t('Ξανά στη θέση μου', 'Back to my location');
+                status.textContent = t('Μετακίνησε τον χάρτη ώστε η κόκκινη καρφίτσα να δείχνει ακριβώς το πρόβλημα.', 'Move the map so that the red pin points exactly at the problem.');
             }, function (err) {
                 locateBtn.disabled = false;
-                status.textContent = errors[err.code] || 'Κάτι πήγε στραβά με την εύρεση της θέσης. Γράψε μια διεύθυνση παρακάτω.';
+                status.textContent = errors[err.code] || t('Κάτι πήγε στραβά με την εύρεση της θέσης. Γράψε μια διεύθυνση παρακάτω.', 'Something went wrong finding your location. Enter an address below.');
             }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
         }
         locateBtn.addEventListener('click', locate);

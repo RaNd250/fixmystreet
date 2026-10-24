@@ -108,11 +108,14 @@ sub greece_turnstile_ok {
     return $c->stash->{greece_turnstile} = $ok;
 }
 
-use constant GREECE_TURNSTILE_ERROR => 'Ο έλεγχος ασφαλείας δεν ολοκληρώθηκε. Περίμενε λίγο να ολοκληρωθεί και στείλε ξανά.';
+sub greece_turnstile_error {
+    $_[0]->greece_t('Ο έλεγχος ασφαλείας δεν ολοκληρώθηκε. Περίμενε λίγο να ολοκληρωθεί και στείλε ξανά.',
+        'The security check did not finish. Wait a moment for it to finish and send again.');
+}
 
 sub extra_contact_validation {
     my ($self, $c) = @_;
-    return $self->greece_turnstile_ok($c) ? () : (turnstile => GREECE_TURNSTILE_ERROR);
+    return $self->greece_turnstile_ok($c) ? () : (turnstile => $self->greece_turnstile_error);
 }
 
 # Whether the report was made without an email (filed under anonymous_account).
@@ -131,9 +134,9 @@ sub report_check_for_errors {
     my %more;
     if (!$c->user_exists && $report && !$report->non_public && $c->get_param('may_show_name')
         && ($c->get_param('username_register') // '') !~ /\S/) {
-        $more{username_register} = 'Για να φαίνεται δημόσια το όνομά σου, γράψε και το email σου.';
+        $more{username_register} = $self->greece_t('Για να φαίνεται δημόσια το όνομά σου, γράψε και το email σου.', 'To show your name publicly, enter your email too.');
     }
-    $more{turnstile} = GREECE_TURNSTILE_ERROR unless $self->greece_turnstile_ok($c);
+    $more{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
     if ($report && ($report->title // '') !~ /\S/) {
         my $category = $report->category // '';
         my $title = $category eq 'Άλλα' || $category eq '' ? greece_excerpt($report->detail, 60) : $category;
@@ -289,7 +292,7 @@ sub process_open311_extras {
     my ($self, $c, $body, $extra) = @_;
     return unless $c && $c->action && $c->action->namespace eq 'report/update' && $c->req->method eq 'POST';
     my $update = $c->stash->{update} or return;
-    $c->stash->{field_errors}{turnstile} = GREECE_TURNSTILE_ERROR unless $self->greece_turnstile_ok($c);
+    $c->stash->{field_errors}{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
     my $count = 0;
     for my $field (qw(text name)) {
         my ($masked, $n) = greece_mask_bad_words($update->$field);
@@ -338,6 +341,30 @@ sub reports_hook_restrict_bodies_list {
     my ($self, $bodies) = @_;
     # Reports.pm passes all_sorted's hashes, not Body rows.
     return [ grep { (ref $_ eq 'HASH' ? $_->{name} : $_->name) =~ /^Δήμος / } @$bodies ];
+}
+
+# A text of the site's own templates in the page's language: greece_t('ελληνικά', 'English').
+sub greece_t {
+    my ($self, $el, $en) = @_;
+    my $c = $self->{c};
+    return $c && ($c->stash->{lang_code} // '') eq 'en-gb' ? $en : $el;
+}
+
+# Language: Greek, unless the visitor chose English with the switch in the menu (?lang=en, or ?lang=el
+# back), which is kept in the gr_lang cookie for a year. The browser's language is not used: the
+# site's own texts are written in Greek. Without a request (emails, cron) the caller's language holds.
+sub language_override {
+    my $self = shift;
+    my $c = $self->{c} or return;
+    my $want = $c->req->query_params->{lang} // '';
+    $want = 'en-gb' if $want eq 'en';
+    if ($want eq 'el' || $want eq 'en-gb') {
+        $c->res->cookies->{gr_lang} = { value => $want, expires => '+1y', path => '/', secure => 1, httponly => 1 };
+        return $want;
+    }
+    my $cookie = $c->req->cookie('gr_lang');
+    my $chosen = $cookie ? $cookie->value : '';
+    return $chosen eq 'en-gb' ? 'en-gb' : 'el';
 }
 
 # Who is voting 👍/👎 on a report (App::Controller::GreeceVote, Problem::greece_votes): a signed-in

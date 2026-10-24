@@ -3,12 +3,12 @@
 [% IF sms_report; gr_sms = sms_report.greece_sms(c.cobrand); END %]
 [% IF gr_sms.number %]
 <section class="gr-sms" aria-labelledby="gr-sms-title">
-  <h2 id="gr-sms-title" class="gr-sms__title">Στείλε την καταγγελία και με SMS στο [% gr_sms.number %]</h2>
-  <p class="gr-sms__intro">Το κουμπί ανοίγει την εφαρμογή μηνυμάτων του κινητού σου με έτοιμο το κείμενο. Το μήνυμα το στέλνεις εσύ, από τον αριθμό σου.</p>
-  <a class="btn btn--primary btn--block gr-sms__btn" href="sms:[% gr_sms.number %]?&amp;body=[% gr_sms.body | uri %]">Άνοιγμα SMS προς [% gr_sms.number %]</a>
-  <p class="gr-sms__desktop">Από υπολογιστή, άνοιξε αυτή τη σελίδα στο κινητό σου ή στείλε το κείμενο από εκεί.</p>
+  <h2 id="gr-sms-title" class="gr-sms__title">[% c.cobrand.greece_t('Στείλε την καταγγελία και με SMS στο', 'Also send the complaint by SMS to') %] [% gr_sms.number %]</h2>
+  <p class="gr-sms__intro">[% c.cobrand.greece_t('Το κουμπί ανοίγει την εφαρμογή μηνυμάτων του κινητού σου με έτοιμο το κείμενο. Το μήνυμα το στέλνεις εσύ, από τον αριθμό σου.', 'The button opens your phone’s messages app with the text ready, in Greek for the police. You send it yourself, from your own number.') %]</p>
+  <a class="btn btn--primary btn--block gr-sms__btn" href="sms:[% gr_sms.number %]?&amp;body=[% gr_sms.body | uri %]">[% c.cobrand.greece_t('Άνοιγμα SMS προς', 'Open SMS to') %] [% gr_sms.number %]</a>
+  <p class="gr-sms__desktop">[% c.cobrand.greece_t('Από υπολογιστή, άνοιξε αυτή τη σελίδα στο κινητό σου ή στείλε το κείμενο από εκεί.', 'On a computer, open this page on your phone, or send the text from there.') %]</p>
   <details class="gr-sms__text">
-    <summary>Το κείμενο του μηνύματος</summary>
+    <summary>[% c.cobrand.greece_t('Το κείμενο του μηνύματος', 'The text of the message') %]</summary>
     <pre>[% gr_sms.body | html %]</pre>
   </details>
 </section>

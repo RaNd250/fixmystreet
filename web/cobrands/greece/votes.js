@@ -5,6 +5,10 @@
  */
 (function() {
     'use strict';
+    // The page's language (the menu's switch): English texts when it is English.
+    var EN = /^en/i.test(document.documentElement.lang || '');
+    function t(el, en) { return EN ? en : el; }
+
 
     function update(box, v) {
         Array.prototype.forEach.call(box.querySelectorAll('.gr-vote'), function(b) {
@@ -33,7 +37,7 @@
         }).then(function(v) {
             update(box, v);
         }).catch(function(code) {
-            status.textContent = code === 429 ? 'Πολλές ψήφοι σε λίγο χρόνο· δοκίμασε σε λίγο.' : 'Η ψήφος δεν καταγράφηκε· δοκίμασε ξανά.';
+            status.textContent = code === 429 ? t('Πολλές ψήφοι σε λίγο χρόνο· δοκίμασε σε λίγο.', 'Too many votes in a short time; try again shortly.') : t('Η ψήφος δεν καταγράφηκε· δοκίμασε ξανά.', 'The vote was not recorded; please try again.');
         }).then(function() {
             Array.prototype.forEach.call(buttons, function(b) { b.disabled = false; });
         });

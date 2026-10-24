@@ -1,26 +1,24 @@
 [%# Minimap that centres on the visitor's location, so a report can start without typing an address.
     It outlines the municipality under the pin and shows its contact details.
-    Hidden until minimap.js confirms geolocation, WebGL and the basemap style are available. %]
-[% gr_minimap_css = BLOCK %]
-<link rel="stylesheet" href="[% version('/cobrands/greece/vendor/maplibre-gl-4.7.1/maplibre-gl.css') %]">
-<link rel="stylesheet" href="[% version('/cobrands/greece/minimap.css') %]">
-[% END %]
-[% extra_css = extra_css _ gr_minimap_css %]
+    Hidden until minimap.js confirms geolocation, WebGL and the basemap style are available.
+    Its CSS is loaded by header/css.html on every page: set here, it came too late on pages that
+    print the header first (e.g. /around with several matching places), and without a height the
+    map and its box grew each other forever. %]
 <div class="gr-minimap" id="gr-minimap-box" data-dimoi="/cobrands/greece/dimoi/" hidden>
     <div class="gr-minimap__frame">
-        <div class="gr-minimap__map" id="gr-minimap" role="application" aria-label="Χάρτης για την επιλογή σημείου"></div>
+        <div class="gr-minimap__map" id="gr-minimap" role="application" aria-label="[% c.cobrand.greece_t('Χάρτης για την επιλογή σημείου', 'Map to choose the place') %]"></div>
         <span class="gr-minimap__pin" aria-hidden="true"></span>
     </div>
-    <p class="gr-minimap__status" id="gr-minimap-status" aria-live="polite">Πάτα «Χρήση της τοποθεσίας μου» ή μεγέθυνε τον χάρτη στο σημείο του προβλήματος.</p>
+    <p class="gr-minimap__status" id="gr-minimap-status" aria-live="polite">[% c.cobrand.greece_t('Πάτα «Χρήση της τοποθεσίας μου» ή μεγέθυνε τον χάρτη στο σημείο του προβλήματος.', 'Press “Use my location” or zoom the map in on the problem.') %]</p>
     <div class="gr-minimap__actions">
-        <button type="button" class="btn" id="gr-minimap-locate">Χρήση της τοποθεσίας μου</button>
-        <a class="btn btn--primary" id="gr-minimap-report" href="[% c.uri_for('/report/new') %]" hidden>Αναφορά εδώ</a>
+        <button type="button" class="btn" id="gr-minimap-locate">[% c.cobrand.greece_t('Χρήση της τοποθεσίας μου', 'Use my location') %]</button>
+        <a class="btn btn--primary" id="gr-minimap-report" href="[% c.uri_for('/report/new') %]" hidden>[% c.cobrand.greece_t('Αναφορά εδώ', 'Report here') %]</a>
     </div>
     <div class="gr-dimos" id="gr-dimos" aria-live="polite" hidden>
         <strong class="gr-dimos__name" id="gr-dimos-name"></strong>
         <ul class="gr-dimos__contacts" id="gr-dimos-contacts"></ul>
     </div>
 </div>
-<p class="gr-minimap-or" id="gr-minimap-or" hidden>ή αναζήτησε διεύθυνση</p>
+<p class="gr-minimap-or" id="gr-minimap-or" hidden>[% c.cobrand.greece_t('ή αναζήτησε διεύθυνση', 'or search for an address') %]</p>
 <script defer src="[% version('/cobrands/greece/vendor/maplibre-gl-4.7.1/maplibre-gl.js') %]"></script>
 <script defer src="[% version('/cobrands/greece/minimap.js') %]"></script>

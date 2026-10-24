@@ -4,8 +4,6 @@
     the police again. ~%]
 [%
 paravasi = report.get_extra_field_value('paravasi');
-syxnotita = report.get_extra_field_value('syxnotita');
-oxima = report.get_extra_field_value('oxima');
 pinakida = report.greece_plate;
 
 paravasi_texts = {
@@ -15,8 +13,6 @@ paravasi_texts = {
     diavasi => 'Στάθμευση οχήματος σε διάβαση πεζών ή μπροστά σε αυτή',
 };
 paravasi_text = paravasi ? paravasi_texts.$paravasi : '';
-syxnotita_texts = { epanalamvanomeni => 'επαναλαμβανόμενη ', monimi => 'μόνιμη ' };
-syxnotita_text = syxnotita ? syxnotita_texts.$syxnotita : '';
 
 street = closest_address ? closest_address.parts.street : '';
 number = closest_address ? closest_address.parts.number : '';

@@ -5,7 +5,7 @@ Subject: [% subject %] (αρ. αναφοράς [% report.greece_ref %])
 
 Αξιότιμοι κύριοι / κυρίες,
 
-Με την παρούσα επιστολή επιθυμώ να καταγγείλω την [% syxnotita_text %]παράνομη κατάληψη
+Με την παρούσα επιστολή επιθυμώ να καταγγείλω την παράνομη κατάληψη
 χώρου που προορίζεται για [% purpose %].
 
 Συγκεκριμένα:
@@ -15,9 +15,6 @@ Subject: [% subject %] (αρ. αναφοράς [% report.greece_ref %])
 • Περιγραφή της παράβασης: [% paravasi_text %].[% IF report.detail %] Σχόλια: «[% report.detail %]»[% END %]
 [% IF pinakida %]
 • Αριθμός κυκλοφορίας: [% pinakida %]
-[% END %]
-[% IF oxima %]
-• Στοιχεία οχήματος: [% oxima %]
 [% END %]
 • Ημερομηνία και ώρα της αναφοράς: [% report.greece_local_time %]
 [% IF photos.size %]

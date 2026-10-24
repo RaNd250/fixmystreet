@@ -5,7 +5,7 @@
 (function() {
     'use strict';
     function greek() {
-        if (!window.jQuery || !jQuery.validator) { return; }
+        if (!window.jQuery || !jQuery.validator || /^en/i.test(document.documentElement.lang || '')) { return; }
         jQuery.extend(jQuery.validator.messages, {
             required: 'Αυτό το πεδίο είναι υποχρεωτικό.',
             email: 'Γράψε μια σωστή διεύθυνση email.',
