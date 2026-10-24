@@ -41,6 +41,59 @@ sub munge_sendreport_params {
 # from their own phone; see Problem::greece_sms.
 sub greece_sms_number { '100' }
 
+# Reporting needs no account and no email confirmation: a report is confirmed and sent straight
+# away. Afterwards the reporter's address gets a one-off link to create an account (below).
+sub never_confirm_reports { 1 }
+
+# Not signed in, the report form must not change an existing account: FixMyStreet writes the
+# form's name and phone onto the user with that email, and with no confirmation anyone could do
+# that. This hook runs before, with the address given; keep what the account has, and put it back
+# before the report is saved (report_new_munge_before_insert). The report keeps the name given.
+sub disable_login_for_email {
+    my ($self, $email) = @_;
+    my $c = $self->{c} or return;
+    return if $c->user_exists;
+    my $user = $email && FixMyStreet::DB->resultset('User')->find({ email => lc $email });
+    $c->stash->{greece_account_before} = $user
+        ? { id => $user->id, map { $_ => $user->$_ } qw(name phone title) } : undef;
+    return;
+}
+
+sub report_new_munge_before_insert {
+    my ($self, $report) = @_;
+    my $c = $self->{c} or return;
+    my $before = $c->stash->{greece_account_before} or return;
+    my $user = $report->user;
+    return unless $user && $user->in_storage && $user->id == $before->{id};
+    $user->$_($before->{$_}) for qw(name phone title);
+    $user->update if $user->is_changed;
+}
+
+# After a report made without signing in, email the address given a link that signs in once and
+# asks for a password: the account is created (or, if one exists, opened) only if they want it.
+sub report_new_munge_after_insert {
+    my ($self, $report) = @_;
+    my $c = $self->{c} or return;
+    return if $c->user_exists || $c->stash->{greece_account_link_sent};
+    my $user = $report->user;
+    return unless $user && $user->email;
+    my $exists = $user->password ? 1 : 0;
+    my $token = $c->model('DB::Token')->create({ scope => 'email_sign_in', data => {
+        email => $user->email,
+        r => $exists ? 'my' : 'auth/change_password',
+        # Never rename an existing account from a form anyone can fill in.
+        ($user->name ? () : (name => $report->name)),
+    } });
+    $c->send_email('account-link.txt', {
+        to => [ [ $user->email, $report->name ] ],
+        report => $report,
+        account_exists => $exists,
+        token_url => $c->uri_for_action('/auth/token', [ $token->token ]),
+        report_url => $report->non_public ? '' : $self->base_url_for_report($report) . $report->url,
+    });
+    $c->stash->{greece_account_link_sent} = 1;
+}
+
 # Installable web app (PWA). Name and colours are the cobrand's manifest theme (admin, or
 # data/greece/manifest-theme.sql); the icons in web/theme/greece/ are drawn to be maskable.
 sub manifest {

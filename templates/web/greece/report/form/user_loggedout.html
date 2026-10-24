@@ -1,0 +1,31 @@
+<!-- user_loggedout.html (greece) -->
+[%# Reports need no account: name, email and phone, then send. The account comes afterwards, from a
+    one-off link emailed to the address given (Greece.pm). Updates keep FixMyStreet's own form. ~%]
+<div id="form_sign_in">
+    [% PROCESS 'report/form/private_details.html' %]
+  [% IF type == 'update' %]
+    <h2 class="hidden-js">[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name) %]</h2>
+    [% PROCESS 'report/form/user_loggedout_password.html' %]
+    [% PROCESS 'report/form/user_loggedout_by_email.html' %]
+  [% ELSE %]
+    <div id="form_sign_in_no" class="form-box gr-reporter">
+        [% INCLUDE 'report/new/extra_name.html' %]
+        [% PROCESS 'user/_anonymity.html' anonymous = object.anonymous %]
+        [% INCLUDE 'report/form/user_name.html' %]
+        [% INCLUDE 'report/_show_name_label.html' %]
+        [% PROCESS 'report/form/user_loggedout_email.html' name='username_register' %]
+        <label for="form_phone">[% loc('Phone number') %]<span id="js-optional-phone"> [% loc('(optional)') %]</span></label>
+        [% IF field_errors.phone %]
+          <p class='form-error'>[% field_errors.phone %]</p>
+        [% END %]
+        <input class="form-control" type="text" value="[% phone | html %]" name="phone" id="form_phone" autocomplete="tel">
+        <div class="general-notes gr-reporter__note">
+            <p>Δεν χρειάζεται λογαριασμός ούτε επιβεβαίωση: η αναφορά στέλνεται μόλις πατήσεις «[% loc('Submit') %]».
+            Μετά θα σου στείλουμε στο email σου έναν προσωπικό σύνδεσμο, για να δημιουργήσεις λογαριασμό αν θέλεις
+            και να παρακολουθείς τις αναφορές σου.</p>
+        </div>
+        [% PROCESS 'report/form/submit.html' %]
+    </div>
+  [% END %]
+</div>
+<!-- /user_loggedout.html -->
