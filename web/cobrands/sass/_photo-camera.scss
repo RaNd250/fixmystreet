@@ -1,0 +1,94 @@
+/* Photo camera and gallery buttons under Dropzone (photo-camera.js) */
+$fms-photo-actions-margin: 0.75em 0 0.5em !default;
+$fms-photo-actions-gap: 0.5em !default;
+$fms-photo-actions-btn-padding: 0.4em 0.75em !default;
+$fms-photo-actions-btn-font-size: $font-size-base !default;
+$fms-photo-actions-btn-border-radius: 4px !default;
+
+.fms-photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $fms-photo-actions-gap;
+  margin: $fms-photo-actions-margin;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    padding: $fms-photo-actions-btn-padding;
+    font-size: $fms-photo-actions-btn-font-size;
+    border-radius: $fms-photo-actions-btn-border-radius;
+    white-space: nowrap;
+  }
+
+  .btn svg {
+    flex-shrink: 0;
+  }
+}
+
+/* Camera dialog */
+.fms-photo-camera {
+  width: min(90vw, 560px);
+  border: none;
+  border-radius: 8px;
+  padding: 0;
+  background: #1a1a1a;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  &::backdrop {
+    background: rgba(8, 15, 30, 0.6);
+    backdrop-filter: blur(3px);
+  }
+}
+
+.fms-photo-camera__frame {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fms-photo-camera__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.fms-photo-camera__status {
+  margin: 0.75em 1em;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  font-size: $font-size-base;
+}
+
+.fms-photo-camera__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  padding: 0.75em 1em;
+  justify-content: center;
+
+  .btn {
+    margin: 0;
+  }
+}
+
+.fms-photo-camera__shutter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.fms-photo-camera [hidden] {
+  display: none !important;
+}
+
+/* Hide the hidden file inputs that are inserted by the buttons */
+.fms-photo-actions input[type="file"] {
+  display: none;
+}
