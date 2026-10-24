@@ -72,9 +72,7 @@ INCLUDE '_email_top.html';
   [% END %]
     <p style="[% secondary_p_style %]">
       <strong>Τοποθεσία:</strong>
-      <a href="[% osm_url %]" title="Η τοποθεσία στον χάρτη OpenStreetMap">
-        [%~ report.latitude %], [% report.longitude ~%]
-      </a>
+      <a href="[% gmaps_url %]">Άνοιγμα στο Google Maps</a>
       [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
     </p>
 [% END %]

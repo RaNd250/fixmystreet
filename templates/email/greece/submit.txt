@@ -33,11 +33,7 @@ Email: [% report.user.email OR "Δεν δόθηκε" %]
 
 [% END %][% END ~%]
 
-Γεωγραφικό πλάτος: [% report.latitude %]
-
-Γεωγραφικό μήκος: [% report.longitude %]
-
-Η τοποθεσία στον χάρτη OpenStreetMap: [% osm_url %]
+Η τοποθεσία στον χάρτη: [% gmaps_url %]
 
 [% closest_address %]----------
 
