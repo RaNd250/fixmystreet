@@ -85,6 +85,8 @@
             var c = map.getCenter(), z = map.getZoom();
             var ready = z >= REPORT_ZOOM;
             reportLink.hidden = !ready;
+            // One blue button at a time: «Χρήση της τοποθεσίας μου» until «Αναφορά εδώ» can be pressed.
+            locateBtn.classList.toggle('btn--primary', !ready);
             if (ready) {
                 reportLink.href = reportBase + '?latitude=' + c.lat.toFixed(6) + '&longitude=' + c.lng.toFixed(6);
             }
