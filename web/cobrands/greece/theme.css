@@ -615,3 +615,6 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
    the logo, and took its clicks: the wrapper lets clicks through, its menu still takes them. */
 .nav-wrapper { pointer-events: none; }
 .nav-wrapper * { pointer-events: auto; }
+
+/* "Συμπληρώθηκε από τη φωτογραφία· έλεγξέ το." under the plate filled in from a photo (camera.js) */
+.gr-plate-note { margin: 0.25em 0 0.75em; font-size: 0.875em; color: #5b6475; }

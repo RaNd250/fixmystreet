@@ -6,6 +6,12 @@
  * - Computers: a dialog with the live camera picture (getUserMedia) and a shutter button.
  *   Without a camera or permission, it offers the file picker instead.
  *
+ * The boxes upload to /greece/photo/upload, which answers like /photo/upload plus the number plates
+ * the anonymiser read in the photo (App::Controller::GreecePhoto). The first plate fills in the
+ * category's plate question («pinakida») if it is empty, now or when the question appears, with a
+ * note to check it; it is never written over what the reporter typed, and is taken back if its
+ * photo is removed while the field still holds it.
+ *
  * The photo upload boxes are created by fixmystreet.js (also when the report form is loaded into
  * the side panel later), so new boxes are looked for whenever the page changes.
  */
@@ -31,6 +37,37 @@
     }
 
     var DROP_TEXT = 'Εισαγωγή φωτογραφίας';
+    var PLATE_NOTE = 'Συμπληρώθηκε από τη φωτογραφία· έλεγξέ το.';
+    var pendingPlate = null;   // a plate read before the plate question was on the page
+
+    function plateField(el) {
+        var form = el.closest ? el.closest('form') : null;
+        return (form || document).querySelector('input[name="pinakida"]');
+    }
+
+    function fillPlate(input, plate) {
+        if (!input || !plate || input.value.trim()) { return false; }
+        input.value = plate;
+        input.setAttribute('data-gr-plate', plate);
+        var note = input.parentNode.querySelector('.gr-plate-note');
+        if (!note) {
+            note = document.createElement('p');
+            note.className = 'gr-plate-note';
+            note.textContent = PLATE_NOTE;
+            input.parentNode.insertBefore(note, input.nextSibling);
+        }
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        return true;
+    }
+
+    function unfillPlate(input, plate) {
+        if (!input || input.getAttribute('data-gr-plate') !== plate || input.value !== plate) { return; }
+        input.value = '';
+        input.removeAttribute('data-gr-plate');
+        var note = input.parentNode.querySelector('.gr-plate-note');
+        if (note) { note.parentNode.removeChild(note); }
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
 
     // The device's own camera app.
     function cameraApp(dz) {
@@ -161,6 +198,18 @@
             var dz = el.dropzone;
             if (!dz || el.getAttribute('data-gr-camera')) { return; }
             el.setAttribute('data-gr-camera', '1');
+            dz.options.url = '/greece/photo/upload';
+            dz.on('success', function(file, answer) {
+                var plate = answer && answer.plates && answer.plates[0];
+                if (!plate) { return; }
+                file.grPlate = plate;
+                if (!fillPlate(plateField(el), plate) && !plateField(el)) { pendingPlate = { el: el, plate: plate }; }
+            });
+            dz.on('removedfile', function(file) {
+                if (!file.grPlate) { return; }
+                if (pendingPlate && pendingPlate.plate === file.grPlate) { pendingPlate = null; }
+                unfillPlate(plateField(el), file.grPlate);
+            });
             // One short text instead of FixMyStreet's "drag photos here or browse photos".
             dz.options.dictDefaultMessage = DROP_TEXT;
             var message = el.querySelector('.dz-message .dz-button, .dz-message span') || el.querySelector('.dz-message');
@@ -185,7 +234,15 @@
     function schedule() {
         if (queued) { return; }
         queued = true;
-        window.requestAnimationFrame(function() { queued = false; enhance(); });
+        window.requestAnimationFrame(function() {
+            queued = false;
+            enhance();
+            // The plate question appears when a category with it is chosen.
+            if (pendingPlate && plateField(pendingPlate.el)) {
+                fillPlate(plateField(pendingPlate.el), pendingPlate.plate);
+                pendingPlate = null;
+            }
+        });
     }
 
     function start() {

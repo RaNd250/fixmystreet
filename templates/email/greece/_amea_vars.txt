@@ -36,5 +36,6 @@ purpose = 'τη στάθμευση και τη διέλευση ατόμων μ�
 location = street ? 'Επί της οδού ' _ street _ (number ? ' ' _ number : '') : 'Στο σημείο του χάρτη';
 location = location _ (area.size ? ', στην περιοχή ' _ area.join(', ') : '');
 
-photos = report.greece_photos;
+# The police get the photos with the plates readable (PhotoStorage::Greece).
+photos = report.greece_photos('police');
 ~%]

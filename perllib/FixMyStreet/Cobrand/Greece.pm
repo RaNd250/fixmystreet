@@ -389,10 +389,18 @@ SQL
 }
 
 # Every photo of the report at full size, for attaching to an email.
+# With 'police', the copy with the plates readable where there is one (FixMyStreet::PhotoStorage::Greece),
+# for the police letter; the photos everyone else gets have plates and faces blurred.
 sub greece_photos {
-    my $self = shift;
+    my ($self, $mode) = @_;
     my $set = $self->get_photoset;
-    return [ grep { $_ } map { $set->get_image_data(num => $_, size => 'full') } 0 .. $set->num_images - 1 ];
+    my $police = ($mode // '') eq 'police' && eval { require FixMyStreet::PhotoStorage::Greece; 1 };
+    my @photos;
+    for my $num (0 .. $set->num_images - 1) {
+        my $copy = $police && FixMyStreet::PhotoStorage::Greece->police_photo($set->get_id($num));
+        push @photos, $copy ? { data => $copy, content_type => 'image/jpeg' } : $set->get_image_data(num => $num, size => 'full');
+    }
+    return [ grep { $_ } @photos ];
 }
 
 # When the report was made, in local time, e.g. "24/10/2026 18:05".
