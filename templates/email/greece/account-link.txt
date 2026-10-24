@@ -2,7 +2,7 @@ Subject: Η αναφορά σου [% report.greece_ref %] καταχωρήθηκ
 
 Γεια σου [% report.name %],
 
-η αναφορά σου «[% report.title %]» καταχωρήθηκε με αριθμό [% report.greece_ref %][% IF report.bodies_str %] και στέλνεται [% report.bodies_str.match(',') ? 'στις αρμόδιες υπηρεσίες' : 'στην αρμόδια υπηρεσία' %]: [% report.body %][% END %].
+η αναφορά σου «[% report.title %]» καταχωρήθηκε με αριθμό [% report.greece_ref %][% IF report.state == 'hidden' %]. Η περιγραφή είχε ακατάλληλες λέξεις, γι' αυτό θα ελεγχθεί πρώτα από τους διαχειριστές και μετά θα σταλεί[% ELSIF report.bodies_str %] και στέλνεται [% report.bodies_str.match(',') ? 'στις αρμόδιες υπηρεσίες' : 'στην αρμόδια υπηρεσία' %]: [% report.body %][% END %].
 [% IF report_url %]
 Μπορείς να τη δεις εδώ: [% report_url %]
 [% END %]

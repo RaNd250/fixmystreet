@@ -1,14 +1,10 @@
 /*
- * Two buttons under each photo upload box (Dropzone); what they give is added to the box as if
- * the user had picked a file there.
- *
- * "Τράβηξε φωτογραφία" takes a photo there and then:
+ * Each photo upload box (Dropzone) says only «Εισαγωγή φωτογραφίας» (a click opens the device's
+ * gallery or file picker, as before), and gets a «Λήψη» button under it that takes a photo there
+ * and then; the photo is added to the box as if the user had picked a file there:
  * - Phones and tablets: a file input with capture="environment" opens the device's camera app.
  * - Computers: a dialog with the live camera picture (getUserMedia) and a shutter button.
  *   Without a camera or permission, it offers the file picker instead.
- *
- * "Από τη συλλογή" ("Επιλογή αρχείου" on computers) opens the device's photo gallery or file
- * picker: accept="image/*" without capture, several photos at once.
  *
  * The photo upload boxes are created by fixmystreet.js (also when the report form is loaded into
  * the side panel later), so new boxes are looked for whenever the page changes.
@@ -34,21 +30,14 @@
         }
     }
 
-    var GALLERY_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">' +
-        '<path fill="currentColor" d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v9.6l4.3-4.3a1 1 0 0 1 ' +
-        '1.4 0L13 14.6l2.3-2.3a1 1 0 0 1 1.4 0L20 15.6V6H4Zm11 1.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/></svg>';
+    var DROP_TEXT = 'Εισαγωγή φωτογραφίας';
 
-    // The device's own camera app (capture), or its gallery / file picker (no capture, several
-    // photos at once).
-    function nativeInput(dz, capture) {
+    // The device's own camera app.
+    function cameraApp(dz) {
         var input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
-        if (capture) {
-            input.setAttribute('capture', 'environment');
-        } else {
-            input.multiple = true;
-        }
+        input.setAttribute('capture', 'environment');
         input.hidden = true;
         input.addEventListener('change', function() {
             Array.prototype.forEach.call(input.files || [], function(f) { dz.addFile(f); });
@@ -172,27 +161,22 @@
             var dz = el.dropzone;
             if (!dz || el.getAttribute('data-gr-camera')) { return; }
             el.setAttribute('data-gr-camera', '1');
-            var cameraInput = nativeInput(dz, true);
-            var galleryInput = nativeInput(dz, false);
+            // One short text instead of FixMyStreet's "drag photos here or browse photos".
+            dz.options.dictDefaultMessage = DROP_TEXT;
+            var message = el.querySelector('.dz-message .dz-button, .dz-message span') || el.querySelector('.dz-message');
+            if (message) { message.textContent = DROP_TEXT; }
+            var cameraInput = cameraApp(dz);
             var actions = document.createElement('div');
             actions.className = 'gr-photo-actions';
 
             var camera = document.createElement('button');
             camera.type = 'button';   // never submits the report form
             camera.className = 'btn gr-camera-btn';
-            camera.innerHTML = ICON + '<span>Τράβηξε φωτογραφία</span>';
+            camera.innerHTML = ICON + '<span>Λήψη</span>';
             camera.addEventListener('click', function() { openCamera(dz, cameraInput); });
 
-            var gallery = document.createElement('button');
-            gallery.type = 'button';
-            gallery.className = 'btn gr-gallery-btn';
-            gallery.innerHTML = GALLERY_ICON + '<span>' + (touchDevice ? 'Από τη συλλογή' : 'Επιλογή αρχείου') + '</span>';
-            gallery.addEventListener('click', function() { galleryInput.click(); });
-
             actions.appendChild(camera);
-            actions.appendChild(gallery);
             actions.appendChild(cameraInput);
-            actions.appendChild(galleryInput);
             el.parentNode.insertBefore(actions, el.nextSibling);
         });
     }

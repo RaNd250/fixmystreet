@@ -26,24 +26,54 @@ sub munge_sendreport_params {
     # The address the email went to, so the recipient can send us a better one.
     $h->{sent_to} = join ', ', map { ref $_ ? $_->[0] : $_ } @{ $params->{To} || [] };
 
-    # A category can have its own email (contact extra metadata email_template, e.g. "amea"
-    # for the police complaint about disabled or EV-charging bays); submit.txt hands over to it.
+    # A category can have its own email (contact extra metadata email_template: "ev" for the police
+    # complaint about EV-charging bays and blocked passage, "amea" for disabled bays, ramps,
+    # pavements and crossings); submit.txt hands over to submit-<template>.txt.
     my $contact = $row->contact;
     my $template = ($contact && $contact->get_extra_metadata('email_template')) || '';
     $h->{email_template} = $template if $template =~ /^[a-z]+$/;
+
+    # The location as a Google Maps link, which the police letters give instead of coordinates.
+    $h->{gmaps_url} = sprintf 'https://www.google.com/maps/search/?api=1&query=%.6f,%.6f', $row->latitude, $row->longitude;
 
     # The municipality of the location, for emails to a body that is not the municipality.
     my $dimos = $row->greece_dimos;
     $h->{dimos_name} = $dimos->name if $dimos;
 }
 
-# Police complaints (disabled and EV-charging bays) can also be sent by the reporter as an SMS
+# Police complaints (EV-charging bays, blocked passage) can also be sent by the reporter as an SMS
 # from their own phone; see Problem::greece_sms.
 sub greece_sms_number { '100' }
 
 # Reporting needs no account and no email confirmation: a report is confirmed and sent straight
 # away. Afterwards the reporter's address gets a one-off link to create an account (below).
 sub never_confirm_reports { 1 }
+
+# The report form has no title field, only the description (templates/web/greece/report/new/
+# form_report.html). The title is the category, which is what lists, the report page and the
+# emails to the body show above the description; for «Άλλα» it is the start of the description.
+sub report_check_for_errors {
+    my ($self, $c) = @_;
+    my $report = $c->stash->{report};
+    if ($report && ($report->title // '') !~ /\S/) {
+        my $category = $report->category // '';
+        my $title = $category eq 'Άλλα' || $category eq '' ? greece_excerpt($report->detail, 60) : $category;
+        $report->title($title || $category || 'Αναφορά');
+    }
+    return $self->SUPER::report_check_for_errors($c);
+}
+
+# The text on one line, cut at a word to at most $max characters, with "…" if cut.
+sub greece_excerpt {
+    my ($text, $max) = @_;
+    $text = $text // '';
+    $text =~ s/\s+/ /g;
+    $text =~ s/^ | $//g;
+    return $text if length $text <= $max;
+    my $cut = substr($text, 0, $max);
+    $cut =~ s/[\s,.;:·]+\S*$// if $cut =~ /\s/;
+    return "$cut…";
+}
 
 # Not signed in, the report form must not change an existing account: FixMyStreet writes the
 # form's name and phone onto the user with that email, and with no confirmation anyone could do
@@ -61,6 +91,7 @@ sub disable_login_for_email {
 
 sub report_new_munge_before_insert {
     my ($self, $report) = @_;
+    $self->greece_bad_words($report);
     my $c = $self->{c} or return;
     my $before = $c->stash->{greece_account_before} or return;
     my $user = $report->user;
@@ -74,6 +105,7 @@ sub report_new_munge_before_insert {
 sub report_new_munge_after_insert {
     my ($self, $report) = @_;
     my $c = $self->{c} or return;
+    $self->greece_moderation_email($report);
     return if $c->user_exists || $c->stash->{greece_account_link_sent};
     my $user = $report->user;
     return unless $user && $user->email;
@@ -89,9 +121,113 @@ sub report_new_munge_after_insert {
         report => $report,
         account_exists => $exists,
         token_url => $c->uri_for_action('/auth/token', [ $token->token ]),
-        report_url => $report->non_public ? '' : $self->base_url_for_report($report) . $report->url,
+        report_url => $report->non_public || $report->state eq 'hidden' ? '' : $self->base_url_for_report($report) . $report->url,
     });
     $c->stash->{greece_account_link_sent} = 1;
+}
+
+# Bad words in the report form: each one becomes "***", and a report with GREECE_MODERATE or more
+# is held for a moderator: hidden and flagged, so it is neither shown nor sent until a moderator
+# opens it in the admin (/admin/flagged). Whole words, any case; "παλιο-", "βρωμο-", "ψωρο-" in
+# front count too. Accents are written where the word without them is a harmless one (μαλάκα, the
+# insult; μαλακά, softly), so those match only as written with the accent.
+use constant GREECE_MODERATE => 3;
+my @BAD_WORDS = (
+    # Greek
+    'μαλ[άα]κας', 'μαλάκα', 'μαλ[άα]κες', 'μαλάκων', 'μαλακ[ίι](?:α|ας|ες)', 'μαλακι[ώω]ν', 'μαλακισμ[έε]ν\p{L}*',
+    'γαμ[ώω]', 'γαμ[ώω]το', 'γαμ[ηή]σ(?:ου|τε|ε|ω)', 'γάμησ(?:[εέ]|αν|ες)', 'γαμ[ηή]σι\p{L}*', 'γαμι[έε]σ(?:αι|αστε|τε)', 'γαμι[έε]ται',
+    'γαμι[όο]υνται', 'γαμημ[έε]ν\p{L}*', 'γαμι[όο]λ\p{L}*',
+    'π[οό][υύ]στ\p{L}*', 'καρ(?:γ)?ι[όο]λ\p{L}*', 'πουτ[άα]ν\p{L}*', 'τσο[υύ]λ(?:α|ας|ες)',
+    'αρχ[ιί]δ[ιί](?:α|ά|ων|ών)?', 'αρχιδ[άα]τ\p{L}*', 'μουν[ίι]', 'μουνι[άα]', 'μουνι[ώω]ν', 'μουν[άα]ρ\p{L}*', 'μουν[όο]π[αά]ν\p{L}*',
+    'ψωλ(?:ή|η|ές|ες|ής|ης)', 'κα[υύ]λ(?:α|ας|ί|ι|ιά|ια|ωμ[έε]ν\p{L}*)', 'βυζ[ιί](?:α|ά)?',
+    'σκατ(?:[άα]|[όο]|[ώω]ν|[έε]ν\p{L}*|ο\p{L}{3,})', 'χ[έε]σ(?:ε|τε|ου)', 'χ[έε]στηκ\p{L}*', 'χεσμ[έε]ν\p{L}*',
+    'κ[ώω]λ(?:ος|ο|ου|οι|ους)', 'κωλ[οό]\p{L}{3,}', 'κερατ[άα](?:ς|δες|δων)',
+    'βλ[άα]κ(?:ας|α|ες)', 'ηλ[ίι]θι\p{L}*',
+    'γ[ύυ]φτ(?:ος|οι|ου|ους|ισσα|ισσες|ιά|ια|ιές|ιες|ικ\p{L}*|αρι\p{L}*)',
+    # Greeklish
+    'malak(?:as|a|es|ia|ies|ismen\p{L}*)', 'gam(?:w|o|wto|oto|isou|hsou|iesai|imen\p{L}*|hmen\p{L}*|iol\p{L}*)',
+    'poust\p{L}*', 'kar(?:g)?iol\p{L}*', 'poutan\p{L}*', 'arxid\p{L}*', 'mouni(?:a)?', 'skata', 'xese', 'tsoula',
+    'psol(?:i|h)',
+    # English
+    'fuck\p{L}*', 'motherfuck\p{L}*', 'shit(?:s|ty|ting|head\p{L}*)?', 'bitch\p{L}*', 'asshole\p{L}*', 'cunt\p{L}*',
+    'dickhead\p{L}*', 'bastard\p{L}*', 'wank\p{L}*',
+);
+my $BAD_WORDS = do {
+    my $words = join '|', @BAD_WORDS;
+    qr/(?<![\p{L}\p{N}])(?:παλι[οό]|βρ[ωώ]μ[οό]|ψωρ[οό])?(?:$words)(?![\p{L}\p{N}])/i;
+};
+
+# The text with every bad word as "***", and how many there were.
+sub greece_mask_bad_words {
+    my ($text) = @_;
+    return ($text, 0) unless defined $text && $text =~ /\S/;
+    my $count = $text =~ s/$BAD_WORDS/***/g;
+    return ($text, $count || 0);
+}
+
+sub greece_bad_words {
+    my ($self, $report) = @_;
+    my $count = 0;
+    for my $field (qw(detail name)) {
+        my ($masked, $n) = greece_mask_bad_words($report->$field);
+        next unless $n;
+        $report->$field($masked);
+        $count += $n;
+    }
+    # The title is the category, or (for «Άλλα») the start of the description: masked, not counted.
+    my ($title) = greece_mask_bad_words($report->title);
+    $report->title($title) if defined $title;
+    my $user = $report->user;
+    if ($user && !$user->in_storage) {
+        my ($name) = greece_mask_bad_words($user->name);
+        $user->name($name) if defined $name;
+    }
+    return unless $count;
+    $report->set_extra_metadata(greece_bad_words => $count);
+    if ($count >= GREECE_MODERATE) {
+        $report->state('hidden');
+        $report->flagged(1);
+    }
+}
+
+# A report held for a moderator: tell the site's contact address, with the admin link.
+sub greece_moderation_email {
+    my ($self, $report) = @_;
+    my $c = $self->{c} or return;
+    return unless $report->state eq 'hidden' && $report->flagged && $report->get_extra_metadata('greece_bad_words');
+    $c->send_email('moderation.txt', {
+        to => [ $self->contact_email ],
+        report => $report,
+        admin_url => $c->cobrand->base_url . '/admin/report_edit/' . $report->id,
+    });
+}
+
+# The reports page («Εμφάνιση αναφορών ανά περιοχή») offers only the municipalities: a police unit
+# covers several of them, and choosing one would show most of the map.
+sub reports_hook_restrict_bodies_list {
+    my ($self, $bodies) = @_;
+    # Reports.pm passes all_sorted's hashes, not Body rows.
+    return [ grep { (ref $_ eq 'HASH' ? $_->{name} : $_->name) =~ /^Δήμος / } @$bodies ];
+}
+
+# Who is voting 👍/👎 on a report (App::Controller::GreeceVote, Problem::greece_votes): a signed-in
+# voter is their account; anyone else is a random id in a long-lived cookie, kept here only as its
+# hash. Undef when there is none yet and $create is false.
+sub greece_voter {
+    my ($self, $c, $create) = @_;
+    return 'u:' . $c->user->id if $c->user_exists;
+    my $cookie = $c->req->cookie('gr_voter');
+    my $id = $cookie ? $cookie->value : '';
+    if ($id !~ /^[0-9a-f]{32}$/) {
+        return unless $create;
+        open my $fh, '<:raw', '/dev/urandom' or die "no /dev/urandom: $!";
+        read $fh, my $bytes, 16;
+        close $fh;
+        $id = unpack 'H*', $bytes;
+        $c->res->cookies->{gr_voter} = { value => $id, expires => '+2y', path => '/', httponly => 1, secure => 1 };
+    }
+    require Digest::SHA;
+    return 'c:' . Digest::SHA::sha256_hex($id);
 }
 
 # Installable web app (PWA). Name and colours are the cobrand's manifest theme (admin, or
@@ -101,7 +237,7 @@ sub manifest {
     return {
         id => '/?pwa',
         display => 'standalone',
-        description => 'Ανάφερε προβλήματα και εμπόδια στην περιοχή σου: λακκούβες, σκουπίδια, φώτα, πεζοδρόμια, στάθμευση σε θέσεις ΑμεΑ.',
+        description => 'Ανάφερε προβλήματα και εμπόδια στην περιοχή σου: λακκούβες, σκουπίδια, φώτα, πεζοδρόμια, παράνομη στάθμευση.',
         categories => [ 'government', 'utilities' ],
         icons => [ (map { { %$_, purpose => 'any' } } @icons), (map { { %$_, purpose => 'maskable' } } @icons) ],
     };
@@ -128,7 +264,11 @@ sub greece_dimos {
 my %SMS_VEHICLE = (
     xoris_karta => 'καταλαμβάνει θέση στάθμευσης ΑμεΑ χωρίς Μπλε Κάρτα',
     rampa => 'καταλαμβάνει ράμπα ΑμεΑ',
+    pezodromio => 'είναι σταθμευμένο στο πεζοδρόμιο και εμποδίζει τους πεζούς',
+    diavasi => 'είναι σταθμευμένο σε διάβαση πεζών',
     fortistis => 'καταλαμβάνει θέση φόρτισης ηλεκτρικών οχημάτων χωρίς να φορτίζει',
+    eisodos => 'κλείνει είσοδο οχημάτων (γκαράζ)',
+    diplo => 'είναι σταθμευμένο διπλά και κλείνει τον δρόμο',
 );
 my %SMS_OTHER = (
     empodia => 'Παράνομα εμπόδια ή κώνοι από κατάστημα',
@@ -193,13 +333,13 @@ sub greece_recipients {
 }
 
 # For a police complaint, the SMS the reporter can send from their phone: { number, body }, e.g.
-#   Όχημα με πινακίδα ΙΚΧ-1234 καταλαμβάνει ράμπα ΑμεΑ στη διεύθυνση Φαβιέρου 15, 124 61 Χαϊδάρι, Αττική.
+#   Όχημα με πινακίδα ΙΚΧ-1234 κλείνει είσοδο οχημάτων (γκαράζ) στη διεύθυνση Φαβιέρου 15, 124 61 Χαϊδάρι, Αττική.
 #   Αρ. αναφοράς 24102026-1, στάλθηκε στα x@astynomia.gr και y@astynomia.gr.
 # Nothing for other categories.
 sub greece_sms {
     my ($self, $cobrand) = @_;
     my $contact = $self->contact;
-    return unless $contact && ($contact->get_extra_metadata('email_template') || '') eq 'amea';
+    return unless $contact && ($contact->get_extra_metadata('email_template') || '') =~ /^(?:ev|amea)$/;
 
     my $paravasi = $self->get_extra_field_value('paravasi') // '';
     my $address = $self->greece_address($cobrand);
@@ -210,7 +350,7 @@ sub greece_sms {
         my $plate = $self->greece_plate;
         $what = 'Όχημα' . ($plate ? " με πινακίδα $plate" : '') . " $does $where.";
     } else {
-        $what = ($SMS_OTHER{$paravasi} || 'Παράνομη στάθμευση σε θέση ΑμεΑ ή φόρτισης ηλεκτρικών οχημάτων') . " $where.";
+        $what = ($SMS_OTHER{$paravasi} || 'Παράνομη στάθμευση') . " $where.";
     }
 
     my @to = $self->greece_recipients;
@@ -265,6 +405,20 @@ sub greece_local_time {
 }
 
 # Inverse of greece_ref: the id of the $n-th report created on local date $date (YYYY-MM-DD).
+# 👍/👎 counts and the voter's own vote (1, -1 or 0); the voter from the request unless given.
+sub greece_votes {
+    my ($self, $c, $voter) = @_;
+    $voter //= $c ? $c->cobrand->greece_voter($c) : undef;
+    my ($up, $down, $mine) = eval {
+        FixMyStreet::DB->schema->storage->dbh->selectrow_array(<<'SQL', undef, $voter // '', $self->id);
+SELECT count(*) FILTER (WHERE value = 1), count(*) FILTER (WHERE value = -1),
+       coalesce(max(value) FILTER (WHERE voter = ?), 0)
+  FROM greece_vote WHERE problem_id = ?
+SQL
+    };
+    return { up => $up || 0, down => $down || 0, mine => $mine || 0 };
+}
+
 sub greece_ref_to_id {
     my ($date, $n) = @_;
     return unless $n >= 1;

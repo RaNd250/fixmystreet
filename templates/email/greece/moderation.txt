@@ -1,0 +1,16 @@
+[%# To the site's contact address: a report held for a moderator because of bad words (Greece.pm). ~%]
+Subject: Αναφορά [% report.greece_ref %] σε έλεγχο: ακατάλληλες λέξεις
+
+Η αναφορά [% report.greece_ref %] ([% report.category %][% IF report.title != report.category %]: «[% report.title %]»[% END %]) είχε [% report.get_extra_metadata('greece_bad_words') %] ακατάλληλες λέξεις και κρατήθηκε κρυφή: δεν φαίνεται στον ιστότοπο και δεν στέλνεται.
+
+Περιγραφή, με *** στη θέση τους:
+
+[% report.detail %]
+
+Όνομα: [% report.name %]
+
+Έλεγχος στο admin:
+
+[% admin_url %]
+
+Για να σταλεί και να δημοσιευτεί, άλλαξε την κατάσταση σε «Ανοιχτή» και βγάλε τη σήμανση (flag). Αλλιώς άφησέ την κρυφή.

@@ -1,18 +1,18 @@
-[%# Shared by submit-amea.txt and submit-amea.html: the complaint to the police about a
-    disabled (ΑμεΑ) or EV-charging bay, built from the category's questions. ~%]
+[%# Shared by submit-amea.txt and submit-amea.html: the complaint to the police about parking on a
+    disabled (ΑμεΑ) bay or ramp, a pavement or a crossing (email_template "amea"). The ΑμεΑ category
+    links to xorisempodia.gr today and makes no report here; this letter is for when it is sent to
+    the police again. ~%]
 [%
 paravasi = report.get_extra_field_value('paravasi');
 syxnotita = report.get_extra_field_value('syxnotita');
 oxima = report.get_extra_field_value('oxima');
 pinakida = report.greece_plate;
 
-ev = paravasi == 'fortistis';
 paravasi_texts = {
     xoris_karta => 'Στάθμευση οχήματος σε θέση ΑμεΑ χωρίς την ειδική Μπλε Κάρτα',
     rampa => 'Στάθμευση οχήματος σε ράμπα ΑμεΑ, που εμποδίζει τη διέλευση',
-    fortistis => 'Στάθμευση οχήματος σε θέση φόρτισης ηλεκτρικών οχημάτων χωρίς να φορτίζει',
-    empodia => 'Τοποθέτηση παράνομων εμποδίων ή κώνων από κατάστημα',
-    p72 => 'Ύπαρξη αυθαίρετης ή μη εγκεκριμένης διαγράμμισης και πινακίδας P-72',
+    pezodromio => 'Στάθμευση οχήματος σε πεζοδρόμιο, που εμποδίζει τη διέλευση πεζών και ατόμων με αναπηρία',
+    diavasi => 'Στάθμευση οχήματος σε διάβαση πεζών ή μπροστά σε αυτή',
 };
 paravasi_text = paravasi ? paravasi_texts.$paravasi : '';
 syxnotita_texts = { epanalamvanomeni => 'επαναλαμβανόμενη ', monimi => 'μόνιμη ' };
@@ -30,13 +30,8 @@ area.push(place) IF place;
 area.push(dimos_name) IF dimos_name;
 
 subject_place = street ? 'επί της οδού ' _ street : 'στην περιοχή ' _ (area.join(', ') OR 'που φαίνεται στον χάρτη');
-IF ev;
-    subject = 'Καταγγελία για Παράνομη Κατάληψη Θέσης Φόρτισης Ηλεκτρικών Οχημάτων ' _ subject_place;
-    purpose = 'τη φόρτιση ηλεκτρικών οχημάτων';
-ELSE;
-    subject = 'Καταγγελία για Παράνομη Κατάληψη / Σήμανση Θέσης Στάθμευσης ΑμεΑ ' _ subject_place;
-    purpose = 'τη στάθμευση οχημάτων ΑμεΑ (ή τη διέλευση αυτών)';
-END;
+subject = 'Καταγγελία για Παράνομη Στάθμευση σε Θέση ΑμεΑ, Ράμπα, Πεζοδρόμιο ή Διάβαση ' _ subject_place;
+purpose = 'τη στάθμευση και τη διέλευση ατόμων με αναπηρία και πεζών';
 
 location = street ? 'Επί της οδού ' _ street _ (number ? ' ' _ number : '') : 'Στο σημείο του χάρτη';
 location = location _ (area.size ? ', στην περιοχή ' _ area.join(', ') : '');

@@ -1,4 +1,12 @@
 [%# Photo upload boxes on the report and update forms get "take a photo" and gallery buttons;
-    the address box gets suggestions while typing (it only acts where there is one). ~%]
-[% IF bodyclass.match('mappage'); scripts.push(version('/cobrands/greece/camera.js')); END ~%]
-[% scripts.push(version('/cobrands/greece/place-search.js')) ~%]
+    the address box gets suggestions while typing (it only acts where there is one).
+    assets.js holds FixMyStreet's message controller, which shows a category's stop message
+    (disable_form) in place of the rest of the form, e.g. the link to xorisempodia.gr. ~%]
+[% IF bodyclass.match('mappage');
+    scripts.push(version('/cobrands/fixmystreet/assets.js'));
+    scripts.push(version('/cobrands/greece/camera.js'));
+END ~%]
+[%# form-draft.js keeps the report form's text if the reporter leaves it by mistake, and forgets
+    it on the confirmation page, so it is on every page. ~%]
+[% scripts.push(version('/cobrands/greece/place-search.js'), version('/cobrands/greece/form-draft.js'),
+    version('/cobrands/greece/votes.js')) ~%]

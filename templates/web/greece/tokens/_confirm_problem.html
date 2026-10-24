@@ -1,7 +1,12 @@
 [%# Confirmation page after a report: reports need no account or email confirmation (Greece.pm). ~%]
 <h2>Ευχαριστούμε για την αναφορά!</h2>
 <p>Αριθμός αναφοράς: <strong>[% report.greece_ref %]</strong>.
-[%~ IF report.bodies_str %] Στέλνεται τώρα [% report.bodies_str.match(',') ? 'στις αρμόδιες υπηρεσίες' : 'στην αρμόδια υπηρεσία' %]: [% report.body %].[% END %]</p>
+[%~ IF report.state == 'hidden' %] Η περιγραφή είχε ακατάλληλες λέξεις, γι' αυτό η αναφορά θα ελεγχθεί πρώτα από τους
+διαχειριστές και μετά θα δημοσιευτεί και θα σταλεί.
+[%~ ELSIF report.bodies_str %] Στέλνεται τώρα [% report.bodies_str.match(',') ? 'στις αρμόδιες υπηρεσίες' : 'στην αρμόδια υπηρεσία' %]: [% report.body %].[% END %]</p>
+[% IF report.state != 'hidden' AND report.get_extra_metadata('greece_bad_words') %]
+<p>Κάποιες ακατάλληλες λέξεις της περιγραφής αντικαταστάθηκαν με ***.</p>
+[% END %]
 [% UNLESS c.user_exists %]
 <p>Στο email που δήλωσες σου στείλαμε έναν προσωπικό σύνδεσμο, για να δημιουργήσεις λογαριασμό αν θέλεις
 και να παρακολουθείς τις αναφορές σου. Ισχύει 24 ώρες.</p>

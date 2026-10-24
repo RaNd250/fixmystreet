@@ -10,10 +10,9 @@ Subject: [% subject %] (αρ. αναφοράς [% report.greece_ref %])
 
 Συγκεκριμένα:
 
-• Τοποθεσία: [% location %] (γεωγραφικό πλάτος / μήκος [% report.latitude %], [% report.longitude %],
-χάρτης: [% osm_url %] ).
+• Τοποθεσία: [% location %]. Στον χάρτη: [% gmaps_url %]
 
-• Περιγραφή της παράβασης: [% paravasi_text %]. Σχόλια: «[% report.title %][% IF report.detail %]: [% report.detail %][% END %]»
+• Περιγραφή της παράβασης: [% paravasi_text %].[% IF report.detail %] Σχόλια: «[% report.detail %]»[% END %]
 [% IF pinakida %]
 • Αριθμός κυκλοφορίας: [% pinakida %]
 [% END %]

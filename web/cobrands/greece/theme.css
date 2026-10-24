@@ -477,7 +477,7 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
     border-radius: var(--gr-radius-s);
 }
 
-/* "Τράβηξε φωτογραφία" and "Από τη συλλογή" under the photo upload box (camera.js) */
+/* «Λήψη» under the photo upload box (camera.js) */
 
 .gr-photo-actions {
     display: flex;
@@ -559,3 +559,59 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 .gr-places__main { font-weight: 600; }
 .gr-places__context { font-size: 0.875em; color: var(--gr-ink-3); }
 .gr-places__credit { margin: 0; padding: 0.35em 0.8em 0.1em; font-size: 0.75em; color: var(--gr-ink-3); text-align: right; }
+
+/* Report form: no "Or search for a different location" link under the map hint. */
+.change_location__search { display: none; }
+
+/* "Συμπληρώσαμε ό,τι είχες γράψει πριν" above the description (form-draft.js) */
+.gr-draft-notice {
+    margin: 0 0 0.5em;
+    padding: 0.5em 0.75em;
+    font-size: 0.9375em;
+    background: var(--gr-surface);
+    border: 1px solid var(--gr-line);
+    border-radius: var(--gr-radius-s);
+}
+.gr-draft-notice__clear {
+    margin-left: 0.25em;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* 👍/👎 on the report page (report/_support.html, votes.js) */
+.gr-votes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+    margin: 0.75em 0;
+}
+.gr-vote {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    min-height: 44px;
+    padding: 0.35em 0.9em;
+    font: inherit;
+    font-weight: 600;
+    color: inherit;
+    background: var(--gr-surface);
+    border: 1px solid var(--gr-line);
+    border-radius: 999px;
+    cursor: pointer;
+}
+.gr-vote:hover { border-color: #9db4e8; }
+.gr-vote[aria-pressed="true"] { background: #e8eefc; border-color: #1d5fd6; color: #123c8c; }
+.gr-vote:disabled { opacity: 0.6; cursor: wait; }
+.gr-votes__status { flex-basis: 100%; font-size: 0.875em; color: #a1260d; }
+.gr-votes__status:empty { display: none; }
+
+/* The logo links to the home page. On wide screens the menu's wrapper spans the whole header, over
+   the logo, and took its clicks: the wrapper lets clicks through, its menu still takes them. */
+.nav-wrapper { pointer-events: none; }
+.nav-wrapper * { pointer-events: auto; }

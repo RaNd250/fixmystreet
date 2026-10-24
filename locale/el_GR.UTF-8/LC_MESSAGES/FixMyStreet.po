@@ -3612,7 +3612,7 @@ msgstr "Φωτογραφίες/Έγγραφα"
 #: templates/web/base/reports/index.html:76
 #: templates/web/base/reports/index.html:79
 msgid "Pick your council"
-msgstr "Διάλεξε την υπηρεσία σου"
+msgstr "Διάλεξε τον δήμο σου"
 
 #: templates/web/base/reports/index.html:66
 #: templates/web/base/reports/index.html:69

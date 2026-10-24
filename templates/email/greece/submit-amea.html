@@ -22,9 +22,9 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">Συγκεκριμένα:</p>
   <ul style="margin: 0 0 0.8em 0; padding-left: 20px;">
     <li style="[% p_style %]"><strong>Τοποθεσία:</strong> [% location | html %].
-      <a href="[% osm_url %]">[% report.latitude %], [% report.longitude %]</a></li>
+      <a href="[% gmaps_url %]">Άνοιγμα στο Google Maps</a></li>
     <li style="[% p_style %]"><strong>Περιγραφή της παράβασης:</strong> [% paravasi_text | html %].
-      Σχόλια: «[% report.title | html %][% IF report.detail %]: [% report.detail | html %][% END %]»</li>
+      [%~ IF report.detail %] Σχόλια: «[% report.detail | html %]»[% END %]</li>
     [%~ IF pinakida %]
     <li style="[% p_style %]"><strong>Αριθμός κυκλοφορίας:</strong> [% pinakida | html %]</li>
     [%~ END %]
@@ -58,7 +58,7 @@ INCLUDE '_email_top.html';
   [% end_padded_box | safe %]
 </th>
 <th style="[% td_style %][% secondary_column_style %]" id="secondary_column">
-  <a href="[% osm_url %]"><img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="310" height="200" alt="Χάρτης της τοποθεσίας"></a>
+  <a href="[% gmaps_url %]"><img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="310" height="200" alt="Χάρτης της τοποθεσίας"></a>
   [% start_padded_box | safe %]
     [%~ FOR photo IN photos %]
     <p style="[% secondary_p_style %]"><img src="[% inline_image(photo, 'photo' _ loop.count _ '.jpeg') %]" width="278" style="max-width: 100%; height: auto;" alt="Φωτογραφία [% loop.count %]"></p>
