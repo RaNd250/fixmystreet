@@ -1141,3 +1141,8 @@ body.gr-has-dock .gr-toast { bottom: calc(68px + env(safe-area-inset-bottom, 0px
     #map_sidebar #js-category-stopper p:last-child { margin: 0; }
     #map_sidebar .js-reporting-page--category:has(#js-category-stopper) .floating-button-spacer { display: none; }
 }
+
+/* «Λήψη ενημερώσεων» (FixMyStreet's email/RSS alerts for a report or an area) is not offered: nobody
+   used it (owner's request). The link on a report and on the map of reports, and their panels, go. */
+#key-tool-report-updates, #key-tool-around-updates, #report-updates-data, #around-updates-data,
+#key-tools li:has(> #key-tool-report-updates), #key-tools li:has(> #key-tool-around-updates) { display: none !important; }
