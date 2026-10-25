@@ -4,9 +4,13 @@
  * /places (nginx) asks Photon, which is made for search-as-you-type; the form's own search
  * uses Nominatim, whose usage policy does not allow it. Picking a suggestion submits the form
  * with its coordinates, so /around opens there; Enter without a pick still does the normal search.
+ * The list looks and moves like the municipality search on the reports page (dimos-search.js,
+ * theme.css .gr-places): the typed words are highlighted, ignoring accents, and an empty search says so.
  */
 (function() {
     'use strict';
+    var EN = /^en/i.test(document.documentElement.lang || '');
+    function t(el, en) { return EN ? en : el; }
 
     var input = document.getElementById('pc');
     var form = input && input.form;
@@ -25,11 +29,38 @@
     input.setAttribute('aria-controls', list.id);
     input.setAttribute('aria-expanded', 'false');
     input.setAttribute('autocomplete', 'off');
+    var status = document.createElement('p');
+    status.className = 'gr-places__status';
+    status.setAttribute('role', 'status');
+    input.parentNode.appendChild(status);
 
     var items = [], active = -1, timer, controller, last = '';
 
+    // Lower case without accents or diaeresis, final sigma as sigma, for comparing; each letter stays
+    // one character, so a position in plain() is the same position in the text.
+    function plain(s) {
+        return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/ς/g, 'σ');
+    }
+    function escape(s) { return s.replace(/[&<>"]/g, function(c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    // The text with every typed word (two letters or more) in it marked.
+    function marked(text, q) {
+        var p = plain(text), on = [];
+        plain(q).split(/[\s,]+/).filter(function(w) { return w.length > 1; }).forEach(function(w) {
+            for (var at = p.indexOf(w); at >= 0; at = p.indexOf(w, at + w.length)) {
+                for (var k = at; k < at + w.length; k++) { on[k] = true; }
+            }
+        });
+        var out = '', open = false;
+        for (var i = 0; i < text.length; i++) {
+            if (!!on[i] !== open) { out += open ? '</mark>' : '<mark>'; open = !open; }
+            out += escape(text.charAt(i));
+        }
+        return out + (open ? '</mark>' : '');
+    }
+
     function close() {
         list.hidden = true;
+        status.textContent = '';
         input.setAttribute('aria-expanded', 'false');
         input.removeAttribute('aria-activedescendant');
         active = -1;
@@ -67,15 +98,29 @@
             items.push({ main: d.main, context: d.context, lon: c[0], lat: c[1] });
         });
         list.innerHTML = '';
-        if (!items.length) { close(); return; }
+        var q = input.value.trim();
+        if (!items.length) {
+            var empty = document.createElement('li');
+            empty.className = 'gr-places__empty';
+            empty.textContent = t('Δεν βρέθηκε διεύθυνση με αυτό το κείμενο. Πάτα «Εμπρός» για πλήρη αναζήτηση.',
+                'No address matches that. Press “Go” for a full search.');
+            list.appendChild(empty);
+            status.textContent = empty.textContent;
+            list.hidden = false;
+            input.setAttribute('aria-expanded', 'false');
+            active = -1;
+            return;
+        }
+        status.textContent = Math.min(items.length, 6) + ' ' + t('προτάσεις', 'suggestions');
         items.slice(0, 6).forEach(function(item, i) {
             var li = document.createElement('li');
             li.id = 'pc-suggestion-' + i;
             li.setAttribute('role', 'option');
             li.className = 'gr-places__item';
+            li.style.setProperty('--i', i);
             var main = document.createElement('span');
             main.className = 'gr-places__main';
-            main.textContent = item.main;
+            main.innerHTML = marked(item.main, q);
             li.appendChild(main);
             if (item.context) {
                 var ctx = document.createElement('span');

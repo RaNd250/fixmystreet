@@ -525,9 +525,13 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 .gr-camera [hidden] { display: none !important; }
 .gr-camera__shutter { display: inline-flex; align-items: center; gap: 0.5em; }
 
-/* Suggestions under the address box (place-search.js) */
+/* Suggestions under the address box (place-search.js), looking and moving like the municipality
+   search on the reports page (.gr-combo): the list opens with a slide, the rows follow one another,
+   the typed words are marked. The box itself is a pill that clips its contents, so the list is let
+   out of it (overflow: visible), else it was cut off and nothing showed while typing. */
 
 .gr-places-wrap { position: relative; }
+.postcode-form-box .gr-places-wrap { overflow: visible; }
 .gr-places {
     position: absolute;
     z-index: 30;
@@ -542,23 +546,30 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
     text-align: left;
     background: var(--gr-surface);
     border: 1px solid var(--gr-line);
-    border-radius: var(--gr-radius);
+    border-radius: var(--gr-radius-s);
     box-shadow: var(--gr-shadow-3);
+    transform-origin: top center;
+    animation: gr-combo-open 0.2s var(--gr-ease);
 }
 .gr-places[hidden] { display: none; }
+.gr-places__item, .gr-places__empty { margin: 0; padding: 0.55em 0.75em; border-radius: 8px; line-height: 1.3; }
 .gr-places__item {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    margin: 0;
-    padding: 0.6em 0.8em;
-    border-radius: var(--gr-radius-s);
     color: var(--gr-ink);
     cursor: pointer;
+    animation: gr-combo-row 0.24s var(--gr-ease) backwards;
+    animation-delay: calc(var(--i, 0) * 18ms);
+    transition: background-color var(--gr-fast) ease, color var(--gr-fast) ease;
 }
-.gr-places__item:hover, .gr-places__item[aria-selected="true"] { background: var(--gr-accent-soft); }
+.gr-places__item:hover { background: var(--gr-surface-2); }
+.gr-places__item[aria-selected="true"] { background: var(--gr-accent-soft); color: var(--gr-accent-ink); }
+.gr-places__item mark { padding: 0; background: none; color: var(--gr-accent); font-weight: 700; }
 .gr-places__main { font-weight: 600; }
 .gr-places__context { font-size: 0.875em; color: var(--gr-ink-3); }
+.gr-places__empty { color: var(--gr-ink-3); }
+.gr-places__status { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .gr-places__credit { margin: 0; padding: 0.35em 0.8em 0.1em; font-size: 0.75em; color: var(--gr-ink-3); text-align: right; }
 
 /* Report form: no "Or search for a different location" link under the map hint. */
@@ -838,6 +849,28 @@ body.gr-has-dock .gr-toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px
 .gr-signin__note p { margin: 0 0 0.4em; }
 .gr-signin__note p:last-child { margin: 0; }
 
+
+/* Reports page (dashboard) in the site's colours instead of FixMyStreet's orange and black: the heading
+   as on other pages, the search panel and the table's stripes in the soft blue, «Εμπρός» as the site's
+   blue button. The charts' colours are set by dashboard-theme.js. */
+.dashboard-header { background: none; color: var(--gr-ink); padding-bottom: 0.25em; }
+.dashboard-header h1 { color: var(--gr-ink); }
+.dashboard-subheading { border-bottom-color: var(--gr-line); }
+.dashboard-search { background: var(--gr-accent-soft); border-radius: var(--gr-radius); color: var(--gr-ink); }
+.dashboard-search h2, .dashboard-search label { color: var(--gr-ink); }
+.dashboard-search input[type="submit"] {
+    background: var(--gr-accent); color: #fff; border: 1px solid var(--gr-accent); border-radius: var(--gr-pill);
+    text-transform: none; font-weight: 700; box-shadow: 0 6px 16px -6px rgba(31, 95, 214, 0.55); cursor: pointer;
+    transition: background-color var(--gr-fast) ease, border-color var(--gr-fast) ease, transform var(--gr-fast) ease;
+}
+.dashboard-search input[type="submit"]:hover, .dashboard-search input[type="submit"]:focus { background: var(--gr-accent-hover); border-color: var(--gr-accent-hover); }
+.dashboard-search input[type="submit"]:active { transform: scale(0.97); }
+.dashboard-ranking-table tbody tr:nth-child(odd) > * { background-color: var(--gr-accent-soft); }
+.dashboard-ranking-table tbody tr:nth-child(odd) > :first-child { border-radius: var(--gr-radius-s) 0 0 var(--gr-radius-s); }
+.dashboard-ranking-table tbody tr:nth-child(odd) > :last-child { border-radius: 0 var(--gr-radius-s) var(--gr-radius-s) 0; }
+@media (min-width: 48em) {
+    .dashboard-search { margin-right: 0; }
+}
 
 /* The municipality chooser on the reports page as a search that filters while typing (dimos-search.js):
    the list opens under the box, its rows come in one after another, and the matching part is marked.
