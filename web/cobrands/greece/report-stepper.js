@@ -8,6 +8,8 @@
 (function() {
     'use strict';
     var EN = /^en/i.test(document.documentElement.lang || '');
+    // Shown as the second step when the category locks the form (disable_form): the report is made elsewhere.
+    var STOP = ['Χωρίς Εμπόδια', 'Without Obstacles'];
     var NAMES = {
         category: ['Κατηγορία', 'Category'],
         subcategory: ['Υποκατηγορία', 'Subcategory'],
@@ -30,13 +32,15 @@
         var active = form.querySelector('.js-reporting-page--active');
         var current = list.indexOf(active);
         if (list.length < 2 || current < 0) { bar.hidden = true; return; }
+        // A category that locks the form leaves only two real steps: the category, then the other site.
+        if (current === 0 && form.querySelector('#js-category-stopper')) { list = [list[0], null]; }
         bar.hidden = false;
-        var key = list.map(function(p) { return p.getAttribute('data-page-name'); }).join(',');
+        var key = list.map(function(p) { return p ? p.getAttribute('data-page-name') : 'stopper'; }).join(',');
         if (bar.getAttribute('data-steps') !== key) {
             bar.setAttribute('data-steps', key);
             bar.querySelector('ol').innerHTML = list.map(function(p, i) {
-                var n = NAMES[p.getAttribute('data-page-name')];
-                return '<li class="gr-stepper__step" data-page="' + p.getAttribute('data-page-name') + '">' +
+                var n = p ? NAMES[p.getAttribute('data-page-name')] : STOP;
+                return '<li class="gr-stepper__step" data-page="' + (p ? p.getAttribute('data-page-name') : '') + '">' +
                     '<button type="button" class="gr-stepper__dot" tabindex="-1">' +
                     '<span class="gr-stepper__num">' + (i + 1) + '</span><span class="gr-stepper__check">' + CHECK + '</span></button>' +
                     '<span class="gr-stepper__name">' + (EN ? n[1] : n[0]) + '</span></li>';
@@ -87,6 +91,21 @@
         new MutationObserver(update).observe(form, { attributes: true, attributeFilter: ['class'], subtree: true, childList: true });
         window.addEventListener('resize', update);
         render(form, bar);
+
+        // «← Πίσω» beside the heading is FixMyStreet's history.back(): from a step, the step before (or the
+        // map on phones), and from the first, the page before. When that page was not on this site (a
+        // shared link, a new tab), it goes to the home page instead of leaving the site.
+        var back = form.querySelector('#report-a-problem-main > .problem-back--top');
+        if (back) {
+            back.addEventListener('click', function(e) {
+                var state = window.history.state;
+                if (state && state.reportingPage) { return; }
+                if (document.referrer.indexOf(window.location.origin + '/') === 0) { return; }
+                e.preventDefault();
+                e.stopPropagation();   // before FixMyStreet's handler on the document
+                window.location.href = '/';
+            });
+        }
     }
 
     function scan() {

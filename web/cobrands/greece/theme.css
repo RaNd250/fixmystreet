@@ -691,6 +691,28 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
     #map_sidebar .gr-photo-actions .btn { padding-top: 0.4em; padding-bottom: 0.4em; }
 }
 
+/* Report form: «← Πίσω» beside the heading, on computers too. It is FixMyStreet's own back link
+   (history.back(): the step before, the map on phones, or the page before; report-stepper.js sends it
+   to the home page when there is nothing to go back to), which phones showed as a bar above. */
+#report-a-problem-main { position: relative; }
+#report-a-problem-main > .problem-back--top {
+    display: inline-flex; align-items: center; position: absolute; top: 0; right: 0; z-index: 1;
+    margin: 0; padding: 0.3em 0.85em; border: 1px solid var(--gr-line-2); border-radius: var(--gr-pill);
+    background: var(--gr-surface); color: var(--gr-ink-2); font-size: 0.875rem; font-weight: 600; line-height: 1.4;
+    text-decoration: none; transition: border-color var(--gr-fast) ease, color var(--gr-fast) ease;
+}
+#report-a-problem-main > .problem-back--top:hover, #report-a-problem-main > .problem-back--top:focus-visible { border-color: var(--gr-accent); color: var(--gr-accent); }
+#report-a-problem-main > .problem-back--top::before {
+    content: "\2190"; content: "\2190" / ""; width: auto; height: auto; margin: 0 0.4em 0 0;
+    background: none; vertical-align: baseline; font-weight: 700;
+}
+#report-a-problem-main > .problem-back--top + h1 { padding-right: 96px; }
+@media (max-width: 47.99em) {
+    /* The bar above gave the heading its space from the top. */
+    #report-a-problem-main { padding-top: 10px; }
+    #report-a-problem-main > .problem-back--top { top: 20px; }
+}
+
 /* Steps of the report form fade into each other (step-fade.js): a copy of the step being left, with
    the panel's background, fades out over the new one while that fades in. */
 .gr-step-ghost { position: absolute; z-index: 3; margin: 0; pointer-events: none; animation: gr-step-out 0.22s ease forwards; }
