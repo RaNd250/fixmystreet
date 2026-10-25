@@ -1,5 +1,8 @@
+[%# A page's own title where _page_title.html has one (the reports pages), else FixMyStreet's. ~%]
+[%- gr_title = INCLUDE '_page_title.html' -%]
 <title>
-    [% IF title %][% tprintf('%s :: ', title) %][% site_name -%]
+    [% IF gr_title %][% gr_title %] :: [% site_name -%]
+    [% ELSIF title %][% tprintf('%s :: ', title) %][% site_name -%]
     [% ELSIF c.req.uri.path == '/' %][% site_name %] – [% c.cobrand.greece_t('Αναφορά προβλημάτων στον δήμο σου', 'Report problems to your municipality') -%]
     [% ELSE %][% site_name -%][% END %]
 </title>

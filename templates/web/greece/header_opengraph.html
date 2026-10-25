@@ -1,0 +1,11 @@
+[%# FixMyStreet's header_opengraph.html, with the page's own description (_page_description.html) on
+    every page for link previews, not only an English line on the home page. The image is the site's
+    own (web/cobrands/greece/images/fms-og_image.jpg), or a report's first photo. ~%]
+[%- gr_og_description = INCLUDE '_page_description.html';
+    gr_og_title = INCLUDE '_page_title.html' -%]
+        <meta property="og:url" content="[% c.cobrand.base_url %][% c.req.uri.path %]">
+        <meta property="og:title" content="[% gr_og_title || title || site_name %]">
+        <meta property="og:site_name" content="[% site_name %]">
+        <meta property="og:description" content="[% gr_og_description | html %]">
+        <meta property="og:type" content="website">
+        [% INCLUDE 'header_opengraph_image.html' %]

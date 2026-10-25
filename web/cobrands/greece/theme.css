@@ -688,6 +688,8 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 #map_sidebar h1 { margin: 0.2em 0 0.3em; }
 #map_sidebar .change_location { margin: 0 0 0.5em; }
 #map_sidebar .change_location li { margin: 0; padding-top: 0; padding-bottom: 0.15em; font-size: 0.875rem; line-height: 1.35; }
+/* «Βρείτε στον χάρτη το ακριβές σημείο» under the heading, without the arrow before it. */
+#map_sidebar .change_location__map { padding-left: 0; background-image: none; }
 #map_sidebar .form-section-heading { margin: 0.5em 0 0.2em; font-size: 1.125rem; }
 #map_sidebar .form-section-description { font-size: 0.875rem; line-height: 1.4; margin-bottom: 0.25em; }
 #map_sidebar .form-section-description p { margin: 0 0 0.3em; }

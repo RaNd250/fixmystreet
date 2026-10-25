@@ -1,0 +1,25 @@
+[%# The page's description for search engines and link previews (header_extra.html,
+    header_opengraph.html): a report's own text, a municipality's reports page, the reports and help
+    pages each their own, and the home page's for the rest. Plain text; the caller escapes it. ~%]
+[%- gr_path = c.req.uri.path;
+    IF problem AND gr_path.match('^/report/[0-9]+$') AND problem.detail;
+        gr_text = problem.detail.replace('\s+', ' ');
+        gr_text = gr_text.length > 150 ? gr_text.substr(0, 147) _ '…' : gr_text;
+        problem.category_display _ ': ' _ gr_text;
+    ELSIF gr_path == '/reports';
+        c.cobrand.greece_t(
+            'Δες τι αναφέρουν οι πολίτες σε κάθε δήμο της Ελλάδας: λακκούβες, φωτισμός, καθαριότητα, πεζοδρόμια, στάθμευση. Βρες τον δήμο σου και ανάφερε κι εσύ ένα πρόβλημα.',
+            'See what people report in every Greek municipality: potholes, street lights, cleaning, pavements, parking. Find your municipality and report a problem too.');
+    ELSIF body AND gr_path.match('^/reports/');
+        body.name _ c.cobrand.greece_t(
+            ': αναφορές πολιτών για λακκούβες, φωτισμό, καθαριότητα, πεζοδρόμια και στάθμευση. Δες τι έχει αναφερθεί στον χάρτη και ανάφερε κι εσύ ένα πρόβλημα.',
+            ': reports of potholes, street lights, cleaning, pavements and parking. See what has been reported on the map and report a problem too.');
+    ELSIF gr_path == '/faq';
+        c.cobrand.greece_t(
+            'Συχνές ερωτήσεις για το FixMyStreets: πώς κάνεις μια αναφορά, πού πηγαίνει, τι γίνεται με τις φωτογραφίες και τα στοιχεία σου, και πώς μαθαίνεις τι έγινε.',
+            'Questions about FixMyStreets: how to report a problem, where it goes, what happens to photos and your details, and how you hear back.');
+    ELSE;
+        c.cobrand.greece_t(
+            'Αναφέρετε λακκούβες, χαλασμένο φωτισμό, παράνομη στάθμευση και άλλα προβλήματα της πόλης σας απευθείας στον δήμο σας. Δωρεάν, χωρίς εγγραφή.',
+            'Report potholes, broken street lights, illegal parking and other local problems straight to your municipality. Free, no sign-up.');
+    END -%]

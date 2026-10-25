@@ -1,0 +1,8 @@
+[%# The title of the reports page and of a municipality's reports, for what people search («Αναφορές
+    προβλημάτων ανά δήμο», «Αναφορές προβλημάτων – Δήμος …») instead of «Πίνακας Ελέγχου» or «Συνοπτικές
+    αναφορές»; empty for other pages. Used by header/title.html and header_opengraph.html. ~%]
+[%- IF c.req.uri.path == '/reports';
+        c.cobrand.greece_t('Αναφορές προβλημάτων ανά δήμο', 'Problem reports by municipality');
+    ELSIF body AND c.req.uri.path.match('^/reports/');
+        c.cobrand.greece_t('Αναφορές προβλημάτων', 'Problem reports') _ ' – ' _ body.name;
+    END -%]

@@ -274,7 +274,7 @@ sub greece_bad_words {
         $report->$field($masked);
         $count += $n;
     }
-    # The title is the category, or (for «Άλλα») the start of the description: masked, not counted.
+    # The title is the category, or (for «Άλλο») the start of the description: masked, not counted.
     my ($title) = greece_mask_bad_words($report->title);
     $report->title($title) if defined $title;
     my $user = $report->user;
@@ -383,6 +383,7 @@ my %FIELD_EN = (
         fortistis => 'Parked in an electric vehicle charging bay without charging',
         eisodos => 'Parked in front of a vehicle entrance or exit (garage)',
         diplo => 'Double parking, or a vehicle blocking the road',
+        stasi => 'Parked at a bus stop',
         empodia => 'Illegal obstacles or cones put out by a shop',
         p72 => 'Unauthorised road markings and P-72 sign',
     } },
@@ -493,6 +494,7 @@ my %SMS_VEHICLE = (
     fortistis => 'καταλαμβάνει θέση φόρτισης ηλεκτρικών οχημάτων χωρίς να φορτίζει',
     eisodos => 'κλείνει είσοδο οχημάτων (γκαράζ)',
     diplo => 'είναι σταθμευμένο διπλά και κλείνει τον δρόμο',
+    stasi => 'είναι σταθμευμένο σε στάση λεωφορείου',
 );
 my %SMS_OTHER = (
     empodia => 'Παράνομα εμπόδια ή κώνοι από κατάστημα',

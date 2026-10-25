@@ -1,15 +1,23 @@
-[%- canonical = c.cobrand.base_url _ c.req.uri.path -%]
-<link rel="canonical" href="[% canonical %]">
-<meta name="description" content="[% c.cobrand.greece_t(
-    'Αναφέρετε λακκούβες, χαλασμένο φωτισμό, παράνομη στάθμευση και άλλα προβλήματα της πόλης σας απευθείας στον δήμο σας. Δωρεάν, χωρίς εγγραφή.',
-    'Report potholes, broken street lights, illegal parking and other local problems straight to your municipality. Free, no sign-up.') | html %]">
+[%# For search engines: the page's address, its two language versions, its description
+    (_page_description.html) and, on the home page, who runs the site. The English version is the
+    same address with ?lang=en (the menu's switch), so a page shown in English names that address as
+    its own, and both versions point to each other. ~%]
+[%- gr_url = c.cobrand.base_url _ c.req.uri.path;
+    gr_url_en = gr_url _ '?lang=en';
+    gr_description = INCLUDE '_page_description.html' -%]
+<link rel="canonical" href="[% c.cobrand.greece_t(gr_url, gr_url_en) | html %]">
+<link rel="alternate" hreflang="el" href="[% gr_url | html %]">
+<link rel="alternate" hreflang="en" href="[% gr_url_en | html %]">
+<link rel="alternate" hreflang="x-default" href="[% gr_url | html %]">
+<meta name="description" content="[% gr_description | html %]">
 <meta property="og:locale" content="[% c.cobrand.greece_t('el_GR', 'en_GB') %]">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale:alternate" content="[% c.cobrand.greece_t('en_GB', 'el_GR') %]">
+<meta name="twitter:card" content="summary_large_image">
 [% IF c.req.uri.path == '/' %]
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"Organization","@id":"[% c.cobrand.base_url %]/#org","name":"FixMyStreets","url":"[% c.cobrand.base_url %]/","logo":"[% c.cobrand.base_url %]/theme/greece/512.png"},
- {"@type":"WebSite","@id":"[% c.cobrand.base_url %]/#site","name":"FixMyStreets","url":"[% c.cobrand.base_url %]/","inLanguage":"el","publisher":{"@id":"[% c.cobrand.base_url %]/#org"}}
+ {"@type":"WebSite","@id":"[% c.cobrand.base_url %]/#site","name":"FixMyStreets","url":"[% c.cobrand.base_url %]/","inLanguage":"[% c.cobrand.greece_t('el', 'en') %]","publisher":{"@id":"[% c.cobrand.base_url %]/#org"}}
 ]}
 </script>
 [% END %]
