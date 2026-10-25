@@ -5,8 +5,8 @@
  * the copy slides out to the left and fades while the new step slides in from the right; going back
  * (the stepper, the browser's back button), the other way round (theme.css .gr-step-ghost,
  * .gr-step-in). The copy has no ids, names, frames or scripts, is inert and hidden from screen
- * readers, and is removed after the slide, so the form and its fields are untouched. Not for steps
- * showing the map (phones), nor with reduced motion.
+ * readers, and is removed after the slide, so the form and its fields are untouched. On phones, the
+ * first step slides in as the map makes way for it. Not for the map itself, nor with reduced motion.
  */
 (function() {
     'use strict';
@@ -43,8 +43,12 @@
         var toPage = pc.toPage;
         pc.toPage = function() {
             var curr = document.querySelector('.js-reporting-page--active');
+            // Phones: the map covers the form, laid out behind it, until «Συνέχεια» (#mob_ok).
+            var mobOk = document.getElementById('mob_ok');
+            var fromMap = !!(mobOk && mobOk.offsetParent);
+            var currShown = !fromMap && !!(curr && curr.offsetParent && !curr.classList.contains('js-reporting-page--map'));
             var ghost = null, parent, top, left, width;
-            if (curr && curr.offsetParent && !curr.classList.contains('js-reporting-page--map')) {
+            if (currShown) {
                 parent = curr.parentNode;
                 if (getComputedStyle(parent).position === 'static') { parent.style.position = 'relative'; }
                 top = curr.offsetTop; left = curr.offsetLeft; width = curr.offsetWidth;
@@ -52,27 +56,31 @@
             }
             var result = toPage.apply(this, arguments);
             var next = document.querySelector('.js-reporting-page--active');
-            if (ghost && next && next !== curr && next.offsetParent && !next.classList.contains('js-reporting-page--map')) {
-                var pages = Array.prototype.slice.call(document.querySelectorAll('.js-reporting-page'));
-                var back = pages.indexOf(next) < pages.indexOf(curr);
+            if (!next || !next.offsetParent || next.classList.contains('js-reporting-page--map') || (next === curr && currShown)) {
+                return result;
+            }
+            var pages = Array.prototype.slice.call(document.querySelectorAll('.js-reporting-page'));
+            var back = currShown && pages.indexOf(next) < pages.indexOf(curr);
+            if (ghost) {
                 ghost.classList.add(back ? 'gr-step-ghost--back' : 'gr-step-ghost--on');
                 ghost.style.top = top + 'px';
                 ghost.style.left = left + 'px';
                 ghost.style.width = width + 'px';
                 ghost.style.backgroundColor = background(parent);
-                parent.classList.add('gr-step-anim');
                 parent.appendChild(ghost);
-                next.classList.remove('gr-step-in', 'gr-step-in--back');
-                void next.offsetWidth;   // so that the slide starts again on a quick second change
-                next.classList.add('gr-step-in');
-                if (back) { next.classList.add('gr-step-in--back'); }
-                var done = function() {
-                    if (ghost.parentNode) { ghost.parentNode.removeChild(ghost); }
-                    if (!parent.querySelector('.gr-step-ghost')) { parent.classList.remove('gr-step-anim'); }
-                    next.classList.remove('gr-step-in', 'gr-step-in--back');
-                };
-                setTimeout(done, 520);
+            } else {
+                parent = next.parentNode;   // from the map (phones): nothing to slide away, the step comes in
             }
+            parent.classList.add('gr-step-anim');
+            next.classList.remove('gr-step-in', 'gr-step-in--back');
+            void next.offsetWidth;   // so that the slide starts again on a quick second change
+            next.classList.add('gr-step-in');
+            if (back) { next.classList.add('gr-step-in--back'); }
+            setTimeout(function() {
+                if (ghost && ghost.parentNode) { ghost.parentNode.removeChild(ghost); }
+                if (!parent.querySelector('.gr-step-ghost')) { parent.classList.remove('gr-step-anim'); }
+                next.classList.remove('gr-step-in', 'gr-step-in--back');
+            }, 520);
             return result;
         };
     }
