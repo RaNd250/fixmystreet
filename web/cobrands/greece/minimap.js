@@ -30,6 +30,9 @@
     var searchForm = document.getElementById('postcodeForm');
     var searchLine = document.getElementById('gr-minimap-search');
     var leaving = null;
+    // Phones: the address search waits behind «Αναζήτηση διεύθυνσης» from the start, not only once the
+    // location is found, and the map's message can be closed (theme.css).
+    var PHONE = !!(window.matchMedia && window.matchMedia('(max-width: 47.99em)').matches);
 
     // Once the location is found, the address search and the how-to steps fade out and give way to the
     // map; «Αναζήτηση διεύθυνσης» brings the search back. If finding the location fails, all of it shows
@@ -37,11 +40,13 @@
     function located(yes) {
         if (!front || !searchLine) { return; }
         clearTimeout(leaving);
-        orLine.hidden = yes;
-        searchLine.hidden = !yes;
+        orLine.hidden = yes || PHONE;
+        searchLine.hidden = !yes && !PHONE;
         if (!yes) {
             front.classList.remove('gr-leaving', 'gr-located');
-            if (searchForm) { searchForm.classList.remove('gr-search-open'); }
+            // On phones the messages point to the address search: it opens.
+            if (searchForm) { searchForm.classList.toggle('gr-search-open', PHONE); }
+            if (PHONE) { searchLine.hidden = true; }
         } else if (!front.classList.contains('gr-located')) {
             front.classList.add('gr-leaving');
             leaving = setTimeout(function () {
@@ -51,14 +56,49 @@
         }
     }
     if (searchLine) {
-        searchLine.querySelector('button').addEventListener('click', function () {
+        searchLine.querySelector('button').addEventListener('click', function (e) {
+            e.stopPropagation();
             searchLine.hidden = true;
-            orLine.hidden = false;
+            orLine.hidden = PHONE;
             if (searchForm) { searchForm.classList.add('gr-search-open'); }
             var pc = document.getElementById('pc');
             if (pc) { pc.focus(); }
         });
     }
+    // Phones: «Αναζήτηση διεύθυνσης» right under the buttons, and the search as a pop-up over the page
+    // (theme.css), which a tap outside it or Escape closes.
+    if (PHONE && searchLine && searchForm && front) {
+        box.insertBefore(searchLine, card);
+        var closeSearch = function () {
+            if (!searchForm.classList.contains('gr-search-open')) { return; }
+            searchForm.classList.remove('gr-search-open');
+            searchLine.hidden = false;
+        };
+        document.addEventListener('click', function (e) {
+            if (!searchForm.contains(e.target)) { closeSearch(); }
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') { closeSearch(); }
+        });
+    }
+
+    // The map's message on phones sits on the map; ✕ hides it for the visit. A new message after a failed
+    // location search shows it again, as it says what to do next.
+    var statusClose = document.createElement('button');
+    statusClose.type = 'button';
+    statusClose.className = 'gr-minimap__status-close';
+    statusClose.setAttribute('aria-label', t('Κλείσιμο του μηνύματος', 'Close the message'));
+    statusClose.textContent = '\u2715';
+    status.parentNode.insertBefore(statusClose, status.nextSibling);
+    function hideStatus(yes) {
+        status.classList.toggle('gr-minimap__status--closed', yes);
+        statusClose.hidden = yes;
+    }
+    statusClose.addEventListener('click', function () {
+        hideStatus(true);
+        try { sessionStorage.setItem('gr-minimap-status', 'closed'); } catch (e) {}
+    });
+    try { if (sessionStorage.getItem('gr-minimap-status') === 'closed') { hideStatus(true); } } catch (e) {}
 
     function hasWebGL() {
         try {
@@ -75,7 +115,11 @@
             return l['source-layer'] !== 'building' && l.type !== 'fill-extrusion';
         });
         box.hidden = false;
-        orLine.hidden = false;
+        orLine.hidden = PHONE;
+        if (PHONE && searchLine && front) {
+            searchLine.hidden = false;
+            front.classList.add('gr-minimap-on');
+        }
         init(style);
     }, function () { /* keep the plain address search only */ });
 
@@ -124,7 +168,10 @@
             // One blue button at a time: «Χρήση της τοποθεσίας μου» until «Αναφορά εδώ» can be pressed.
             locateBtn.classList.toggle('btn--primary', !ready);
             if (ready) {
-                reportLink.href = reportBase + '?latitude=' + c.lat.toFixed(6) + '&longitude=' + c.lng.toFixed(6);
+                // The report's map opens at the same scale: MapLibre's zoom z is OpenLayers' z + 1 (512 px
+                // against 256 px tiles), and FixMyStreet's zoom counts from its lowest level, 13 (Map::Base).
+                var olZoom = Math.min(6, Math.max(0, Math.round(z + 1) - 13));
+                reportLink.href = reportBase + '?latitude=' + c.lat.toFixed(6) + '&longitude=' + c.lng.toFixed(6) + '&zoom=' + olZoom;
             }
             if (!index || z < DIMOS_ZOOM) {
                 show(null);
@@ -132,7 +179,10 @@
             }
             var seq = ++lookupSeq;
             findDimos(c.lng, c.lat).then(function (hit) {
-                if (seq === lookupSeq) { show(hit); }
+                if (seq !== lookupSeq) { return; }
+                show(hit);
+                // Within a municipality with several stations, the nearest one follows the map.
+                if (hit && hit.d.s) { showPolice(hit.d); }
             }, function () {});
         }
 
@@ -192,18 +242,40 @@
                 a.rel = 'noopener';
                 item(t('Ιστότοπος: ', 'Website: ')).appendChild(a);
             }
-            // The municipality's police station (or its police directorate), as the police complaints go there.
-            if (hit.d.a) {
-                var police = item(hit.d.a.n + ': ');
-                police.className = 'gr-dimos__police';
-                if (hit.d.a.e) { police.appendChild(link('mailto:' + hit.d.a.e, hit.d.a.e)); }
-                if (hit.d.a.e && hit.d.a.t) { police.appendChild(document.createTextNode(' · ')); }
-                if (hit.d.a.t) { police.appendChild(link('tel:' + hit.d.a.t.replace(/\s+/g, ''), hit.d.a.t)); }
-            }
+            // The municipality's police station, as the police complaints go there.
+            policeItem = item('');
+            policeItem.className = 'gr-dimos__police';
+            policeShown = null;
+            showPolice(hit.d);
             if (fixLink) {
                 fixLink.href = '/contact?subject=' + encodeURIComponent(t('Διόρθωση στοιχείων: ', 'Correction: ') + hit.d.n);
             }
             card.hidden = false;
+        }
+
+        // The station: the municipality's own; where it has several (d.s), the one nearest the map centre;
+        // where it has none, the nearest one elsewhere (a.x); failing those, the police directorate.
+        var policeItem = null, policeShown = null;
+        function showPolice(d) {
+            if (!policeItem) { return; }
+            var st = d.a, near = !!(d.a && d.a.x);
+            if (d.s && d.s.length) {
+                var c = map.getCenter(), k = Math.cos(c.lat * Math.PI / 180), best = Infinity;
+                d.s.forEach(function (s) {
+                    var dx = (s.p[0] - c.lng) * k, dy = s.p[1] - c.lat, dist = dx * dx + dy * dy;
+                    if (dist < best) { best = dist; st = s; }
+                });
+                near = true;
+            }
+            if (st === policeShown) { return; }
+            policeShown = st;
+            while (policeItem.firstChild) { policeItem.removeChild(policeItem.firstChild); }
+            policeItem.hidden = !st;
+            if (!st) { return; }
+            policeItem.appendChild(document.createTextNode(st.n + (near ? t(' (το πλησιέστερο)', ' (nearest)') : '') + ': '));
+            if (st.e) { policeItem.appendChild(link('mailto:' + st.e, st.e)); }
+            if (st.e && st.t) { policeItem.appendChild(document.createTextNode(' · ')); }
+            if (st.t) { policeItem.appendChild(link('tel:' + st.t.replace(/\s+/g, ''), st.t)); }
         }
 
         function item(text) {
@@ -235,11 +307,12 @@
                 map.jumpTo({ center: here, zoom: 17 });
                 locateBtn.disabled = false;
                 locateBtn.textContent = t('Ξανά στη θέση μου', 'Back to my location');
-                status.textContent = t('Μετακίνησε τον χάρτη ώστε η κόκκινη καρφίτσα να δείχνει ακριβώς το πρόβλημα.', 'Move the map so that the red pin points exactly at the problem.');
+                status.textContent = t('Μετακίνησε τον χάρτη ώστε η καρφίτσα να δείχνει ακριβώς το πρόβλημα.', 'Move the map so that the pin points exactly at the problem.');
                 located(true);
             }, function (err) {
                 locateBtn.disabled = false;
                 located(false);
+                hideStatus(false);
                 status.textContent = errors[err.code] || t('Κάτι πήγε στραβά με την εύρεση της θέσης. Γράψε μια διεύθυνση παρακάτω.', 'Something went wrong finding your location. Enter an address below.');
             }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
         }
