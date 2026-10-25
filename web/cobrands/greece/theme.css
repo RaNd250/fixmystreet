@@ -1078,6 +1078,9 @@ body.gr-has-dock .gr-toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px
     #map_sidebar .gr-reporter .govuk-checkboxes__label:after { top: 11px; }
     #map_sidebar .gr-reporter .govuk-checkboxes__input { top: -6px; }
     #map_sidebar .gr-reporter__note p { margin: 4px 0 0; font-size: 0.8125rem; line-height: 1.35; }
+    #map_sidebar .gr-reporter__contact { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    #map_sidebar .gr-reporter__contact > div { min-width: 0; }
+    #map_sidebar .gr-reporter__contact label { font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     #map_sidebar .btn--final { position: sticky; bottom: 6px; z-index: 2; margin-top: 10px; }
     /* A category's questions (the police ones: six answers and the plate): FixMyStreet's general
        «Βοήθησε τον φορέα…» goes to screen readers, the notice gets smaller, the answers two by two. */
