@@ -1,0 +1,16 @@
+<!-- user_name.html (greece) -->
+[%# FixMyStreet's name field, with at least 4 characters when a name is given (Greece.pm
+    greece_name_error checks it on the server too). Left empty, a report goes anonymously. ~%]
+<label for="form_name">[% loc('Name') %]
+[% TRY %]
+    [% INCLUDE 'report/form/after_name.html' %]
+    [% CATCH file %]
+[% END %]
+</label>
+[% IF field_errors.name %]
+    <p class='form-error'>[% field_errors.name %]</p>
+[% END %]
+<input type="text" class="form-control [% valid_class OR 'validName' %] js-form-name [% extra_class %]"
+    value="[% object.name || c.user.name | html %]" name="name" id="form_name" autocomplete="name" aria-required="true"
+    minlength="4" maxlength="100" data-msg-minlength="[% c.cobrand.greece_t('Το όνομα θέλει τουλάχιστον 4 χαρακτήρες.', 'The name needs at least 4 characters.') %]">
+<!-- /user_name.html -->

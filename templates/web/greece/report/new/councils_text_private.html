@@ -1,0 +1,13 @@
+[%# The line above the reporter's details. FixMyStreet's «…δεν θα εμφανιστούν ποτέ online χωρίς την
+    άδειά σου» said less than is true here: email and phone are never public, the name only if chosen. ~%]
+[% FILTER collapse %]
+[% category = mark_safe(category) %]
+[% IF unresponsive.$category OR unresponsive.ALL OR bodies_to_list.size == 0 %]
+    [% c.cobrand.greece_t('Το email και το τηλέφωνο δεν εμφανίζονται ποτέ δημόσια· το όνομα μόνο αν το επιλέξεις.',
+        'Your email and phone are never shown publicly; your name only if you choose.') %]
+[% ELSE %]
+    [% c.cobrand.greece_t('Στέλνονται στην αρμόδια υπηρεσία μαζί με την αναφορά. Το email και το τηλέφωνο δεν εμφανίζονται ποτέ δημόσια· το όνομα μόνο αν το επιλέξεις.',
+        'They go to the responsible service with the report. Your email and phone are never shown publicly; your name only if you choose.') %]
+[% END %]
+(<a href="[% c.cobrand.privacy_policy_url %]">[% c.cobrand.greece_t('Πολιτική απορρήτου', 'Privacy policy') %]</a>)
+[% END -%]

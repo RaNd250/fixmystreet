@@ -8,16 +8,24 @@ use utf8;
 # Reuse the Default cobrand's compiled CSS; this cobrand only adds templates and a little JS/CSS.
 sub asset_moniker { 'default' }
 
-# Search box: "ref: 123" (database id) or a public reference "DDMMYYYY-N".
-# A bare number stays a place search, because Greek postcodes are five digits.
-sub lookup_by_ref_regex { qr/^\s*(?|ref:\s*(\d+)|(\d{8}-\d+))\s*$/ }
+# Search box, by report: the public reference «DDMMYYYY-N» (also with / . or - in the date, or a
+# space before N), or the database id as «#53», «ID 53», «ref: 53», «αρ. 53» or a bare number of up
+# to four digits. A five-digit number stays a place search, because Greek postcodes are five digits.
+my $GREECE_REF_PREFIX = qr/(?:ref|id|\#|αρ\.?|αριθμός(?:\s+αναφοράς)?)\s*[:.]?\s*/i;
+sub lookup_by_ref_regex {
+    qr/^\s*(?|$GREECE_REF_PREFIX?(\d\d[.\/-]?\d\d[.\/-]?\d{4}\s*[-\/ ]\s*\d+)|$GREECE_REF_PREFIX(\d{1,9})|(\d{1,4}))\s*$/i
+}
 
 sub lookup_by_ref {
     my ($self, $ref) = @_;
-    return unless $ref =~ /^(\d\d)(\d\d)(\d{4})-(\d+)$/;
+    return unless $ref =~ /^(\d\d)[.\/-]?(\d\d)[.\/-]?(\d{4})\s*[-\/ ]\s*(\d+)$/;
     my $id = FixMyStreet::DB::Result::Problem::greece_ref_to_id("$3-$2-$1", $4);
     return [ id => $id || 0 ];
 }
+
+# Open reports within 100 m of a new report's pin, of any category, for the notice that asks the
+# reporter to check for a duplicate (web/cobrands/greece/nearby-check.js; FixMyStreet's default is 250 m).
+sub nearby_distances { { inspector => 1000, suggestions => 100 } }
 
 # Values the report email templates use besides the stock ones.
 sub munge_sendreport_params {
@@ -143,12 +151,25 @@ sub report_check_for_errors {
         $more{username_register} = $self->greece_t('Για να φαίνεται δημόσια το όνομά σου, γράψε και το email σου.', 'To show your name publicly, enter your email too.');
     }
     $more{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
+    my $name_error = $self->greece_name_error($c->get_param('name'));
+    $more{name} = $name_error if $name_error;
     if ($report && ($report->title // '') !~ /\S/) {
         my $category = $report->category // '';
         my $title = $category eq 'Άλλο' || $category eq '' ? greece_excerpt($report->detail, 60) : $category;
         $report->title($title || $category || 'Αναφορά');
     }
     return ($self->SUPER::report_check_for_errors($c), %more);
+}
+
+# A name given on a report or update needs at least 4 characters (not counting spaces at either end),
+# so «Γ.» or «aa» do not reach a municipality or the police as the reporter's name. Empty is fine: the
+# report then goes anonymously.
+sub greece_name_error {
+    my ($self, $name) = @_;
+    $name = $name // '';
+    $name =~ s/^\s+|\s+$//g;
+    return if $name eq '' || length $name >= 4;
+    return $self->greece_t('Το όνομα θέλει τουλάχιστον 4 χαρακτήρες.', 'The name needs at least 4 characters.');
 }
 
 # The text on one line, cut at a word to at most $max characters, with "…" if cut.
@@ -334,6 +355,8 @@ sub process_open311_extras {
     return unless $c && $c->action && $c->action->namespace eq 'report/update' && $c->req->method eq 'POST';
     my $update = $c->stash->{update} or return;
     $c->stash->{field_errors}{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
+    my $name_error = $self->greece_name_error($c->get_param('name'));
+    $c->stash->{field_errors}{name} = $name_error if $name_error;
     my $staff = $c->user_exists && ($c->user->is_superuser || $c->user->from_body);
     my $problem = $c->stash->{problem};
     if (!$staff && $problem) {
@@ -752,6 +775,26 @@ sub greece_local_time {
     $dt->set_time_zone(FixMyStreet->local_time_zone) if $dt->time_zone->is_floating;
     $dt->set_time_zone(FixMyStreet->time_zone || FixMyStreet->local_time_zone);
     return $dt->strftime('%d/%m/%Y %H:%M');
+}
+
+# The report page's details card (templates/web/greece/report/_main_sent_info.html): when it was
+# made, with the day, e.g. "Κυριακή 25/10/2026, 16:17"; and how long after that it was sent, e.g.
+# "2 λεπτά", or nothing when it has not been sent.
+my @GREECE_DAYS_EL = qw(Δευτέρα Τρίτη Τετάρτη Πέμπτη Παρασκευή Σάββατο Κυριακή);
+my @GREECE_DAYS_EN = qw(Monday Tuesday Wednesday Thursday Friday Saturday Sunday);
+sub greece_when {
+    my ($self, $en) = @_;
+    my $dt = ($self->confirmed || $self->created)->clone;
+    $dt->set_time_zone(FixMyStreet->local_time_zone) if $dt->time_zone->is_floating;
+    $dt->set_time_zone(FixMyStreet->time_zone || FixMyStreet->local_time_zone);
+    my $day = ($en ? \@GREECE_DAYS_EN : \@GREECE_DAYS_EL)->[$dt->day_of_week - 1];
+    return $day . ' ' . $dt->strftime('%d/%m/%Y, %H:%M');
+}
+
+sub greece_sent_after {
+    my $self = shift;
+    return '' unless $self->whensent && $self->confirmed && $self->service ne 'Open311';
+    return Utils::prettify_duration($self->whensent->epoch - $self->confirmed->epoch, 'minute');
 }
 
 # Inverse of greece_ref: the id of the $n-th report created on local date $date (YYYY-MM-DD).

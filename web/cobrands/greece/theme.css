@@ -722,7 +722,7 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 .extra-category-questions:has(input[value="p72"]:checked) > input[id$="form_pinakida"] { display: none; }
 
 /* Cloudflare Turnstile (turnstile.js): usually invisible; when it asks for a click, it gets room. */
-.gr-turnstile:not(:empty) { margin: 0.75em 0; }
+.gr-turnstile:not(:empty) { margin: 0.75em 0 1.25em; }
 
 /* Report form on computers: smaller heading and category tiles (they were sized for fingers), and
    type that follows the screen. Phones keep the larger, touch-friendly sizes above. */
@@ -892,7 +892,7 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
 @media (max-width: 47.99em) {
     .gr-dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; display: flex; justify-content: space-around; gap: 2px; padding: 4px 12px calc(4px + env(safe-area-inset-bottom, 0px)); border-radius: 16px 16px 0 0; background: rgba(12, 27, 51, 0.92); -webkit-backdrop-filter: blur(12px) saturate(1.4); backdrop-filter: blur(12px) saturate(1.4); box-shadow: 0 14px 34px -12px rgba(12, 27, 51, 0.55); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease; animation: gr-dock-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
     .gr-dock--away { transform: translateY(calc(100% + 24px)); opacity: 0; }
-    .gr-dock__item { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0; padding: 4px 2px; border-radius: 14px; color: rgba(255, 255, 255, 0.78); font-size: 0.65625rem; font-weight: 600; line-height: 1.2; text-align: center; text-decoration: none; transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .gr-dock__item { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0; padding: 4px 2px; border-radius: 14px; color: rgba(255, 255, 255, 0.78); font-size: 0.71875rem; font-weight: 600; line-height: 1.2; text-align: center; text-decoration: none; transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .gr-dock__item svg { width: 20px; height: 20px; }
     .gr-dock__item span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     /* :link/:visited as well: base.css colours visited links, which made the visited pages blue here. */
@@ -1222,4 +1222,29 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
 @media (max-width: 47.99em) {
     .gr-cform { padding: 12px; }
     .gr-cform__send { width: 100%; }
+}
+
+/* Report form: an open report within 100 m (nearby-check.js) */
+.gr-nearby { position: relative; margin: 0 0 12px; padding: 10px 36px 10px 12px; border-radius: var(--gr-radius-s); background: #fff7e6; border: 1px solid #f5c26b; color: var(--gr-ink); font-size: 0.875rem; line-height: 1.4; }
+.gr-nearby strong { display: block; margin-bottom: 2px; }
+.gr-nearby p { margin: 0 0 6px; }
+.gr-nearby ul { margin: 0 !important; padding: 0 !important; list-style: none !important; }
+.gr-nearby li { margin: 2px 0; padding: 0; list-style: none !important; }
+.gr-nearby li::before { content: none !important; }
+@media (max-width: 600px) { .gr-nearby { font-size: 0.8125rem; padding: 8px 34px 8px 10px; margin-bottom: 10px; } }
+.gr-nearby li a { font-weight: 600; color: var(--gr-accent-ink); }
+.gr-nearby li span { color: var(--gr-ink-3); white-space: nowrap; }
+.gr-nearby__close { position: absolute; top: 4px; right: 4px; width: 32px; height: 32px; border: 0; background: none; font-size: 1.25rem; line-height: 1; color: var(--gr-ink-2); cursor: pointer; }
+
+/* Report page: the details card (report/_main_sent_info.html) replaces FixMyStreet's sentence */
+.problem-header > .report_meta_info { display: none; }
+.gr-meta { margin: 8px 0 14px; padding: 10px 14px; border: 1px solid var(--gr-line); border-radius: var(--gr-radius-s); background: var(--gr-surface-2); font-size: 0.875rem; line-height: 1.4; }
+.gr-meta__list { margin: 0; }
+.gr-meta__list > div { display: flex; gap: 10px; padding: 5px 0; border-top: 1px solid var(--gr-line); }
+.gr-meta__list > div:first-child { border-top: 0; }
+.gr-meta__list dt { flex: 0 0 9.5em; margin: 0; color: var(--gr-ink-3); font-weight: 500; }
+.gr-meta__list dd { flex: 1 1 auto; margin: 0; color: var(--gr-ink); min-width: 0; overflow-wrap: anywhere; }
+.gr-meta__note { margin: 6px 0 0; color: var(--gr-ink-2); font-size: 0.8125rem; }
+@media (max-width: 480px) {
+    .gr-meta__list dt { flex-basis: 7.5em; }
 }

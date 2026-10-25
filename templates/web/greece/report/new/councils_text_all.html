@@ -1,0 +1,21 @@
+[%# FixMyStreet's «These will be sent to …» line, reworded: the Greek translation read «θα σταλούν στον
+    φορέα Δήμος Χαϊδαρίου … online», with the body's name undeclined after a declined article. The name
+    now stands as a label, so it needs no case. ~%]
+[% IF NOT list_of_names %]
+    [% SET default_list = [] %][% FOR b IN bodies_to_list.values %][% default_list.push(b.cobrand_name) %][% END %]
+    [% SET list_of_names = default_list %]
+[% END %]
+[% category = mark_safe(category) %]
+[% SET names = mark_safe(list_of_names.join('</strong>' _ c.cobrand.greece_t(' ή ', ' or ') _ '<strong>')) %]
+<p>
+[% IF NOT non_public_categories.$category %]
+    [% c.cobrand.greece_t('Παραλήπτης:', 'Sent to:') %] <strong>[% names %]</strong>.
+    [% c.cobrand.greece_t('Η περιγραφή και οι φωτογραφίες, με πινακίδες και πρόσωπα θολωμένα, θα φαίνονται και στον δημόσιο χάρτη',
+        'The description and photos, with plates and faces blurred, will also be shown on the public map') %]
+    (<a href="[% c.cobrand.privacy_policy_url %]">[% c.cobrand.greece_t('πολιτική απορρήτου', 'privacy policy') %]</a>).
+[% ELSE %]
+    [% c.cobrand.greece_t('Παραλήπτης:', 'Sent to:') %] <strong>[% names %]</strong>.
+    [% c.cobrand.greece_t('Η αναφορά δεν δημοσιεύεται.', 'The report is not published.') %]
+[% END %]
+[% TRY %][% INCLUDE 'report/new/councils_extra_text.html' %][% CATCH file %][% END %]
+</p>

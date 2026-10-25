@@ -1,0 +1,82 @@
+[%# Privacy policy, in English; see privacy.html. ~%]
+[% INCLUDE 'header.html', title = 'Privacy policy', sidebar = 'about/_sidebar.html', bodyclass = 'gr-terms' %]
+
+<h1>Privacy policy</h1>
+<p class="gr-terms__lead">In plain words: what we need, where it goes, and what you can ask for.</p>
+<p class="gr-terms__date">Last updated: 26 October 2026</p>
+
+<h2 id="who">1. Who is responsible</h2>
+<p>[% site_name %] is run by a team of volunteers, who are responsible for the data described here. For any
+question or request write to <a href="mailto:[% c.cobrand.contact_email | html %]">[% c.cobrand.contact_email | html %]</a>.</p>
+
+<h2 id="collect">2. What we collect</h2>
+<p><strong>With every report:</strong> the place on the map and the address found for it, the category, the answers
+to the category's questions, the description, the photos and the date.</p>
+<p><strong>If you give them:</strong> name, email and phone. All are optional; without an email the report is sent
+anonymously.</p>
+<p><strong>With an account:</strong> email, name and password (stored only hashed) or, if you sign in with Google,
+Apple or Microsoft, the identifier and email the provider gives us.</p>
+<p><strong>Technical:</strong> IP address, browser type and request times in the server logs, for security and
+fixing faults.</p>
+
+<h2 id="why">3. Why we use it</h2>
+<ul>
+    <li>to get the report to the responsible service and show it on the map;</li>
+    <li>to send you, if you gave an email, news of the report and the account link;</li>
+    <li>for aggregate statistics by municipality and category;</li>
+    <li>to protect the service from spam and abuse.</li>
+</ul>
+<p>The basis is the service you ask for when you report, our legitimate interest in running the platform safely
+and, where needed, your consent (e.g. for the device's location). We do not sell data and do no ad targeting.</p>
+
+<h2 id="recipients">4. Who receives the report</h2>
+<p>The report is emailed to the service responsible for the place and the category, usually the municipality or,
+for some categories, the Hellenic Police. The name, email and phone you gave go with it, so it can reply to you.</p>
+<p>Number plates and faces in photos are blurred automatically, on our own server. Only reports to the police also
+carry the photo with the plate readable, because without it the report cannot be examined.</p>
+
+<h2 id="public">5. What is public</h2>
+<p>The map and the report page show the place, the category, the description, the blurred photos, the date and the
+updates. Email and phone are never shown; your name only if you choose. Reports to the police are not published at
+all.</p>
+<p>Do not write names, number plates or other details of other people in the description.</p>
+
+<h2 id="cookies">6. Cookies and browser storage</h2>
+<p>We use only what the site needs to work; no advertising or analytics cookies.</p>
+<ul>
+    <li>a sign-in cookie, while you are signed in;</li>
+    <li>a cookie with a random identifier, so your vote (👍/👎) on a report counts once;</li>
+    <li>the draft of the report you are writing, only in your browser, so it is not lost if you leave by mistake;
+        it is cleared once the report is sent;</li>
+    <li>whatever the Cloudflare Turnstile security check needs.</li>
+</ul>
+
+<h2 id="providers">7. Providers</h2>
+<ul>
+    <li><strong>Cloudflare</strong>: the connection to the site passes through its network, and Turnstile checks you are
+        not a bot before a form is sent.</li>
+    <li><strong>Photon (Komoot)</strong>: when you type an address in the search, we send it only the text you typed, not
+        your IP address or cookies.</li>
+    <li><strong>OpenStreetMap / Nominatim</strong>: to find the address of a place, our server sends its coordinates,
+        with nothing else.</li>
+    <li><strong>MapIt (mySociety)</strong>: where the municipalities' boundaries come from; none of your data is sent to it.</li>
+    <li><strong>Google, Apple, Microsoft</strong>: only if you choose to sign in with them.</li>
+</ul>
+<p>The map is drawn by our own server, from OpenStreetMap data.</p>
+
+<h2 id="retention">8. How long we keep it</h2>
+<p>Reports stay, so it shows over time where and how often problems occur. Account details stay as long as the
+account. Logs are kept only as long as security needs. If you ask for deletion, we remove or anonymise your personal
+details; what has already been sent to a municipality or the police is then handled by that service.</p>
+
+<h2 id="rights">9. Your rights</h2>
+<p>You can ask for access to your data, correction, deletion, restriction or portability, and object to processing.
+Write to <a href="mailto:[% c.cobrand.contact_email | html %]">[% c.cobrand.contact_email | html %]</a>. From your account
+you can also hide your name from your reports. If you think we have not respected your rights, you can turn to the
+<a href="https://www.dpa.gr/" rel="noopener">Hellenic Data Protection Authority</a>.</p>
+
+<h2 id="changes">10. Changes</h2>
+<p>When something changes in how the site works, we update this page and its date. See also the
+<a href="/about/terms">Terms of use</a>.</p>
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]
