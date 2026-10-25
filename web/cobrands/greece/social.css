@@ -1,0 +1,13 @@
+/* Sign in with Google / Apple / Microsoft (templates/web/greece/auth/general.html) */
+.gr-social { display: grid; gap: 0.6em; max-width: 26em; margin: 0 0 1.1em; }
+.gr-social__btn { display: flex; align-items: center; justify-content: center; gap: 0.7em; min-height: 2.9em;
+    padding: 0.5em 1em; border: 1px solid var(--gr-border, #cbd5e1); border-radius: var(--gr-radius, 8px);
+    background: #fff; color: #0c1b33; font-weight: 600; text-decoration: none; }
+.gr-social__btn:link, .gr-social__btn:visited { color: #0c1b33; text-decoration: none; }
+.gr-social__btn:hover, .gr-social__btn:focus-visible { border-color: #0c1b33; background: #f3f5fa; }
+.gr-social__btn svg { width: 1.25em; height: 1.25em; flex: none; }
+.gr-social__btn--apple, .gr-social__btn--apple:link, .gr-social__btn--apple:visited { background: #000; border-color: #000; color: #fff; }
+.gr-social__btn--apple:hover, .gr-social__btn--apple:focus-visible { background: #222; border-color: #222; }
+.gr-social__or { display: flex; align-items: center; gap: 0.8em; max-width: 26em; margin: 0 0 0.4em; color: #64748b; font-size: 0.9375rem; }
+.gr-social__or::before, .gr-social__or::after { content: ""; flex: 1; border-top: 1px solid var(--gr-border, #cbd5e1); }
+.gr-social__need { max-width: 26em; padding: 0.8em 1em; border-radius: var(--gr-radius, 8px); background: var(--gr-surface-2, #f3f5fa); }

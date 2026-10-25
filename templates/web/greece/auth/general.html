@@ -10,8 +10,30 @@
     <p class="form-error">[% loc('Sorry, we could not log you in. Please fill in the form below.') %]</p>
 [% END %]
 
+[% IF oauth_need_email %]
+    <p class="gr-social__need">[% c.cobrand.greece_t('Για να ολοκληρώσουμε τη σύνδεση, γράψε το email σου. Θα σου στείλουμε σύνδεσμο επιβεβαίωσης και ο λογαριασμός θα συνδεθεί.', 'To finish signing in, enter your email. We will send you a confirmation link and the account will be linked.') %]</p>
+[% ELSIF c.config.GOOGLE_CLIENT_ID OR c.config.APPLE_SERVICES_ID OR c.config.MICROSOFT_CLIENT_ID %]
+    [% social_r = BLOCK %][% c.req.params.r | uri %][% END %]
+    [% social_r = '?r=' _ social_r IF social_r %]
+    <div class="gr-social">
+      [% IF c.config.GOOGLE_CLIENT_ID %]
+        <a class="gr-social__btn gr-social__btn--google" href="/greece/auth/google[% social_r %]" rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="19" text-anchor="middle" font-size="21" font-weight="700" font-family="Arial,sans-serif" fill="#4285F4">G</text></svg>[% c.cobrand.greece_t('Συνέχεια με Google', 'Continue with Google') %]</a>
+      [% END %]
+      [% IF c.config.APPLE_SERVICES_ID %]
+        <a class="gr-social__btn gr-social__btn--apple" href="/greece/auth/apple[% social_r %]" rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>[% c.cobrand.greece_t('Συνέχεια με Apple', 'Continue with Apple') %]</a>
+      [% END %]
+      [% IF c.config.MICROSOFT_CLIENT_ID %]
+        <a class="gr-social__btn gr-social__btn--microsoft" href="/greece/auth/microsoft[% social_r %]" rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2" y="2" width="9.5" height="9.5" fill="#f25022"/><rect x="12.5" y="2" width="9.5" height="9.5" fill="#7fba00"/><rect x="2" y="12.5" width="9.5" height="9.5" fill="#00a4ef"/><rect x="12.5" y="12.5" width="9.5" height="9.5" fill="#ffb900"/></svg>[% c.cobrand.greece_t('Συνέχεια με Microsoft', 'Continue with Microsoft') %]</a>
+      [% END %]
+    </div>
+    <p class="gr-social__or"><span>[% c.cobrand.greece_t('ή με email', 'or with email') %]</span></p>
+[% END %]
+
 <form action="/greece/auth" method="post" name="general_auth" class="validate gr-signin">
     <input type="hidden" name="r" value="[% c.req.params.r | html %]">
+  [% IF oauth_need_email %]
+    <input type="hidden" name="oauth_need_email" value="1">
+  [% END %]
 
     [% loc_username_error = INCLUDE 'auth/_username_error.html' default='email' %]
     <label class="n" for="username">[% loc('Your email') %]</label>
@@ -20,6 +42,7 @@
   [% END %]
     <input type="email" class="form-control required" id="username" name="username" value="[% username | html %]" autocomplete="username" autofocus>
 
+  [% UNLESS oauth_need_email %]
     <label for="password_sign_in">[% loc('Your password') %]</label>
   [% IF sign_in_error %]
     <p class="form-hint">[% c.cobrand.greece_t('Αν δεν θυμάσαι τον κωδικό, άφησέ τον κενό και θα σου στείλουμε σύνδεσμο.', 'If you cannot remember your password, leave it empty and we will email you a link.') %]</p>
@@ -28,6 +51,7 @@
     <div class="form-error">[% field_errors.password_register %]</div>
   [% END %]
     <input type="password" name="password_sign_in" class="form-control" id="password_sign_in" value="" autocomplete="current-password">
+  [% END %]
 
     [% INCLUDE '_turnstile.html' %]
 

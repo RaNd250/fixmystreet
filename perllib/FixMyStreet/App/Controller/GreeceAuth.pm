@@ -27,7 +27,7 @@ sub general : Path('/greece/auth') : Args(0) {
     my $password = $c->get_param('password_sign_in') // '';
     my $user = $email ? $c->model('DB::User')->find({ email => $email }) : undef;
 
-    if ( $user && $user->password && $password ne '' ) {
+    if ( $user && $user->password && $password ne '' && !$c->get_param('oauth_need_email') ) {
         $c->forward( '/auth/sign_in', [ $email ] )
             && $c->detach( '/auth/redirect_on_signin', [ $c->get_param('r') ] );
         return;
