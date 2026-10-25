@@ -631,13 +631,16 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 /* "Συμπληρώθηκε από τη φωτογραφία· έλεγξέ το." under the plate filled in from a photo (camera.js) */
 .gr-plate-note { margin: 0.25em 0 0.75em; font-size: 0.875em; color: #5b6475; }
 
-/* Logo «FixMyStreets» (2026-10-26, from the owner's fms_12.jpg; its black background made transparent):
+/* Logo «FixMyStreets» (2026-10-26, from the owner's fms_12.jpg; its black background made transparent, its
+   hammer-shaped capital T replaced by the word's own lowercase t, owner's request):
    36px high in the 44px header, with 2x and 3x copies for sharp screens. */
 #site-logo {
-    width: 163px; background-size: 163px 36px; background-position: 0 50%;
-    background-image: url("logo/site-logo.png");
-    background-image: -webkit-image-set(url("logo/site-logo.png") 1x, url("logo/site-logo@2x.png") 2x, url("logo/site-logo@3x.png") 3x);
-    background-image: image-set(url("logo/site-logo.png") 1x, url("logo/site-logo@2x.png") 2x, url("logo/site-logo@3x.png") 3x);
+    width: 160px; background-size: 160px 36px; background-position: 0 50%;
+    /* A thin white outline, so the blue figure and letters stand out on the blue header. */
+    filter: drop-shadow(0 0 0.6px #fff) drop-shadow(0 0 0.6px #fff);
+    background-image: url("logo/site-logo-v2.png");
+    background-image: -webkit-image-set(url("logo/site-logo-v2.png") 1x, url("logo/site-logo-v2@2x.png") 2x, url("logo/site-logo-v2@3x.png") 3x);
+    background-image: image-set(url("logo/site-logo-v2.png") 1x, url("logo/site-logo-v2@2x.png") 2x, url("logo/site-logo-v2@3x.png") 3x);
 }
 
 /* Desktop menu. base.css colours visited menu links #333/#000 (.nav-menu a:visited), which on the
