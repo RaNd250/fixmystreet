@@ -8,7 +8,8 @@
    SET after = problem.greece_sent_after ~%]
 <div class="gr-meta">
   <dl class="gr-meta__list">
-    [% IF problem.category %]
+    [%# The title is the category, except for «Άλλο», so the row would repeat it. ~%]
+    [% IF problem.category AND problem.category != problem.title %]
     <div><dt>[% c.cobrand.greece_t('Κατηγορία', 'Category') %]</dt><dd>[% problem.category_display | html %]</dd></div>
     [% END %]
     <div><dt>[% c.cobrand.greece_t('Υποβλήθηκε', 'Reported') %]</dt><dd>[% problem.greece_when(en) | html %]

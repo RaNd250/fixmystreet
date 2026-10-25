@@ -1246,5 +1246,5 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
 .gr-meta__list dd { flex: 1 1 auto; margin: 0; color: var(--gr-ink); min-width: 0; overflow-wrap: anywhere; }
 .gr-meta__note { margin: 6px 0 0; color: var(--gr-ink-2); font-size: 0.8125rem; }
 @media (max-width: 480px) {
-    .gr-meta__list dt { flex-basis: 7.5em; }
+    .gr-meta__list dt { flex-basis: 8.6em; }
 }

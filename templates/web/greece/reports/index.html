@@ -135,6 +135,10 @@
       [% IF NOT body AND c.cobrand.moniker != 'fixmystreet' %]
         <h2 class="dashboard-subheading">[% loc('Top 5 responsive councils') %]</h2>
         <p>[% loc('Average time between a problem being reported and being fixed, last 100 reports.') %]</p>
+        [%# No fixed reports yet: say so, instead of a table with «Συνολικός μέσος όρος — ημέρες» and no number. ~%]
+        [% IF NOT top_five_bodies.size OR NOT average.length %]
+        <p class="gr-empty">[% c.cobrand.greece_t('Δεν υπάρχουν ακόμη διορθωμένες αναφορές για να υπολογιστεί.', 'No fixed reports yet to work it out from.') %]</p>
+        [% ELSE %]
         <table class="dashboard-ranking-table">
             <tbody>
               [% FOR line IN top_five_bodies %]
@@ -145,6 +149,7 @@
                 <tr><td>[% loc('Overall average') %]</td><td>[% tprintf(nget("%s day", "%s days", average), average) %]</td></tr>
             </tfoot>
         </table>
+        [% END %]
       [% END %]
     </div>
     <div class="dashboard-item dashboard-item--6">
