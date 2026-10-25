@@ -1,7 +1,8 @@
 [%# FixMyStreet's report/new/category_extras_fields.html with a question's list of answers
     (singlevaluelist, e.g. «Τι συμβαίνει;») as radio buttons in place of a drop-down: no
     «-- Διάλεξε μια επιλογή --» line, and nothing chosen beforehand, so a required question is answered
-    on purpose (with a drop-down the first answer went unnoticed, and to the police). ~%]
+    on purpose (with a drop-down the first answer went unnoticed, and to the police). A notice (a field
+    that is not a question) is a paragraph of its own. ~%]
 [%- FOR meta IN metas %]
   [%- meta_name = meta.code -%]
   [%- x_meta_name = 'x' _ meta.code # For report_meta and field_errors lookup, as TT hides codes starting "_" -%]
@@ -20,7 +21,7 @@
         <fieldset class="govuk-fieldset gr-choice">
             <legend class="govuk-fieldset__legend">[% (meta.description OR meta.code) | safe %]</legend>
       [% ELSIF meta.variable == 'false' %]
-        [% (meta.description OR meta.code) | safe %]
+        <p class="gr-extra-notice">[% (meta.description OR meta.code) | safe %]</p>
       [% ELSE %]
         <label for="[% cat_prefix %]form_[% meta_name %]">[% (meta.description OR meta.code) | safe %]</label>
       [% END %]

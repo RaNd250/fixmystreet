@@ -1,5 +1,5 @@
 <!-- user_loggedout.html (greece) -->
-[%# Reports need no account: name, email and phone, then send. The account comes afterwards, from a
+[%# Reports need no account: name and email, then send. The account comes afterwards, from a
     one-off link emailed to the address given (Greece.pm). The email is optional unless the name is to
     be shown publicly (anon-email.js marks it required then; Greece.pm checks it too). Updates likewise:
     without an email one is published at once, anonymously (Greece.pm allow_anonymous_updates); with
@@ -40,17 +40,10 @@
         [% END %]
         <input type="email" name="username_register" id="form_username_register" value="[% c.get_param('username_register') | html %]"
             class="form-control" autocomplete="email" data-msg-required="[% c.cobrand.greece_t('Για να φαίνεται δημόσια το όνομά σου, γράψε και το email σου.', 'To show your name publicly, enter your email too.') %]">
-        <label for="form_phone">[% loc('Phone number') %]<span id="js-optional-phone"> [% loc('(optional)') %]</span></label>
-        [% IF field_errors.phone %]
-          <p class='form-error'>[% field_errors.phone %]</p>
-        [% END %]
-        <input class="form-control" type="text" value="[% phone | html %]" name="phone" id="form_phone" autocomplete="tel">
         <div class="general-notes gr-reporter__note">
-            <p>[% IF lang_code == 'en-gb' %]No account or confirmation needed: the report is sent as soon as you press “[% loc('Submit') %]”.
-            If you enter an email, we will send you a personal link to create an account, if you wish, and follow your
-            reports. Without an email the report is anonymous, but you will not hear what happened.[% ELSE %]Δεν χρειάζεται λογαριασμός ούτε επιβεβαίωση: η αναφορά στέλνεται μόλις πατήσεις «[% loc('Submit') %]».
-            Αν γράψεις email, θα σου στείλουμε έναν προσωπικό σύνδεσμο, για να δημιουργήσεις λογαριασμό αν θέλεις
-            και να παρακολουθείς τις αναφορές σου. Χωρίς email η αναφορά γίνεται ανώνυμα, αλλά δεν θα μαθαίνεις τι έγινε.[% END %]</p>
+            <p>[% c.cobrand.greece_t(
+                'Χωρίς email η αναφορά στέλνεται ανώνυμα, αλλά δεν θα μαθαίνεις τι έγινε.',
+                'Without an email the report is sent anonymously, but you will not hear what happened.') %]</p>
         </div>
         [% INCLUDE '_turnstile.html' %]
         [% PROCESS 'report/form/submit.html' %]

@@ -1,6 +1,6 @@
 /*
  * The report form keeps what the reporter has entered if they leave it by mistake (the back button,
- * a link, a reload) and come back: the description, name, email, phone, the category and its
+ * a link, a reload) and come back: the description, name, email, the category and its
  * questions, and the photos already uploaded. It is kept in sessionStorage, so only in this tab and
  * until the tab is closed, and it is removed once the report is made (the confirmation page).
  *

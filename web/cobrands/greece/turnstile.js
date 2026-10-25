@@ -16,7 +16,8 @@
             window.turnstile.render(el, {
                 sitekey: el.getAttribute('data-sitekey'),
                 language: 'el',
-                appearance: 'always',
+                // Takes no room unless Cloudflare needs a click.
+                appearance: 'interaction-only',
                 size: 'flexible',
                 'refresh-expired': 'auto'
             });

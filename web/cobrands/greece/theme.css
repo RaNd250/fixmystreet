@@ -977,3 +977,126 @@ body.gr-has-dock .gr-toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px
 .gr-combo__status { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @keyframes gr-combo-open { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
 @keyframes gr-combo-row { from { opacity: 0; transform: translateY(4px); } }
+
+/* Header as tall as the logo, its menu 10% smaller (owner's request). FixMyStreet's map pages place the
+   map and the side panel under a 4em header: they follow. */
+#site-logo { height: 44px; }
+#nav-link { width: 40px; padding-top: 40px; }
+#report-cta { font-size: 0.81em; padding: 0.4em 0.85em; }
+.map-fullscreen #map_box { top: 45px; }
+@media (min-width: 48em) {
+    .nav-wrapper { top: 0; }
+    .nav-wrapper #main-nav { min-height: 44px; margin-top: 0; }
+    .nav-wrapper #main-nav .nav-menu--main a, .nav-wrapper #main-nav .nav-menu--main span { font-size: 0.7875rem; padding-top: 0.45em; padding-bottom: 0.45em; }
+    body.mappage #site-header { height: 44px; }
+    #map_box, #map_sidebar { top: 44px; }
+}
+
+/* The home map's pin and message stay inside the map: the menu opens over them. */
+.gr-minimap { position: relative; z-index: 0; }
+
+/* Phones: each step fits on the screen without scrolling (checked at 360×560, the smallest common
+   viewport with the browser's bar showing), with room to spare for longer English labels. */
+@media (max-width: 47.99em) {
+    /* The bottom bar has «Αναφορά» already. */
+    body.gr-has-dock #report-cta { display: none; }
+
+    /* Home page: a shorter heading, no subtitle; the map takes the height left over, so that «Αναφορά
+       εδώ» (after the location is found) or the address search (before) is above the bottom bar. The
+       map's message sits on the map. */
+    #front-main { padding-top: 10px; }
+    #front-main h1 { font-size: 1.375rem; line-height: 1.2; margin: 0 0 8px; }
+    #front-main h2 { display: none; }
+    .gr-minimap { margin-bottom: 8px; }
+    .gr-minimap__map { height: 190px; height: clamp(150px, calc(100svh - 370px), 340px); max-height: none; }
+    body.gr-located .gr-minimap__map { height: 250px; height: clamp(180px, calc(100svh - 310px), 420px); }
+    .gr-minimap__status {
+        position: absolute; top: 8px; left: 8px; right: 48px; z-index: 1001; margin: 0; padding: 5px 10px;
+        border-radius: 12px; background: rgba(12, 27, 51, 0.82); color: #fff; font-size: 0.8125rem; line-height: 1.3;
+        text-align: center; pointer-events: none;
+    }
+    .gr-minimap__actions { flex-wrap: nowrap; margin-top: 8px; }
+    .gr-minimap__actions .btn { flex: 1 1 0; min-width: 0; padding-left: 0.5em; padding-right: 0.5em; }
+    .gr-minimap-or { margin: 0 0 4px; font-size: 0.8125rem; font-weight: 600; color: var(--gr-ink-3); }
+    #postcodeForm { margin: 0; padding: 0; }
+    #postcodeForm > label, #postcodeForm > #pc-hint { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    /* Map stage of the report form: «← Πίσω» belongs to the form, not over the map; «Μετακίνηση της
+       αναφοράς εδώ» above the map's credits. */
+    .only-map #report-a-problem-main > .problem-back--top { display: none; }
+    .map-mobile-report-button { margin-bottom: calc(env(safe-area-inset-bottom) + 104px); }
+    /* The zoom buttons start under a two-line message. */
+    .map-fullscreen #fms_pan_zoom { top: 58px; }
+
+    /* Report form: heading and «← Πίσω» on one line, the stepper close under it. */
+    #report-a-problem-main { padding-top: 4px; }
+    #report-a-problem-main > .problem-back--top { top: 8px; padding: 0.2em 0.75em; }
+    #map_sidebar h1 { font-size: 1.25rem; line-height: 1.25; margin: 0.25em 0 0.2em; }
+    .gr-stepper { margin: 2px 0 6px; }
+    .gr-stepper__track { top: 11px; }
+    .gr-stepper__dot { width: 24px; height: 24px; font-size: 0.75rem; }
+    .gr-stepper__step { gap: 2px; }
+    .gr-stepper__name { font-size: 0.6875rem; line-height: 1.15; }
+    /* «Συνέχεια» stays in view at the bottom should a step run longer (longer English labels, a
+       Cloudflare check that asks for a click). */
+    #map_sidebar .js-reporting-page .floating-button-spacer { position: sticky; bottom: 0; z-index: 2; padding: 6px 0; background: var(--gr-bg); }
+    /* Step headings the stepper already names are left to screen readers. */
+    #form_category_fieldset > legend, #map_sidebar .js-reporting-page > .form-section-heading,
+    #form_sign_in > .form-section-heading, #map_sidebar .form-section-preview--next > .form-section-heading,
+    #map_sidebar #detail-hint {
+        position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+    }
+    /* Categories in two columns, as tiles. */
+    #map_sidebar #form_category_fieldset { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    #map_sidebar #form_category_fieldset .govuk-radios__item { min-height: 48px; margin: 0; padding: 0 10px; align-items: center; }
+    #map_sidebar #form_category_fieldset .govuk-radios__label { margin: 0; padding: 7px 0; font-size: 0.875rem; line-height: 1.25; }
+    #map_sidebar #form_category_fieldset .govuk-radios__label:before, #map_sidebar #form_category_fieldset .govuk-radios__label:after { display: none; }
+    #map_sidebar #form_category_fieldset .govuk-radios__input { left: 0; top: 0; width: 100%; height: 100%; margin: 0; }
+    #map_sidebar #form_category_fieldset .govuk-radios__input:checked + .govuk-radios__label { color: var(--gr-accent-ink); font-weight: 600; }
+    #map_sidebar .js-reporting-page--category .floating-button-spacer { margin-top: 10px; }
+    /* Description and details: smaller notes, a shorter box. */
+    #map_sidebar .form-section-description, #map_sidebar .js-new-report-sign-in-hidden { font-size: 0.8125rem; line-height: 1.35; margin-bottom: 4px; }
+    #map_sidebar .form-section-description p { margin: 0; }
+    #map_sidebar #js-councils_text { font-size: 0.78rem; line-height: 1.3; }
+    #map_sidebar .js-reporting-page label, #map_sidebar .js-reporting-page .label { margin-top: 0.45em; }
+    /* «Εισαγωγή φωτογραφίας» and «Λήψη» side by side. */
+    #map_sidebar .dropzone { padding: 8px; }
+    #map_sidebar .dropzone .dz-message { margin: 0; }
+    #map_sidebar .js-reporting-page > .dropzone { float: left; width: calc(100% - 112px); box-sizing: border-box; margin: 0; }
+    #map_sidebar .js-reporting-page > .gr-photo-actions { float: right; width: 104px; margin: 0; }
+    #map_sidebar .js-reporting-page > .gr-photo-actions .btn { width: 100%; height: 42px; padding-top: 0; padding-bottom: 0; }
+    #map_sidebar .js-reporting-page > .gr-photo-actions + * { clear: both; margin-top: 10px; }
+    #map_sidebar .gr-draft-notice { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 4px; padding: 4px 8px; font-size: 0.8125rem; line-height: 1.3; }
+    #map_sidebar .gr-draft-notice__clear { flex: none; }
+    #map_sidebar #form_detail { height: 5.5em; }
+    #map_sidebar .form-section-preview--next { margin-top: 10px; padding: 0; background: none; border: 0; }
+    /* Details: the card's padding and the checkbox's height go. */
+    #map_sidebar .gr-reporter.form-box { padding-top: 0; padding-bottom: 4px; background: none; border: 0; box-shadow: none; }
+    #map_sidebar .gr-reporter .govuk-form-group { margin-bottom: 4px; }
+    #map_sidebar .gr-reporter .govuk-checkboxes__label { margin: 0; padding: 6px 8px 6px 1px; }
+    #map_sidebar .gr-reporter .govuk-checkboxes__label:before { top: 4px; }
+    #map_sidebar .gr-reporter .govuk-checkboxes__label:after { top: 11px; }
+    #map_sidebar .gr-reporter .govuk-checkboxes__input { top: -6px; }
+    #map_sidebar .gr-reporter__note p { margin: 4px 0 0; font-size: 0.8125rem; line-height: 1.35; }
+    #map_sidebar .btn--final { position: sticky; bottom: 6px; z-index: 2; margin-top: 10px; }
+    /* A category's questions (the police ones: six answers and the plate): FixMyStreet's general
+       «Βοήθησε τον φορέα…» goes to screen readers, the notice gets smaller, the answers two by two. */
+    #map_sidebar .extra-category-questions { margin: 0; padding: 0; background: none; }
+    #map_sidebar .extra-category-questions > .form-section-description { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    #map_sidebar .gr-extra-notice { margin: 0 0 4px; font-size: 0.75rem; line-height: 1.25; color: var(--gr-ink-2); }
+    #map_sidebar .gr-choice { margin-top: 0; }
+    #map_sidebar .gr-choice > legend { margin-bottom: 4px; font-size: 0.9375rem; }
+    #map_sidebar .gr-choice .govuk-radios { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    #map_sidebar .gr-choice .govuk-radios__item { min-height: 40px; margin: 0; padding: 0 8px; align-items: center; }
+    #map_sidebar .gr-choice .govuk-radios__label { margin: 0; padding: 3px 0; font-size: 0.8125rem; font-weight: 450; line-height: 1.22; }
+    #map_sidebar .gr-choice .govuk-radios__label:before, #map_sidebar .gr-choice .govuk-radios__label:after { display: none; }
+    #map_sidebar .gr-choice .govuk-radios__input { left: 0; top: 0; width: 100%; height: 100%; margin: 0; }
+    #map_sidebar .gr-choice .govuk-radios__input:checked + .govuk-radios__label { color: var(--gr-accent-ink); font-weight: 600; }
+    #map_sidebar .extra-category-questions > label { font-size: 0.8125rem; line-height: 1.3; }
+    /* A category that is reported elsewhere (Χωρίς Εμπόδια): the message and its button fit under the
+       categories. */
+    #map_sidebar #js-category-stopper { margin: 8px 0 0; padding: 10px 12px; font-size: 0.875rem; line-height: 1.4; }
+    #map_sidebar #js-category-stopper p { margin: 0 0 8px; }
+    #map_sidebar #js-category-stopper p:last-child { margin: 0; }
+    #map_sidebar .js-reporting-page--category:has(#js-category-stopper) .floating-button-spacer { display: none; }
+}
