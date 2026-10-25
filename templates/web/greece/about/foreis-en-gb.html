@@ -1,0 +1,41 @@
+[%# For municipalities and other bodies (/about/foreis), in English; see foreis.html. ~%]
+[% INCLUDE 'header.html', title = 'For municipalities and public bodies', sidebar = 'about/_sidebar.html', bodyclass = 'gr-foreis' %]
+
+<h1>For municipalities and public bodies</h1>
+
+<p class="gr-foreis__lead">People mark a problem on the map, choose a category and add photos, with number plates
+and faces blurred. The report reaches the service of yours responsible for that category by email, with the place
+on the map and the photos.</p>
+
+<h2>What a body's account does</h2>
+<ul>
+    <li>Change a report's status («In progress», «Fixed» and so on) and post a public update on behalf of the body;
+        the person who made the report hears about it automatically.</li>
+    <li>See all the reports in your area on a map and in a list, with what has happened to each.</li>
+    <li>Correct a report's category, so that it goes to the right service.</li>
+</ul>
+
+<h2>How to get an account</h2>
+<p>Bodies cannot sign up on the site: we create their accounts, so that nobody can close reports in a
+municipality's name.</p>
+<ol>
+    <li>Email <a href="mailto:[% c.cobrand.contact_email | html %]">[% c.cobrand.contact_email | html %]</a>
+        <strong>from your body's address</strong> (on the municipality's domain, not a personal account) with your
+        name, your service and which categories of report concern you.</li>
+    <li>We check that the address and you belong to the body, for example with a call to its protocol office or
+        your service.</li>
+    <li>We create the account and send you a link to set a password.</li>
+</ol>
+
+<h2>Signing in</h2>
+<p>From the same <a href="/auth">sign-in page</a> as everyone else. Bodies' accounts sign in with email and
+password only, not with Google, Apple or Microsoft. At the first sign-in you are asked to set up a second step as
+well: a code that changes every few seconds, from an authenticator app on your phone (for example Google
+Authenticator or Microsoft Authenticator).</p>
+
+<h2>Wrong service?</h2>
+<p>If a report reached a service that is not responsible for it, send us the right address at
+<a href="mailto:[% c.cobrand.contact_email | html %]">[% c.cobrand.contact_email | html %]</a>, with the report's
+number as the subject; we change it for all the reports that follow.</p>
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

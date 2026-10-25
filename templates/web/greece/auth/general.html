@@ -62,6 +62,9 @@
     <div class="gr-signin__note">
         <p>[% c.cobrand.greece_t('Αν δεν έχεις λογαριασμό, θα σου στείλουμε email εγγραφής: πάτα τον σύνδεσμο και ο λογαριασμός είναι έτοιμος, με τον κωδικό που έγραψες.', 'If you do not have an account, we will email you a sign-up link: click it and your account is ready, with the password you entered.') %]</p>
         <p>[% c.cobrand.greece_t('Αν δεν θυμάσαι τον κωδικό, άφησέ τον κενό: θα σου στείλουμε σύνδεσμο για να συνδεθείς.', 'If you cannot remember your password, leave it empty and we will email you a link to sign in.') %]</p>
+        [%# Staff sign in here too; their accounts are made by us (about/foreis.html). ~%]
+        <p>[% c.cobrand.greece_t('Εργάζεστε σε δήμο ή φορέα;', 'Do you work for a municipality or public body?') %]
+            <a href="/about/foreis">[% c.cobrand.greece_t('Δείτε πώς αποκτάτε λογαριασμό φορέα', 'See how to get a body account') %]</a>.</p>
     </div>
 </form>
 

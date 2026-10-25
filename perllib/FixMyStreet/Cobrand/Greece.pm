@@ -349,6 +349,15 @@ sub reports_hook_restrict_bodies_list {
     return [ grep { (ref $_ eq 'HASH' ? $_->{name} : $_->name) =~ /^Δήμος / } @$bodies ];
 }
 
+# Staff of a body (a municipality, the police) sign in with a second step: after the password or the
+# emailed link, a code from an authenticator app, which FixMyStreet asks them to set up at their first
+# sign-in (templates/web/greece/about/foreis.html). They cannot use Google, Apple or Microsoft at all
+# (GreeceSocial.pm). Superusers are not included here: that is the owner's decision.
+sub must_have_2fa {
+    my ($self, $user) = @_;
+    return $user && $user->from_body ? 1 : 0;
+}
+
 # Public reports per municipality, for the map on the reports page (templates/web/greece/reports/index.html,
 # reports-map.js): [{ n => name, u => '/reports/<name>', t => all, o => open, f => fixed }], most first,
 # only the municipalities that have any. Reports for the police (not public) are not counted.
