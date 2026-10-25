@@ -161,10 +161,16 @@ sub greece_excerpt {
 # form's name and phone onto the user with that email, and with no confirmation anyone could do
 # that. This hook runs before, with the address given; keep what the account has, and put it back
 # before the report is saved (report_new_munge_before_insert). The report keeps the name given.
+# Signing up, or asking for a sign-in link, by email (the sign-in page, /auth/create, /auth/forgot)
+# passes the Turnstile check first; the page is shown again with the error.
 sub disable_login_for_email {
     my ($self, $email) = @_;
     my $c = $self->{c} or return;
     return if $c->user_exists;
+    if ($c->stack->[-1]->reverse eq 'auth/email_sign_in' && !$self->greece_turnstile_ok($c)) {
+        $c->stash->{field_errors}{turnstile} = $self->greece_turnstile_error;
+        $c->detach;
+    }
     my $user = $email && FixMyStreet::DB->resultset('User')->find({ email => lc $email });
     $c->stash->{greece_account_before} = $user
         ? { id => $user->id, map { $_ => $user->$_ } qw(name phone title) } : undef;

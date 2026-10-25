@@ -632,7 +632,11 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
     .nav-menu--main a.report-a-problem-btn:link, .nav-menu--main a.report-a-problem-btn:visited,
     .nav-menu--main a.report-a-problem-btn:hover { color: var(--gr-ink); }
     .nav-menu--main a, .nav-menu--main span { white-space: nowrap; }
-    .nav-wrapper #main-nav { float: none; display: flex; justify-content: center; align-items: center; min-height: 60px; padding-left: 200px; box-sizing: border-box; }
+    .nav-wrapper #main-nav { float: none; display: flex; justify-content: center; justify-content: safe center; align-items: center; min-height: 60px; padding-left: 196px; box-sizing: border-box; }
+    /* Sized so that the whole menu, with the Greek labels and the language switch, fits beside the logo
+       from 768px up; where it would not, it starts after the logo instead of running under it. */
+    .nav-wrapper #main-nav .nav-menu--main a, .nav-wrapper #main-nav .nav-menu--main span { font-size: 0.875rem; padding-left: 0.6em; padding-right: 0.6em; margin: 0 1px; }
+    .nav-wrapper #main-nav .nav-menu--main a.report-a-problem-btn { padding-left: 0.85em; padding-right: 0.85em; margin-right: 4px; }
     /* The menu's wrappers span the header, over the logo: only the menu's links take clicks. */
     .nav-wrapper .container, .nav-wrapper #main-nav { pointer-events: none; }
     .nav-wrapper #main-nav .nav-menu--main, .nav-wrapper #main-nav .nav-menu--main * { pointer-events: auto; }
@@ -692,6 +696,17 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 .js-reporting-page--active { animation: gr-step-fade-in 0.3s ease backwards; }
 @keyframes gr-step-out { to { opacity: 0; } }
 @keyframes gr-step-fade-in { from { opacity: 0; } }
+/* Going on, the step left slides out to the left and the new one comes in from the right; going back,
+   the other way round (step-fade.js). The panel clips them sideways only while they move. */
+.gr-step-anim { overflow-x: clip; }
+.gr-step-ghost--on { animation: gr-step-out-left 0.3s var(--gr-ease) forwards; }
+.gr-step-ghost--back { animation: gr-step-out-right 0.3s var(--gr-ease) forwards; }
+.js-reporting-page--active.gr-step-in { animation: gr-step-in-right 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.04s backwards; }
+.js-reporting-page--active.gr-step-in--back { animation-name: gr-step-in-left; }
+@keyframes gr-step-out-left { to { opacity: 0; transform: translateX(-56px); } }
+@keyframes gr-step-out-right { to { opacity: 0; transform: translateX(56px); } }
+@keyframes gr-step-in-right { from { opacity: 0; transform: translateX(56px); } }
+@keyframes gr-step-in-left { from { opacity: 0; transform: translateX(-56px); } }
 
 /* Home page address box as an expandable search (xsearch.js): it widens with a spring when focused or
    filled, on computers; on phones it is always full width. */
@@ -800,3 +815,27 @@ body.gr-has-dock .gr-toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px
 .gr-signin__note p { margin: 0 0 0.4em; }
 .gr-signin__note p:last-child { margin: 0; }
 
+
+/* The municipality chooser on the reports page as a search that filters while typing (dimos-search.js):
+   the list opens under the box, its rows come in one after another, and the matching part is marked.
+   The box and «Εμπρός» share the row, the button as wide as its word (it was cut off at 20%). */
+.dashboard-search { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 0.75em; align-items: center; }
+.dashboard-search > :not(.dashboard-search__input):not(.dashboard-search__submit) { grid-column: 1 / -1; }
+.dashboard-search .dashboard-search__input, .dashboard-search .dashboard-search__submit { float: none; width: auto; padding: 0; }
+.dashboard-search .dashboard-search__submit input { width: auto; padding-left: 1em; padding-right: 1em; white-space: nowrap; }
+.dashboard-search__input { position: relative; }
+.gr-combo { position: relative; display: flex; align-items: center; background: var(--gr-surface); border: 1px solid var(--gr-line-2); border-radius: var(--gr-radius-s); transition: border-color var(--gr-fast) ease, box-shadow var(--gr-fast) ease; }
+.gr-combo:focus-within { border-color: var(--gr-accent); box-shadow: var(--gr-ring); }
+.gr-combo__icon { display: inline-flex; flex: none; padding-left: 12px; color: var(--gr-ink-3); transition: color var(--gr-fast) ease, transform var(--gr-med) var(--gr-ease); }
+.gr-combo:focus-within .gr-combo__icon { color: var(--gr-accent); transform: scale(1.1); }
+.gr-combo__input.gr-combo__input { flex: 1 1 auto; width: 100%; min-width: 0; margin: 0; padding: 0.7em 0.75em; border: 0; background: transparent; box-shadow: none; outline: 0; font: inherit; color: var(--gr-ink); }
+.gr-combo__list { position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; right: 0; max-height: min(320px, 50vh); margin: 0; padding: 6px; overflow-y: auto; list-style: none; background: var(--gr-surface); border: 1px solid var(--gr-line); border-radius: var(--gr-radius-s); box-shadow: var(--gr-shadow-3); transform-origin: top center; animation: gr-combo-open 0.2s var(--gr-ease); }
+.gr-combo__option, .gr-combo__empty { margin: 0; padding: 0.55em 0.75em; border-radius: 8px; line-height: 1.3; }
+.gr-combo__option { cursor: pointer; color: var(--gr-ink); animation: gr-combo-row 0.24s var(--gr-ease) backwards; animation-delay: calc(var(--i, 0) * 18ms); transition: background-color var(--gr-fast) ease, color var(--gr-fast) ease; }
+.gr-combo__option:hover { background: var(--gr-surface-2); }
+.gr-combo__option[aria-selected="true"] { background: var(--gr-accent-soft); color: var(--gr-accent-ink); }
+.gr-combo__option mark { padding: 0; background: none; color: var(--gr-accent); font-weight: 700; }
+.gr-combo__empty { color: var(--gr-ink-3); }
+.gr-combo__status { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@keyframes gr-combo-open { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
+@keyframes gr-combo-row { from { opacity: 0; transform: translateY(4px); } }

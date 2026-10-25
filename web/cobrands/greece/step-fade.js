@@ -1,10 +1,12 @@
 /*
- * The report form's steps fade into each other. FixMyStreet switches steps at once
+ * The report form's steps slide into each other. FixMyStreet switches steps at once
  * (fixmystreet.pageController.toPage) and that stays as it is; just before, a copy of the step being
- * left is made and, once the new step is shown, laid over it with the panel's background and faded
- * out (theme.css .gr-step-ghost) while the new one fades in. The copy has no ids, names, frames or
- * scripts, is inert and hidden from screen readers, and is removed after the fade, so the form and
- * its fields are untouched. Not for steps showing the map (phones), nor with reduced motion.
+ * left is made and, once the new step is shown, laid over it with the panel's background. Going on,
+ * the copy slides out to the left and fades while the new step slides in from the right; going back
+ * (the stepper, the browser's back button), the other way round (theme.css .gr-step-ghost,
+ * .gr-step-in). The copy has no ids, names, frames or scripts, is inert and hidden from screen
+ * readers, and is removed after the slide, so the form and its fields are untouched. Not for steps
+ * showing the map (phones), nor with reduced motion.
  */
 (function() {
     'use strict';
@@ -51,14 +53,25 @@
             var result = toPage.apply(this, arguments);
             var next = document.querySelector('.js-reporting-page--active');
             if (ghost && next && next !== curr && next.offsetParent && !next.classList.contains('js-reporting-page--map')) {
+                var pages = Array.prototype.slice.call(document.querySelectorAll('.js-reporting-page'));
+                var back = pages.indexOf(next) < pages.indexOf(curr);
+                ghost.classList.add(back ? 'gr-step-ghost--back' : 'gr-step-ghost--on');
                 ghost.style.top = top + 'px';
                 ghost.style.left = left + 'px';
                 ghost.style.width = width + 'px';
                 ghost.style.backgroundColor = background(parent);
+                parent.classList.add('gr-step-anim');
                 parent.appendChild(ghost);
-                var done = function() { if (ghost.parentNode) { ghost.parentNode.removeChild(ghost); } };
-                ghost.addEventListener('animationend', done);
-                setTimeout(done, 600);
+                next.classList.remove('gr-step-in', 'gr-step-in--back');
+                void next.offsetWidth;   // so that the slide starts again on a quick second change
+                next.classList.add('gr-step-in');
+                if (back) { next.classList.add('gr-step-in--back'); }
+                var done = function() {
+                    if (ghost.parentNode) { ghost.parentNode.removeChild(ghost); }
+                    if (!parent.querySelector('.gr-step-ghost')) { parent.classList.remove('gr-step-anim'); }
+                    next.classList.remove('gr-step-in', 'gr-step-in--back');
+                };
+                setTimeout(done, 520);
             }
             return result;
         };
