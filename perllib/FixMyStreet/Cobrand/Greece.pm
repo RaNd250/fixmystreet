@@ -204,12 +204,32 @@ sub report_new_munge_before_insert {
         $report->set_extra_metadata(greece_phone => $phone) if $phone ne '';
     }
     $self->greece_bad_words($report);
+    $self->greece_route_to_dimos($report);
     return unless $c;
     my $before = $c->stash->{greece_account_before} or return;
     my $user = $report->user;
     return unless $user && $user->in_storage && $user->id == $before->{id};
     $user->$_($before->{$_}) for qw(name phone title);
     $user->update if $user->is_changed;
+}
+
+# Two answers of the police category's «Τι συμβαίνει;», a shop's obstacles or cones and unauthorised
+# road markings with a P-72 sign, take public space: that is the municipality's (its municipal police),
+# as on gov.gr's MyStreet. Such a report goes to the municipality instead, in its own category, which
+# no list offers (state inactive, data/greece/contacts/dimoi-katalipsi.sql) and which has the same
+# address as its «Άλλο»; it stays private, as the police category said it would.
+use constant GREECE_KATALIPSI => 'Κατάληψη κοινόχρηστου χώρου';
+sub greece_route_to_dimos {
+    my ($self, $report) = @_;
+    my $answer = $report->get_extra_field_value('paravasi') // '';
+    return unless $answer eq 'empodia' || $answer eq 'p72';
+    my $dimos = $report->greece_dimos or return;
+    my $contact = FixMyStreet::DB->resultset('Contact')->search(
+        { body_id => $dimos->id, category => GREECE_KATALIPSI, state => { '!=' => 'deleted' } })->first or return;
+    $report->set_extra_metadata(greece_category_chosen => $report->category);
+    $report->category(GREECE_KATALIPSI);
+    $report->bodies_str($dimos->id);
+    $report->non_public(1);
 }
 
 # After a report made without signing in, email the address given a link that signs in once and

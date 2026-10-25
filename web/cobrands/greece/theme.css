@@ -700,6 +700,19 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
    «Ανώνυμη αναφορά» button is not used. */
 .js-show-if-anonymous { display: none !important; }
 
+/* Under the police category's «Τι συμβαίνει;»: the answers that go to the municipality say so, with
+   gov.gr's MyStreet (category_extras_fields.html). */
+.gr-mystreet { display: none; margin: 6px 0 4px; padding: 8px 10px; border-radius: var(--gr-radius-s, 8px); background: var(--gr-accent-soft); color: var(--gr-ink); font-size: 0.8125rem; line-height: 1.4; }
+.gr-choice:has(input[value="empodia"]:checked) + .gr-mystreet,
+.gr-choice:has(input[value="p72"]:checked) + .gr-mystreet { display: block; }
+/* Then the police notice (it says the report goes to the police) and the plate are not needed. */
+.extra-category-questions:has(input[value="empodia"]:checked) > .gr-extra-notice,
+.extra-category-questions:has(input[value="p72"]:checked) > .gr-extra-notice,
+.extra-category-questions:has(input[value="empodia"]:checked) > label[for$="form_pinakida"],
+.extra-category-questions:has(input[value="p72"]:checked) > label[for$="form_pinakida"],
+.extra-category-questions:has(input[value="empodia"]:checked) > input[id$="form_pinakida"],
+.extra-category-questions:has(input[value="p72"]:checked) > input[id$="form_pinakida"] { display: none; }
+
 /* Cloudflare Turnstile (turnstile.js): usually invisible; when it asks for a click, it gets room. */
 .gr-turnstile:not(:empty) { margin: 0.75em 0; }
 

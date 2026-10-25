@@ -1,6 +1,7 @@
 [%# Shared by submit-ev.txt and submit-ev.html: the complaint to the police about parking on an
     EV-charging bay or that blocks the way (category «Στάθμευση σε φορτιστή EV ή εμπόδιο στη
-    διέλευση», email_template "ev"), built from the category's questions. ~%]
+    διέλευση», email_template "ev"), built from the category's questions; also the same complaint to a
+    municipality about a shop's obstacles or a P-72 sign (email_template "katalipsi"). ~%]
 [%
 paravasi = report.get_extra_field_value('paravasi');
 pinakida = report.greece_plate;
@@ -47,6 +48,7 @@ END;
 location = street ? 'Επί της οδού ' _ street _ (number ? ' ' _ number : '') : 'Στο σημείο του χάρτη';
 location = location _ (area.size ? ', στην περιοχή ' _ area.join(', ') : '');
 
-# The police get the photos with the plates readable (PhotoStorage::Greece).
-photos = report.greece_photos('police');
+# The police get the photos with the plates readable (PhotoStorage::Greece); a municipality, when the
+# report went to it instead (email_template "katalipsi", Greece.pm greece_route_to_dimos), the blurred ones.
+photos = report.greece_photos(email_template == 'katalipsi' ? '' : 'police');
 ~%]
