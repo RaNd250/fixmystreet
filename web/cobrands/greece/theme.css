@@ -1146,3 +1146,25 @@ body.gr-has-dock .gr-toast { bottom: calc(68px + env(safe-area-inset-bottom, 0px
    used it (owner's request). The link on a report and on the map of reports, and their panels, go. */
 #key-tool-report-updates, #key-tool-around-updates, #report-updates-data, #around-updates-data,
 #key-tools li:has(> #key-tool-report-updates), #key-tools li:has(> #key-tool-around-updates) { display: none !important; }
+
+/* Reports page (/reports) on phones: smaller headings and spaces; the last 7 days' three numbers side by
+   side (their charts were 156px each, one under the other, mostly empty). */
+@media (max-width: 47.99em) {
+    body.dashboard .dashboard-header h1 { font-size: 1.375rem; line-height: 1.2; margin: 0; }
+    body.dashboard .dashboard-header { padding-top: 10px; padding-bottom: 4px; }
+    body.dashboard .dashboard-item { padding-top: 8px; padding-bottom: 8px; }
+    body.dashboard .dashboard-item h2, body.dashboard .dashboard-subheading { font-size: 1.125rem; margin: 0 0 6px; padding-bottom: 4px; }
+    body.dashboard .dashboard-item p { margin: 0 0 6px; font-size: 0.875rem; }
+    body.dashboard .gr-rmap__totals { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0 0 8px; font-size: 0.875rem; line-height: 1.3; }
+    body.dashboard .gr-rmap__totals strong { font-size: 1.125rem; }
+    body.dashboard .gr-rmap { margin-bottom: 6px; }
+    body.dashboard .dashboard-sparklines { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    body.dashboard .dashboard-sparklines > div { min-width: 0; }
+    body.dashboard .labelled-sparkline { height: auto !important; }
+    body.dashboard .labelled-sparkline canvas { height: 28px !important; width: 100% !important; }
+    body.dashboard .labelled-sparkline .label { margin: 4px 0 0; font-size: 0.75rem; line-height: 1.25; }
+    body.dashboard .labelled-sparkline .label strong { display: block; margin: 0; font-size: 1.25rem; }
+    body.dashboard .dashboard-search h2 { margin-bottom: 6px; }
+    body.dashboard .dashboard-ranking-table td { padding-top: 4px; padding-bottom: 4px; font-size: 0.875rem; }
+    body.dashboard .footer-marketing { margin-top: 12px; }
+}
