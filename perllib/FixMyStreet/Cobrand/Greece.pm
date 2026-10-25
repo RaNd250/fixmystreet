@@ -139,7 +139,7 @@ sub report_check_for_errors {
     $more{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
     if ($report && ($report->title // '') !~ /\S/) {
         my $category = $report->category // '';
-        my $title = $category eq 'Άλλα' || $category eq '' ? greece_excerpt($report->detail, 60) : $category;
+        my $title = $category eq 'Άλλο' || $category eq '' ? greece_excerpt($report->detail, 60) : $category;
         $report->title($title || $category || 'Αναφορά');
     }
     return ($self->SUPER::report_check_for_errors($c), %more);
@@ -402,6 +402,36 @@ sub munge_report_new_category_list {
             };
         } @$metas;
     }
+}
+
+# The order of the categories, by their stored (Greek) names, in either language: on the report form
+# and in the category filters of the map and the reports pages. Any other category follows in
+# FixMyStreet's alphabetical order, and «Άλλο» stays last.
+my @CATEGORY_ORDER = (
+    'Λακκούβα ή φθορά οδοστρώματος',
+    'Πρόβλημα με πεζοδρόμιο',
+    'Στάθμευση σε ράμπα ή θέση ΑμεΑ, πεζοδρόμιο ή διάβαση',
+    'Στάθμευση σε φορτιστή EV ή εμπόδιο στη διέλευση',
+    'Θέματα καθαριότητας',
+    'Πράσινο και δέντρα',
+);
+sub _greece_sort_categories {
+    my $list = shift or return;
+    my %rank;
+    @rank{@CATEGORY_ORDER} = 0 .. $#CATEGORY_ORDER;
+    my $i = 0;
+    @$list = map { $_->[2] } sort { $a->[0] <=> $b->[0] || $a->[1] <=> $b->[1] } map {
+        my $name = ref $_ eq 'HASH' ? $_->{name} : ref $_ ? $_->category : $_;
+        [ $rank{$name // ''} // (($name // '') eq 'Άλλο' ? 2000 : 1000), $i++, $_ ];
+    } @$list;
+}
+sub munge_mixed_category_groups { my ($self, $list) = @_; _greece_sort_categories($list) }
+sub munge_reports_category_list { my ($self, $categories) = @_; _greece_sort_categories($categories) }
+sub munge_around_filter_category_list {
+    my $self = shift;
+    my $c = $self->{c} or return;
+    _greece_sort_categories($c->stash->{filter_categories});
+    _greece_sort_categories($_->{categories}) for @{ $c->stash->{category_groups} || [] };
 }
 
 # Who is voting 👍/👎 on a report (App::Controller::GreeceVote, Problem::greece_votes): a signed-in

@@ -3437,7 +3437,7 @@ msgstr "Σειρά"
 #: perllib/FixMyStreet/Queue/Item/Report.pm:146
 #: perllib/FixMyStreet/Queue/Item/Report.pm:230
 msgid "Other"
-msgstr "Άλλα"
+msgstr "Άλλο"
 
 #: templates/web/base/reports/index.html:123
 #: templates/web/fixmystreet.com/reports/summary.html:132
