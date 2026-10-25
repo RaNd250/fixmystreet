@@ -680,8 +680,13 @@ sub greece_sms {
 
     my $paravasi = $self->get_extra_field_value('paravasi') // '';
     my $address = $self->greece_address($cobrand);
-    my $where = $address ? "στη διεύθυνση $address"
-        : sprintf('στο σημείο %.5f, %.5f', $self->latitude, $self->longitude);
+    # Where the map gives the street without a house number (OpenStreetMap has none there), the spot's
+    # coordinates as well, so that the police can find it.
+    my $closest = $cobrand && $cobrand->find_closest($self);
+    my $number = $closest && $closest->parts->{number};
+    my $where = !$address ? sprintf('στο σημείο %.5f, %.5f', $self->latitude, $self->longitude)
+        : $number ? "στη διεύθυνση $address"
+        : sprintf('στη διεύθυνση %s (σημείο %.5f, %.5f)', $address, $self->latitude, $self->longitude);
     my $what;
     if (my $does = $SMS_VEHICLE{$paravasi}) {
         my $plate = $self->greece_plate;

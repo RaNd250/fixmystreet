@@ -1050,6 +1050,9 @@ body.gr-has-dock .gr-toast { bottom: calc(68px + env(safe-area-inset-bottom, 0px
     /* The address search opens from «Αναζήτηση διεύθυνσης» (minimap.js), when the map is there, as a
        pop-up under the header. */
     body.gr-minimap-on #postcodeForm:not(.gr-search-open) { display: none; }
+    /* «Πώς να αναφέρεις ένα πρόβλημα» told to type a street, which phones no longer show first; the map
+       and its message say what to do. Gone on phones, as it already was once the location is found. */
+    body.gr-minimap-on #front-howto > h2, body.gr-minimap-on #front-howto > .big-numbers { display: none; }
     body.gr-minimap-on #postcodeForm.gr-search-open {
         position: fixed; top: 52px; left: 12px; right: 12px; z-index: 1100; padding: 10px 12px 12px;
         border-radius: var(--gr-radius-l); background: var(--gr-surface); box-shadow: var(--gr-shadow-3);
