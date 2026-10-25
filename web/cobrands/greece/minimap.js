@@ -171,7 +171,8 @@
                 // The report's map opens at the same scale: MapLibre's zoom z is OpenLayers' z + 1 (512 px
                 // against 256 px tiles), and FixMyStreet's zoom counts from its lowest level, 13 (Map::Base).
                 var olZoom = Math.min(6, Math.max(0, Math.round(z + 1) - 13));
-                reportLink.href = reportBase + '?latitude=' + c.lat.toFixed(6) + '&longitude=' + c.lng.toFixed(6) + '&zoom=' + olZoom;
+                // gr_home: on phones the report opens at its first step, at this spot (report-skip-map.js).
+                reportLink.href = reportBase + '?latitude=' + c.lat.toFixed(6) + '&longitude=' + c.lng.toFixed(6) + '&zoom=' + olZoom + '&gr_home=1';
             }
             if (!index || z < DIMOS_ZOOM) {
                 show(null);
