@@ -21,6 +21,8 @@
 
     // The all-time chart's colours are fixed in dashboard.js: change them once it is drawn, which jQuery
     // may do even after the page's load event, so look for it for a few seconds.
+    // (The reports page shows a map instead of it: nothing to wait for.)
+    if (!document.getElementById('chart-all-reports')) { return; }
     var tries = 0;
     (function recolour() {
         var chart = window.chartAllReports;

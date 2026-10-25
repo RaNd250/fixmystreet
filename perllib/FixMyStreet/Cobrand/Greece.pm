@@ -349,6 +349,41 @@ sub reports_hook_restrict_bodies_list {
     return [ grep { (ref $_ eq 'HASH' ? $_->{name} : $_->name) =~ /^Δήμος / } @$bodies ];
 }
 
+# Public reports per municipality, for the map on the reports page (templates/web/greece/reports/index.html,
+# reports-map.js): [{ n => name, u => '/reports/<name>', t => all, o => open, f => fixed }], most first,
+# only the municipalities that have any. Reports for the police (not public) are not counted.
+sub greece_reports_by_dimos {
+    my $self = shift;
+    my $open = FixMyStreet::DB::Result::Problem->open_states;
+    my $fixed = FixMyStreet::DB::Result::Problem->fixed_states;
+    my @rows = FixMyStreet::DB->resultset('Problem')->search(
+        { non_public => 0, state => [ FixMyStreet::DB::Result::Problem->visible_states ] },
+        { columns => [ 'bodies_str', 'state', { n => { count => 'id' } } ], group_by => [ 'bodies_str', 'state' ],
+          result_class => 'DBIx::Class::ResultClass::HashRefInflator' },
+    )->all;
+    my %count;
+    for my $row (@rows) {
+        for my $id (split /,/, $row->{bodies_str} // '') {
+            my $c = $count{$id} ||= { t => 0, o => 0, f => 0 };
+            $c->{t} += $row->{n};
+            $c->{o} += $row->{n} if $open->{ $row->{state} };
+            $c->{f} += $row->{n} if $fixed->{ $row->{state} };
+        }
+    }
+    return [] unless %count;
+    my @bodies = FixMyStreet::DB->resultset('Body')->search(
+        { id => [ keys %count ], deleted => 0, name => { -like => 'Δήμος %' } })->all;
+    my @list = map { { n => $_->name, u => '/reports/' . $self->short_name($_), %{ $count{ $_->id } } } } @bodies;
+    return [ sort { $b->{t} <=> $a->{t} || $a->{n} cmp $b->{n} } @list ];
+}
+
+# Data for a page's script, as JSON text (the template escapes it into an attribute).
+sub greece_json {
+    my ($self, $data) = @_;
+    require JSON::MaybeXS;
+    return JSON::MaybeXS->new(canonical => 1)->encode($data);
+}
+
 # A text of the site's own templates in the page's language: greece_t('ελληνικά', 'English').
 sub greece_t {
     my ($self, $el, $en) = @_;

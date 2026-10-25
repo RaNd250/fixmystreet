@@ -1,0 +1,167 @@
+[%# FixMyStreet's reports/index.html (the reports page, «Αναφορές προβλημάτων ανά δήμο») with a map of
+    the reports per municipality in place of the all-time chart; a body's dashboard keeps the chart. ~%]
+[% USE Number.Format -%]
+[% extra_js = [
+    version('/vendor/chart.min.js'),
+    version('/vendor/accessible-autocomplete.min.js'),
+    version('/js/dashboard.js')
+] -%]
+[%
+    problems_reported = problems_reported_by_period.last | format_number;
+    problems_fixed = problems_fixed_by_period.last | format_number;
+    last_seven_reported = last_seven_days.problems_total | format_number;
+    last_seven_updated = last_seven_days.updated_total | format_number;
+    last_seven_fixed = last_seven_days.fixed_total | format_number;
+    other_categories_formatted = other_categories | format_number;
+-%]
+[% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass = 'dashboard' %]
+
+<div class="dashboard-header">
+    [%# The heading as the page's title (_page_title.html), not «Πίνακας Ελέγχου», except on a body's dashboard. ~%]
+    <h1>[% IF body %][% loc('Dashboard') %] – [% body.name %][% ELSE %][% c.cobrand.greece_t('Αναφορές προβλημάτων ανά δήμο', 'Problem reports by municipality') %][% END %]</h1>
+</div>
+
+[% IF body %]
+<div class="dashboard-row">
+    <div class="dashboard-item dashboard-item--12">
+        <h2>[% loc('All time') %]</h2>
+        <div class="labelled-line-chart">
+            <canvas id="chart-all-reports" width="600" height="250"
+                data-labels="[[% FOR period IN problem_periods %]&quot;[% period %]&quot;[% IF NOT loop.last %],[% END %][% END %]]"
+                data-values-reports="[[% problems_reported_by_period.join(',') %]]"
+                data-values-fixed="[[% problems_fixed_by_period.join(',') %]]"
+                ></canvas>
+            <span class="label" data-datasetindex="0"><strong style="color: #D97B0C">[% tprintf(nget("%s problem reported", "%s problems reported", problems_reported_by_period.last), decode(problems_reported) _ '</strong>') %]</span>
+            <span class="label" data-datasetindex="1"><strong style="color: #56A54A">[% tprintf(nget("%s problem marked as fixed", "%s problems marked as fixed", problems_fixed_by_period.last), decode(problems_fixed) _ '</strong>') %]</span>
+        </div>
+    </div>
+</div>
+[% ELSE %]
+[%# In place of the all-time chart: the public reports on a map, one circle per municipality with its
+    count (reports-map.js, theme.css .gr-rmap), from Greece.pm greece_reports_by_dimos. The map shows once
+    the script has what it needs; the list below it works without it, and gives the municipalities'
+    pages as links. ~%]
+[% gr_dimoi = c.cobrand.greece_reports_by_dimos %]
+<div class="dashboard-row">
+    <div class="dashboard-item dashboard-item--12">
+        <h2>[% c.cobrand.greece_t('Στον χάρτη', 'On the map') %]</h2>
+        <p class="gr-rmap__totals">
+            <span>[% tprintf(nget("%s problem reported", "%s problems reported", problems_reported_by_period.last), '<strong>' _ decode(problems_reported) _ '</strong>') %]</span>
+            <span class="gr-rmap__fixed">[% tprintf(nget("%s problem marked as fixed", "%s problems marked as fixed", problems_fixed_by_period.last), '<strong>' _ decode(problems_fixed) _ '</strong>') %]</span>
+        </p>
+        <div class="gr-rmap" id="gr-rmap" hidden
+            data-counts="[% c.cobrand.greece_json(gr_dimoi) | html %]"
+            data-index="[% version('/cobrands/greece/dimoi/index.json') %]"
+            data-style="/tiles/styles/positron/style.json">
+            <div class="gr-rmap__map" id="gr-rmap-map" role="region" aria-label="[% c.cobrand.greece_t('Χάρτης με τις αναφορές ανά δήμο', 'Map of reports by municipality') %]"></div>
+        </div>
+      [% IF gr_dimoi.size %]
+        <details class="gr-rmap__details">
+            <summary>[% c.cobrand.greece_t('Οι δήμοι με αναφορές', 'Municipalities with reports') %] ([% gr_dimoi.size %])</summary>
+            <ul class="gr-rmap__list">
+              [% FOR d IN gr_dimoi %]
+                <li><a href="[% d.u %]">[% d.n | html %]</a> <span>[% d.t %]</span></li>
+              [% END %]
+            </ul>
+        </details>
+      [% ELSE %]
+        <p class="gr-rmap__none">[% c.cobrand.greece_t('Δεν υπάρχουν ακόμα δημόσιες αναφορές.', 'There are no public reports yet.') %]</p>
+      [% END %]
+        <script defer src="[% version('/cobrands/greece/vendor/maplibre-gl-4.7.1/maplibre-gl.js') %]"></script>
+        <script defer src="[% version('/cobrands/greece/reports-map.js') %]"></script>
+    </div>
+</div>
+[% END %]
+
+<div class="dashboard-row">
+    <div class="dashboard-item dashboard-item--6">
+        <h2 class="dashboard-subheading">[% loc('Last 7 days') %]</h2>
+        <div class="dashboard-sparklines">
+            <div>
+                <div class="labelled-sparkline">
+                    <canvas width="200" height="50" data-color="#D97B0C" data-values="[% last_seven_days.problems.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #D97B0C;">[% tprintf(nget("%s problem reported", "%s problems reported", last_seven_days.problems_total), decode(last_seven_reported) _ '</strong>') %]</span>
+                </div>
+            </div>
+            <div>
+                <div class="labelled-sparkline">
+                    <canvas width="200" height="50" data-color="#269AE9" data-values="[% last_seven_days.updated.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #269AE9;">[% tprintf(nget("%s update on problems", "%s updates on problems", last_seven_days.updated_total), decode(last_seven_updated) _ '</strong>') %]</span>
+                </div>
+            </div>
+            <div>
+                <div class="labelled-sparkline">
+                    <canvas width="200" height="50" data-color="#56A54A" data-values="[% last_seven_days.fixed.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #56A54A;">[% tprintf(nget("%s problem marked as fixed", "%s problems marked as fixed", last_seven_days.fixed_total), decode(last_seven_fixed) _ '</strong>') %]</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-item dashboard-item--6">
+        <form class="dashboard-search">
+            <h2>[% loc('Show reports in your area') %]</h2>
+          [% IF body %]
+            <label for="ward">[% loc('Pick your ward') %]</label>
+            <div class="dashboard-search__input">
+                <select id="ward" name="ward" class="js-autocomplete" required>
+                    <option value="">[% loc('Pick your ward') %]</option>
+                  [% FOR child IN children.values.sort('name') %]
+                    <option>[% child.name | html ~%]</option>
+                  [% END %]
+                </select>
+            </div>
+          [% ELSE %]
+            <label for="body">[% loc('Pick your council') %]</label>
+            <div class="dashboard-search__input">
+                <select id="body" name="body" class="js-autocomplete" required>
+                    <option value="">[% loc('Pick your council') %]</option>
+                  [% FOR b IN bodies # Not body as 'body' may be on stash %]
+                    <option value="[% b.id %]">[% b.name | html ~%]
+                        [% IF NOT b.area_count %] [% loc('(no longer exists)') %][% END ~%]
+                    </option>
+                  [% END %]
+                </select>
+            </div>
+          [% END %]
+            <div class="dashboard-search__submit">
+                <input type="submit" value="[% loc('Go') %]">
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="dashboard-row">
+    <div class="dashboard-item dashboard-item--6">
+      [% IF NOT body AND c.cobrand.moniker != 'fixmystreet' %]
+        <h2 class="dashboard-subheading">[% loc('Top 5 responsive councils') %]</h2>
+        <p>[% loc('Average time between a problem being reported and being fixed, last 100 reports.') %]</p>
+        <table class="dashboard-ranking-table">
+            <tbody>
+              [% FOR line IN top_five_bodies %]
+                <tr><td>[% line.name %]</td><td>[% tprintf(nget("%s day", "%s days", line.days), line.days) %]</td></tr>
+              [% END %]
+            </tbody>
+            <tfoot>
+                <tr><td>[% loc('Overall average') %]</td><td>[% tprintf(nget("%s day", "%s days", average), average) %]</td></tr>
+            </tfoot>
+        </table>
+      [% END %]
+    </div>
+    <div class="dashboard-item dashboard-item--6">
+        <h2 class="dashboard-subheading">[% loc('Top 5 most used categories') %]</h2>
+        <p>[% loc('Number of problems reported in each category, in the last 7 days.') %]</p>
+        <table class="dashboard-ranking-table">
+            <tbody>
+              [% FOR line IN top_five_categories %]
+                [% line_count = line.count | format_number ~%]
+                <tr><td>[% line.category %]</td><td>[% tprintf(nget("%s report", "%s reports", line.count), decode(line_count)) %]</td></tr>
+              [% END %]
+            </tbody>
+            <tfoot>
+                <tr><td>[% loc('Other categories') %]</td><td>[% tprintf(nget("%s report", "%s reports", other_categories), decode(other_categories_formatted)) %]</td></tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]
