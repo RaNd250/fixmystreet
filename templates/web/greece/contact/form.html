@@ -1,0 +1,129 @@
+[%# FixMyStreet's contact/form.html as cards, with quick topics, checks while typing, a character count
+    and a sending state (contact-ui.js, theme.css .gr-cform); same fields and names, so the server side is
+    FixMyStreet's. ~%]
+<form method="post" action="/contact/submit" class="validate gr-cform" novalidate>
+  <input type="hidden" name="token" value="[% csrf_token %]">
+  <input type="hidden" name="s" value="[% s %]">
+
+  [% INCLUDE 'errors.html' %]
+
+  [% IF update %]
+
+      <p>
+      [% loc('You are reporting the following update for being abusive, containing personal information, or similar:') %]
+      </p>
+
+      <blockquote>
+          <cite>
+              [% IF update.anonymous %]
+                  [% tprintf( loc('Update below added anonymously at %s'), prettify_dt( update.confirmed ) ) %]
+              [% ELSE %]
+                  [% tprintf( loc('Update below added by %s at %s'), update.name, prettify_dt( update.confirmed ) ) | html %]
+              [% END %]
+          </cite>
+
+          <p>
+              [%~ update.text | html ~%]
+          </p>
+
+      </blockquote>
+      <input type="hidden" name="update_id" value="[% update.id %]">
+      <input type="hidden" name="id" value="[% update.problem_id %]">
+
+  [% ELSIF problem %]
+      [% IF moderation_complaint %]
+      <input type="hidden" name="m" value="[% moderation_complaint %]">
+      <p>[% loc('You are complaining that this problem report was unnecessarily moderated:') %]</p>
+      [% ELSE %]
+      [% INCLUDE 'contact/unsuitable-text.html' %]
+      [% END %]
+
+      <blockquote>
+          <h2>[% problem.title_safe | html %]</h2>
+
+          <cite>
+              [% IF problem.anonymous %]
+                  [% tprintf( loc('Reported anonymously at %s'), prettify_dt( problem.confirmed ) ) %]
+              [% ELSE %]
+                  [% tprintf( loc('Reported by %s at %s'), problem.name, prettify_dt( problem.confirmed ) ) | html %]
+              [% END %]
+          </cite>
+
+          <p>
+              [%~ problem.detail | html ~%]
+          </p>
+
+      </blockquote>
+      <input type="hidden" name="id" value="[% problem.id %]">
+
+  [% ELSE %]
+
+      [% INCLUDE 'contact/blurb.html' %]
+
+  [% END %]
+
+  [% INCLUDE 'contact/who.html' %]
+
+  [%# Quick topics: a tap fills the subject (contact-ui.js); the subject stays editable. ~%]
+  [% IF NOT problem AND NOT update %]
+  <div class="gr-cform__topics" role="group" aria-label="[% c.cobrand.greece_t('Θέμα με ένα πάτημα', 'Pick a topic') %]">
+    [% FOR topic IN [
+        c.cobrand.greece_t('Διόρθωση στοιχείων δήμου', 'Correct a municipality’s details'),
+        c.cobrand.greece_t('Πρόβλημα με τον ιστότοπο', 'Problem with the site'),
+        c.cobrand.greece_t('Για δήμους και φορείς', 'For municipalities and bodies'),
+        c.cobrand.greece_t('Πρόταση ή ιδέα', 'Suggestion or idea'),
+        c.cobrand.greece_t('Κάτι άλλο', 'Something else') ] %]
+      <button type="button" class="gr-cform__chip" data-topic="[% topic | html %]">[% topic | html %]</button>
+    [% END %]
+  </div>
+  [% END %]
+
+  <div class="gr-cform__grid">
+    <div class="gr-cform__field">
+      <label class="govuk-label" for="form_name">[% loc('Your name') %]</label>
+      [% IF field_errors.name %]<div class="form-error">[% field_errors.name %]</div>[% END %]
+      <input type="text" class="govuk-input required" name="name" autocomplete="name" id="form_name" value="[% form_name | html %]" size="30" data-gr-required="1">
+      <span class="gr-cform__hint" aria-live="polite"></span>
+    </div>
+    <div class="gr-cform__field">
+      <label class="govuk-label" for="form_email">[% loc('Your email') %]</label>
+      [% IF field_errors.em %]<div class="form-error">[% field_errors.em %]</div>[% END %]
+      <input type="email" class="govuk-input required email" name="em" id="form_email" value="[% em | html %]" size="30" autocomplete="email" inputmode="email" data-gr-required="1" data-gr-email="1">
+      <span class="gr-cform__hint" aria-live="polite"></span>
+    </div>
+  </div>
+
+  <div class="gr-cform__field">
+    <label class="govuk-label" for="form_phone">[% loc('Your phone number') %] <span class="gr-cform__opt">[% loc('optional') %]</span></label>
+    <input type="tel" class="govuk-input extra.phone" name="extra.phone" id="form_phone" value="" size="30" autocomplete="tel">
+  </div>
+
+  <div class="gr-cform__field">
+    <label class="govuk-label" for="form_subject">[% loc('Subject') %]</label>
+    [% IF field_errors.subject %]<div class="form-error">[% field_errors.subject %]</div>[% END %]
+    <input type="text" class="govuk-input required" name="subject" id="form_subject" value="[% subject | html %]" size="30" data-gr-required="1">
+    <span class="gr-cform__hint" aria-live="polite"></span>
+  </div>
+
+  <div class="gr-cform__field">
+    <label class="govuk-label" for="form_message">[% loc('Message') %]</label>
+    [% IF field_errors.message %]<div class="form-error">[% field_errors.message %]</div>[% END %]
+    <textarea class="govuk-textarea required" name="message" id="form_message" rows="5" cols="50" maxlength="5000" data-gr-required="1">[% message | html %]</textarea>
+    <div class="gr-cform__meta">
+      <span class="gr-cform__hint" aria-live="polite"></span>
+      <span class="gr-cform__count" aria-hidden="true">0 / 5000</span>
+    </div>
+  </div>
+
+  [% IF NOT problem AND NOT update %]
+  <p class="gr-cform__note">[% loc('If you are contacting us about a specific report or update please include a link to the report in the message.') %]</p>
+  [% END %]
+
+  [% PROCESS 'auth/form_extra.html' %]
+
+  <button class="final-submit btn btn--primary gr-cform__send" type="submit">
+    <span class="gr-cform__spinner" aria-hidden="true"></span>
+    <span class="gr-cform__label">[% loc('Send') %]</span>
+  </button>
+
+</form>

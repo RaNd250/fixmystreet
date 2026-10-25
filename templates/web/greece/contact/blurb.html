@@ -1,0 +1,21 @@
+[%# Above the contact form: two cards, the FAQ and «not for reports» (FixMyStreet's blurb.html, which named
+    «FixMyStreet» without the s). ~%]
+<div class="gr-contact__cards">
+    <a class="gr-contact__card" href="[% c.uri_for('/faq') %]">
+        <span class="gr-contact__icon" aria-hidden="true">?</span>
+        <span>
+            <strong>[% c.cobrand.greece_t('Συχνές ερωτήσεις', 'FAQ') %]</strong>
+            <span>[% c.cobrand.greece_t('Η απάντηση μπορεί να είναι ήδη εκεί.', 'The answer may already be there.') %]</span>
+        </span>
+    </a>
+    <a class="gr-contact__card gr-contact__card--warn" href="/">
+        <span class="gr-contact__icon" aria-hidden="true">!</span>
+        <span>
+            <strong>[% c.cobrand.greece_t('Όχι για αναφορές προβλημάτων', 'Not for reporting problems') %]</strong>
+            <span>[% c.cobrand.greece_t('Τα μηνύματα πηγαίνουν στην ομάδα πίσω από το FixMyStreets, όχι σε κάποια υπηρεσία. Για αναφορά, πήγαινε στην αρχική.',
+                'Messages go to the team behind FixMyStreets, not to a council. To report a problem, go to the home page.') %]</span>
+        </span>
+    </a>
+</div>
+<p class="gr-contact__volunteer">[% c.cobrand.greece_t('Η πλατφόρμα λειτουργεί με την εθελοντική συνεισφορά πολιτών.',
+    'The platform runs on the volunteer contribution of citizens.') %]</p>

@@ -632,15 +632,14 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 .gr-plate-note { margin: 0.25em 0 0.75em; font-size: 0.875em; color: #5b6475; }
 
 /* Logo «FixMyStreets» (2026-10-26, from the owner's fms_12.jpg; its black background made transparent, its
-   hammer-shaped capital T replaced by the word's own lowercase t, owner's request):
-   36px high in the 44px header, with 2x and 3x copies for sharp screens. */
+   hammer-shaped capital T replaced by the word's own lowercase t, owner's request): 36px high in the 44px
+   header, sharpened, with a thin light outline drawn into each copy (1x to 4x) so it stays crisp on the
+   blue header; a CSS drop-shadow blurred it. */
 #site-logo {
-    width: 160px; background-size: 160px 36px; background-position: 0 50%;
-    /* A thin white outline, so the blue figure and letters stand out on the blue header. */
-    filter: drop-shadow(0 0 0.6px #fff) drop-shadow(0 0 0.6px #fff);
-    background-image: url("logo/site-logo-v2.png");
-    background-image: -webkit-image-set(url("logo/site-logo-v2.png") 1x, url("logo/site-logo-v2@2x.png") 2x, url("logo/site-logo-v2@3x.png") 3x);
-    background-image: image-set(url("logo/site-logo-v2.png") 1x, url("logo/site-logo-v2@2x.png") 2x, url("logo/site-logo-v2@3x.png") 3x);
+    width: 157px; background-size: 157px 36px; background-position: 0 50%;
+    background-image: url("logo/site-logo-v3.png");
+    background-image: -webkit-image-set(url("logo/site-logo-v3.png") 1x, url("logo/site-logo-v3@2x.png") 2x, url("logo/site-logo-v3@3x.png") 3x, url("logo/site-logo-v3@4x.png") 4x);
+    background-image: image-set(url("logo/site-logo-v3.png") 1x, url("logo/site-logo-v3@2x.png") 2x, url("logo/site-logo-v3@3x.png") 3x, url("logo/site-logo-v3@4x.png") 4x);
 }
 
 /* Desktop menu. base.css colours visited menu links #333/#000 (.nav-menu a:visited), which on the
@@ -1180,4 +1179,47 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
     body.dashboard .dashboard-search h2 { margin-bottom: 6px; }
     body.dashboard .dashboard-ranking-table td { padding-top: 4px; padding-bottom: 4px; font-size: 0.875rem; }
     body.dashboard .footer-marketing { margin-top: 12px; }
+}
+
+/* Contact page (contact/blurb.html, contact/form.html, contact-ui.js): two cards above, the form as a
+   card with quick topics, fields that say whether they are fine, a character count and a sending state. */
+.gr-contact__cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin: 0.5em 0 0.75em; }
+.gr-contact__card { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--gr-line); border-radius: var(--gr-radius); background: var(--gr-surface); color: var(--gr-ink); text-decoration: none; box-shadow: var(--gr-shadow-1); transition: transform var(--gr-fast) ease, box-shadow var(--gr-fast) ease, border-color var(--gr-fast) ease; }
+.gr-contact__card:hover, .gr-contact__card:focus-visible { transform: translateY(-2px); box-shadow: var(--gr-shadow-3); border-color: var(--gr-accent); text-decoration: none; color: var(--gr-ink); }
+.gr-contact__card strong { display: block; margin-bottom: 2px; }
+.gr-contact__card span span { color: var(--gr-ink-2); font-size: 0.875rem; line-height: 1.4; }
+.gr-contact__icon { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--gr-accent-soft); color: var(--gr-accent); font-weight: 800; }
+.gr-contact__card--warn .gr-contact__icon { background: #fff4e0; color: #b45309; }
+.gr-contact__volunteer { margin: 0 0 1em; color: var(--gr-ink-2); font-size: 0.875rem; }
+.gr-cform { padding: 16px; border: 1px solid var(--gr-line); border-radius: var(--gr-radius-l); background: var(--gr-surface); box-shadow: var(--gr-shadow-1); }
+.gr-cform--shake { animation: gr-shake 0.35s ease; }
+.gr-cform__topics { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.gr-cform__chip { padding: 6px 12px; border: 1px solid var(--gr-line-2); border-radius: var(--gr-pill); background: var(--gr-surface); color: var(--gr-ink-2); font: inherit; font-size: 0.875rem; cursor: pointer; transition: background-color var(--gr-fast) ease, border-color var(--gr-fast) ease, color var(--gr-fast) ease, transform var(--gr-fast) ease; }
+.gr-cform__chip:hover { border-color: var(--gr-accent); color: var(--gr-accent); }
+.gr-cform__chip:active { transform: scale(0.96); }
+.gr-cform__chip[aria-pressed="true"] { background: var(--gr-accent); border-color: var(--gr-accent); color: #fff; }
+.gr-cform__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 14px; }
+.gr-cform__field { position: relative; margin-bottom: 10px; }
+.gr-cform__field .govuk-label { margin-bottom: 4px; font-weight: 600; font-size: 0.9375rem; }
+.gr-cform__opt { font-weight: 400; color: var(--gr-ink-3); font-size: 0.8125rem; }
+.gr-cform .govuk-input, .gr-cform .govuk-textarea { width: 100%; max-width: none; box-sizing: border-box; border: 1.5px solid var(--gr-line-2); border-radius: var(--gr-radius-s, 10px); padding: 0.6em 0.75em; transition: border-color var(--gr-fast) ease, box-shadow var(--gr-fast) ease; }
+.gr-cform .govuk-input:focus, .gr-cform .govuk-textarea:focus { border-color: var(--gr-accent); box-shadow: var(--gr-ring); outline: 0; }
+.gr-cform__field--ok .govuk-input, .gr-cform__field--ok .govuk-textarea { border-color: #16a34a; }
+.gr-cform__field--bad .govuk-input, .gr-cform__field--bad .govuk-textarea { border-color: #dc2626; }
+.gr-cform__field--ok .govuk-input { padding-right: 2.2em; background: no-repeat right 0.7em center / 1em url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2316a34a' d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E"); }
+.gr-cform__hint { display: block; min-height: 0; color: #dc2626; font-size: 0.8125rem; line-height: 1.3; }
+.gr-cform__hint:empty { display: none; }
+.gr-cform__meta { display: flex; justify-content: space-between; gap: 8px; }
+.gr-cform__count { margin-left: auto; color: var(--gr-ink-3); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.gr-cform__count--near { color: #b45309; }
+.gr-cform .govuk-textarea { resize: vertical; min-height: 7em; }
+.gr-cform__note { color: var(--gr-ink-2); font-size: 0.875rem; }
+.gr-cform__send { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 9em; }
+.gr-cform__spinner { display: none; width: 1em; height: 1em; border: 2px solid rgba(255, 255, 255, 0.45); border-top-color: #fff; border-radius: 50%; animation: gr-spin 0.7s linear infinite; }
+.gr-cform__send--busy .gr-cform__spinner { display: inline-block; }
+.gr-cform__send--busy { opacity: 0.9; cursor: progress; }
+@keyframes gr-spin { to { transform: rotate(360deg); } }
+@media (max-width: 47.99em) {
+    .gr-cform { padding: 12px; }
+    .gr-cform__send { width: 100%; }
 }

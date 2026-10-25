@@ -82,7 +82,10 @@ if ('serviceWorker' in navigator) {
 [% END %]
 
 [% IF file_exists("web/cobrands/" _ c.cobrand.moniker _ "/favicon.ico") %]
-<link rel="icon" href="/cobrands/[% c.cobrand.moniker %]/favicon.ico">
+<link rel="icon" href="/cobrands/[% c.cobrand.moniker %]/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/cobrands/greece/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/cobrands/greece/favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/cobrands/greece/apple-touch-icon.png">
 [% END %]
 
 [% INCLUDE 'header_opengraph.html' %]
