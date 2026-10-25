@@ -1,8 +1,11 @@
-[%# FixMyStreet's report/new/category_extras_fields.html without the «-- Διάλεξε μια επιλογή --» line
-    at the top of a question's list: the first answer shows instead. ~%]
+[%# FixMyStreet's report/new/category_extras_fields.html with a question's list of answers
+    (singlevaluelist, e.g. «Τι συμβαίνει;») as radio buttons in place of a drop-down: no
+    «-- Διάλεξε μια επιλογή --» line, and nothing chosen beforehand, so a required question is answered
+    on purpose (with a drop-down the first answer went unnoticed, and to the police). ~%]
 [%- FOR meta IN metas %]
   [%- meta_name = meta.code -%]
   [%- x_meta_name = 'x' _ meta.code # For report_meta and field_errors lookup, as TT hides codes starting "_" -%]
+  [%- is_choice = meta.variable != 'false' AND meta.datatype != 'datetime' AND meta.datatype != 'multivaluelist' AND meta.item('values').size -%]
 
   [% IF c.cobrand.category_extra_hidden(meta) AND NOT show_hidden %]
 
@@ -13,6 +16,9 @@
       [% IF  meta.datatype == 'multivaluelist' %]
         <fieldset class="group-error-propagate-end">
             <legend class="group-error-place-after">[% (meta.description OR meta.code) | safe %]</legend>
+      [% ELSIF is_choice %]
+        <fieldset class="govuk-fieldset gr-choice">
+            <legend class="govuk-fieldset__legend">[% (meta.description OR meta.code) | safe %]</legend>
       [% ELSIF meta.variable == 'false' %]
         [% (meta.description OR meta.code) | safe %]
       [% ELSE %]
@@ -37,12 +43,16 @@
           [% END %]
           </fieldset>
         [% ELSIF meta.item('values').size %]
-          [%# singlevaluelist %]
-          <select class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+          [%# singlevaluelist, as radio buttons (required on the first makes the group required) %]
+          <div class="govuk-radios govuk-radios--small">
             [% FOR option IN meta.values %]
-              <option value="[% option.key %]"[% IF option.key == report_meta.$x_meta_name.value %] selected[% END %]>[% option.name %]</option>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" type="radio" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]_[% loop.index %]" value="[% option.key %]"[% ' required' IF meta.required == 'true' AND loop.first %][% ' checked' IF option.key == report_meta.$x_meta_name.value %]>
+                <label class="govuk-radios__label" for="[% cat_prefix %]form_[% meta_name %]_[% loop.index %]">[% option.name %]</label>
+              </div>
             [% END %]
-          </select>
+          </div>
+          </fieldset>
         [% ELSIF meta.datatype == 'text' %]
           <textarea class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>[% report_meta.$x_meta_name.value %]</textarea>
         [% ELSE %]

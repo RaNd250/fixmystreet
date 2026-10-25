@@ -952,7 +952,7 @@ msgstr "Κάνε κλικ στον σύνδεσμο αυτού του email γι
 
 #: templates/web/base/report/new/fill_in_details_form.html:16
 msgid "Click the map or drag the pin to adjust the location"
-msgstr "Βρείτε στον χάρτη το ακριβές σημείο"
+msgstr "Βρες στον χάρτη το ακριβές σημείο"
 
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:200
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:159

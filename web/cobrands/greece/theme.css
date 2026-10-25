@@ -874,6 +874,13 @@ body.gr-has-dock .gr-toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px
     .dashboard-search { margin-right: 0; }
 }
 
+/* Page for municipalities and bodies (about/foreis.html): the trial-run note until go-live; and a
+   question's answers as radio buttons in the report form (report/new/category_extras_fields.html). */
+.gr-foreis__staging { margin: 0 0 1.25em; padding: 0.75em 1em; border-left: 4px solid var(--gr-warm); border-radius: var(--gr-radius-s); background: #fff7e6; color: var(--gr-ink); }
+.gr-foreis__lead { font-size: 1.0625rem; color: var(--gr-ink-2); }
+.gr-choice { margin: 0.6em 0 0.25em; padding: 0; border: 0; }
+.gr-choice .govuk-fieldset__legend { margin-bottom: 0.35em; font-weight: 700; }
+
 /* Reports page: the reports per municipality on a map in place of FixMyStreet's chart (reports-map.js,
    templates/web/greece/reports/index.html). A circle per municipality, larger for more reports; the
    marker element is positioned by MapLibre, so only the button inside it grows on hover. */

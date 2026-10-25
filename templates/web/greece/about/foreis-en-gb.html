@@ -3,6 +3,11 @@
 
 <h1>For municipalities and public bodies</h1>
 
+[% IF c.config.STAGING_SITE %]
+<p class="gr-foreis__staging">The site is in a trial run: reports are not sent to the municipalities yet.
+What is described here applies once it runs normally.</p>
+[% END %]
+
 <p class="gr-foreis__lead">People mark a problem on the map, choose a category and add photos, with number plates
 and faces blurred. The report reaches the service of yours responsible for that category by email, with the place
 on the map and the photos.</p>
