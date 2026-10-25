@@ -56,6 +56,8 @@
 .gr-dimos__contacts { margin: 0; padding: 0; list-style: none; font-size: 0.95em; }
 .gr-dimos__contacts li { margin: 0.15em 0; padding: 0; list-style: none; overflow-wrap: anywhere; }
 .gr-dimos__contacts li::before { content: none; }
+.gr-dimos__contacts li.gr-dimos__police { margin-top: 0.4em; padding-top: 0.4em; border-top: 1px solid var(--gr-line, #e3e8f0); }
+.gr-dimos__fix { margin: 0.6em 0 0; font-size: 0.875em; }
 
 .gr-minimap__status { margin: 0.6em 0; font-size: 0.95em; }
 .gr-minimap__actions { display: flex; flex-wrap: wrap; gap: 0.5em; }

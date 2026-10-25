@@ -1,0 +1,23 @@
+[%# To the site's contact address: someone who is not staff asked, in an update, for a report to be
+    closed (Greece.pm process_open311_extras, greece_close_request_email). The update is published; the
+    report keeps its state until a moderator changes it in the admin. ~%]
+Subject: Αίτημα κλεισίματος για την αναφορά [% report.greece_ref %]
+
+Σε μια ενημέρωση ζητήθηκε η αναφορά [% report.greece_ref %] ([% report.category %]) να κλείσει
+([% requested_state %]). Η ενημέρωση δημοσιεύτηκε, αλλά η αναφορά μένει όπως είναι μέχρι να το εγκρίνεις.
+
+Κείμενο της ενημέρωσης:
+
+[% update.text %]
+
+Από: [% update.anonymous ? 'ανώνυμος πολίτης' : update.name %]
+
+Η αναφορά:
+
+[% report_url %]
+
+Για να την κλείσεις, άλλαξε την κατάσταση στο admin (π.χ. «Διορθώθηκε»):
+
+[% admin_url %]
+
+Αν δεν ισχύει, άφησέ την όπως είναι.

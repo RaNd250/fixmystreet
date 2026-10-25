@@ -1,15 +1,33 @@
 <!-- user_loggedout.html (greece) -->
 [%# Reports need no account: name, email and phone, then send. The account comes afterwards, from a
     one-off link emailed to the address given (Greece.pm). The email is optional unless the name is to
-    be shown publicly (anon-email.js marks it required then; Greece.pm checks it too). Updates keep
-    FixMyStreet's own form. ~%]
+    be shown publicly (anon-email.js marks it required then; Greece.pm checks it too). Updates likewise:
+    without an email one is published at once, anonymously (Greece.pm allow_anonymous_updates); with
+    one, FixMyStreet's confirmation link applies. Marking a report fixed waits for our approval. ~%]
 <div id="form_sign_in">
     [% PROCESS 'report/form/private_details.html' %]
   [% IF type == 'update' %]
-    [% INCLUDE '_turnstile.html' %]
-    <h2 class="hidden-js">[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name) %]</h2>
-    [% PROCESS 'report/form/user_loggedout_password.html' %]
-    [% PROCESS 'report/form/user_loggedout_by_email.html' %]
+    <div id="form_sign_in_no" class="form-box gr-reporter">
+        [% INCLUDE 'report/form/user_name.html' %]
+        [% INCLUDE 'report/_show_name_label.html' %]
+        <label for="form_username_register">[% loc('Your email') %]<span> [% loc('(optional)') %]</span></label>
+        [% IF field_errors.username_register %]
+          <p class='form-error'>[% field_errors.username_register %]</p>
+        [% END %]
+        <input type="email" name="username_register" id="form_username_register" value="[% c.get_param('username_register') | html %]"
+            class="form-control" autocomplete="email">
+        <div class="checkbox-group">
+            <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
+            <label class="inline" for="form_add_alert">[% loc('Alert me to future updates') %]</label>
+        </div>
+        <div class="general-notes gr-reporter__note">
+            <p>[% c.cobrand.greece_t(
+                'Χωρίς email η ενημέρωση δημοσιεύεται αμέσως, ανώνυμα. Με email θα σου στείλουμε σύνδεσμο για να την επιβεβαιώσεις, και θα μαθαίνεις τα νέα της αναφοράς. Αν σημειώσεις ότι το πρόβλημα διορθώθηκε, η αναφορά κλείνει αφού το ελέγξουμε.',
+                'Without an email the update is published at once, anonymously. With an email we will send you a link to confirm it, and you will hear what happens next. If you mark the problem as fixed, the report is closed once we have checked.') %]</p>
+        </div>
+        [% INCLUDE '_turnstile.html' %]
+        [% PROCESS 'report/form/submit.html' %]
+    </div>
   [% ELSE %]
     <div id="form_sign_in_no" class="form-box gr-reporter">
         [% INCLUDE 'report/new/extra_name.html' %]

@@ -659,6 +659,43 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
     .nav-menu--main a.report-a-problem-btn { display: none; }
 }
 
+/* «Όλες οι αναφορές» with its submenu («Τοπικές ειδοποιήσεις»; main_nav_items.html, subnav.js). On
+   computers the submenu drops down on hover or from the arrow (keyboards too), and stays while the
+   focus is in it; on phones it is listed under its item, slightly in, and the arrow is not needed. */
+.gr-subnav__menu { margin: 0; padding: 0; list-style: none; }
+.gr-subnav__menu li::before { content: none; }
+@media (max-width: 47.99em) {
+    .gr-subnav__toggle { display: none; }
+    #main-nav .gr-subnav__menu { padding-left: 1em; }
+    #main-nav .gr-subnav__menu a, #main-nav .gr-subnav__menu span { font-size: 1.05em; color: var(--gr-ink-2); }
+}
+@media (min-width: 48em) {
+    /* The menu bar scrolls its overflow (FixMyStreet), which cut the submenu off below it. */
+    .nav-wrapper #main-nav { overflow: visible; }
+    .nav-wrapper #main-nav .nav-menu--main .gr-subnav { position: relative; display: flex; align-items: center; }
+    .gr-subnav__toggle {
+        display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 28px; margin: 0 2px 0 -6px; padding: 0;
+        border: 0; border-radius: 6px; background: none; color: rgba(255, 255, 255, 0.86); cursor: pointer;
+        transition: background-color var(--gr-fast) ease, color var(--gr-fast) ease;
+    }
+    .gr-subnav__toggle:hover, .gr-subnav__toggle:focus-visible { color: #fff; background: rgba(255, 255, 255, 0.12); outline: none; }
+    .gr-subnav__toggle svg { transition: transform var(--gr-fast) var(--gr-ease); }
+    .gr-subnav:hover .gr-subnav__toggle svg, .gr-subnav--open .gr-subnav__toggle svg { transform: rotate(180deg); }
+    .nav-wrapper #main-nav .nav-menu--main .gr-subnav__menu {
+        position: absolute; top: calc(100% + 4px); left: 0; z-index: 60; display: block; min-width: 100%; padding: 6px;
+        background: #13284d; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: var(--gr-radius-s); box-shadow: var(--gr-shadow-3);
+        opacity: 0; visibility: hidden; transform: translateY(-4px);
+        transition: opacity var(--gr-fast) ease, transform var(--gr-fast) var(--gr-ease), visibility 0s linear var(--gr-fast);
+    }
+    /* A bridge over the gap, so the pointer can move down into the submenu. */
+    .nav-wrapper #main-nav .nav-menu--main .gr-subnav__menu::before { content: ""; position: absolute; left: 0; right: 0; top: -8px; height: 8px; }
+    .gr-subnav:hover .gr-subnav__menu, .gr-subnav__menu:focus-within, .gr-subnav--open .gr-subnav__menu {
+        opacity: 1 !important; visibility: visible !important; transform: none !important; transition: opacity var(--gr-fast) ease, transform var(--gr-fast) var(--gr-ease), visibility 0s !important;
+    }
+    .nav-wrapper #main-nav .nav-menu--main .gr-subnav__menu li { display: block; }
+    .nav-wrapper #main-nav .nav-menu--main .gr-subnav__menu a, .nav-wrapper #main-nav .nav-menu--main .gr-subnav__menu span { display: block; margin: 0; border-radius: 8px; }
+}
+
 /* Reports without an email are made from the same form (email left empty), so FixMyStreet's separate
    «Ανώνυμη αναφορά» button is not used. */
 .js-show-if-anonymous { display: none !important; }
@@ -873,6 +910,10 @@ body.gr-has-dock .gr-toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px
 @media (min-width: 48em) {
     .dashboard-search { margin-right: 0; }
 }
+
+/* Contact page: the address at the top (contact/_heading.html). */
+.gr-contact__email { margin: 0 0 1.25em; padding: 0.8em 1em; border-radius: var(--gr-radius-s); background: var(--gr-accent-soft); font-size: 1.0625rem; }
+.gr-contact__email a { font-weight: 700; }
 
 /* Page for municipalities and bodies (about/foreis.html): the trial-run note until go-live; and a
    question's answers as radio buttons in the report form (report/new/category_extras_fields.html). */

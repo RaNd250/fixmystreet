@@ -1,4 +1,5 @@
-[%# FixMyStreet's main_nav_items.html with a language switch after «Βοήθεια». ~%]
+[%# FixMyStreet's main_nav_items.html with «Τοπικές ειδοποιήσεις» as a submenu of «Όλες οι αναφορές»,
+    «Επικοινωνία» after «Βοήθεια», and a language switch. ~%]
 [% INCLUDE 'navigation/_report.html' %]
 
 [%~ IF c.user_exists ~%]
@@ -11,18 +12,39 @@
     [%~ INCLUDE navitem always_url=1 uri='/my/planned' label=loc('Shortlist') ~%]
 [%~ END ~%]
 
-[%~ INCLUDE 'navigation/_all_reports.html' ~%]
-
+[%# «Όλες οι αναφορές» still opens the reports; on computers hovering or the arrow opens its submenu
+    (theme.css .gr-subnav, subnav.js), on phones the submenu is listed under it. The address of the
+    reports is FixMyStreet's (navigation/_all_reports.html). ~%]
 [%~
-  IF pc;
-    pc_uri = pc | uri;
-    pc_suffix = "/list?pc=" _ pc_uri;
-  END;
-
-  INCLUDE navitem uri='/alert' label=loc('Local alerts') suffix=pc_suffix;
+    IF c.user_exists AND c.user.from_body AND ( c.user.categories.size OR c.user.area_ids.size );
+      reports_uri = '/my/inspector_redirect';
+    ELSE;
+      reports_uri = '/reports';
+    END;
+    IF pc;
+      pc_uri = pc | uri;
+      pc_suffix = "/list?pc=" _ pc_uri;
+    END;
+    gr_nav_path = c.req.uri.path;
 ~%]
+    <li class="gr-subnav[% ' gr-subnav--here' IF gr_nav_path.match('^/(reports|alert)') %]">
+      [%~ IF gr_nav_path == reports_uri ~%]
+        <span>[% loc('All reports') %]<span class="screen-reader-only">(current page)</span></span>
+      [%~ ELSE ~%]
+        <a href="[% reports_uri %]">[% loc('All reports') %]</a>
+      [%~ END ~%]
+        <button type="button" class="gr-subnav__toggle" aria-expanded="false" aria-controls="gr-subnav-reports">
+          <span class="screen-reader-only">[% c.cobrand.greece_t('Περισσότερα', 'More') %]</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="currentColor" d="m12 15.4-6-6L7.4 8l4.6 4.6L16.6 8 18 9.4z"/></svg>
+        </button>
+        <ul class="gr-subnav__menu" id="gr-subnav-reports">
+          [%~ INCLUDE navitem uri='/alert' label=loc('Local alerts') suffix=pc_suffix ~%]
+        </ul>
+    </li>
 
 [%~ INCLUDE navitem uri='/faq' label=loc('Help') ~%]
+
+[%~ INCLUDE navitem uri='/contact' label=c.cobrand.greece_t('Επικοινωνία', 'Contact') ~%]
 
 [%~# Language switch (Greece.pm language_override keeps the choice in a cookie). ~%]
 [%~ IF lang_code == 'en-gb';

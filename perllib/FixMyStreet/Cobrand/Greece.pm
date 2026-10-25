@@ -67,6 +67,12 @@ sub never_confirm_reports { 1 }
 # to the site's contact address (munge_sendreport_params). The email is needed to show the name.
 sub allow_anonymous_reports { 1 }
 
+# Updates need no email either: one sent without an email is filed under the same anonymous account
+# and shown at once, without a name. FixMyStreet offers that only behind a «report anonymously» button
+# ('button' here), so an empty email field is taken as that button (disable_login_for_email, which
+# FixMyStreet calls just before it looks at it). With an email, FixMyStreet's confirmation link applies.
+sub allow_anonymous_updates { 'button' }
+
 sub anonymous_account {
     my $domain = FixMyStreet->config('EMAIL_DOMAIN') or return;
     return { email => "anonymous\@$domain", name => 'Ανώνυμος πολίτης' };
@@ -167,6 +173,12 @@ sub disable_login_for_email {
     my ($self, $email) = @_;
     my $c = $self->{c} or return;
     return if $c->user_exists;
+    # An update sent without an email, not signing in: as if «anonymously» were pressed (above).
+    if ($c->stack->[-1]->reverse eq 'report/update/process_user' && ($email // '') eq ''
+            && !$c->get_param('submit_sign_in') && !$c->get_param('password_sign_in')) {
+        $c->req->params->{report_anonymously} = 1;
+        return;
+    }
     if ($c->stack->[-1]->reverse eq 'auth/email_sign_in' && !$self->greece_turnstile_ok($c)) {
         $c->stash->{field_errors}{turnstile} = $self->greece_turnstile_error;
         $c->detach;
@@ -291,14 +303,29 @@ sub greece_bad_words {
 }
 
 # Updates get the same filter. FixMyStreet has no hook before an update is saved, but calls
-# process_open311_extras for an update once its text is set: mask the words there, and with
-# GREECE_MODERATE or more keep the update from changing the report's state. Once it is saved and
-# confirmed, update_email_shortlisted_user hides it and tells the contact address (below).
+# process_open311_extras for an update once its text and requested state are set: mask the words there,
+# and with GREECE_MODERATE or more keep the update from changing the report's state. Once it is saved
+# and confirmed, update_email_shortlisted_user hides it and tells the contact address (below).
+# Closing a report (marked fixed, or a fixed or closed state) needs a moderator's approval unless a
+# body's staff or a superuser does it: the update is published, the report keeps its state, and the
+# request goes to the contact address to approve in the admin (update_email_shortlisted_user).
 sub process_open311_extras {
     my ($self, $c, $body, $extra) = @_;
     return unless $c && $c->action && $c->action->namespace eq 'report/update' && $c->req->method eq 'POST';
     my $update = $c->stash->{update} or return;
     $c->stash->{field_errors}{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
+    my $staff = $c->user_exists && ($c->user->is_superuser || $c->user->from_body);
+    my $problem = $c->stash->{problem};
+    if (!$staff && $problem) {
+        my $state = $update->problem_state // '';
+        my $closes = FixMyStreet::DB::Result::Problem->fixed_states->{$state}
+            || FixMyStreet::DB::Result::Problem->closed_states->{$state};
+        if ($update->mark_fixed || ($closes && $state ne $problem->state)) {
+            $update->set_extra_metadata(greece_close_requested => $state || 'fixed - user');
+            $update->mark_fixed(0);
+            $update->problem_state($problem->state);
+        }
+    }
     my $count = 0;
     for my $field (qw(text name)) {
         my ($masked, $n) = greece_mask_bad_words($update->$field);
@@ -317,6 +344,7 @@ sub process_open311_extras {
 
 sub update_email_shortlisted_user {
     my ($self, $update) = @_;
+    $self->greece_close_request_email($update);
     my $count = $update->get_extra_metadata('greece_bad_words') or return;
     return unless $count >= GREECE_MODERATE && $update->state ne 'hidden';
     $update->update({ state => 'hidden' });
@@ -327,6 +355,25 @@ sub update_email_shortlisted_user {
         report => $update->problem,
         admin_url => $c->cobrand->base_url . '/admin/update_edit/' . $update->id,
     });
+}
+
+# A request to close a report, from an update (process_open311_extras): to the contact address once,
+# with the admin page where the report's state is changed if it is right. Not for a hidden update.
+sub greece_close_request_email {
+    my ($self, $update) = @_;
+    my $state = $update->get_extra_metadata('greece_close_requested') or return;
+    return if $update->get_extra_metadata('greece_close_request_sent') || $update->state ne 'confirmed';
+    my $c = $self->{c} or return;
+    $c->send_email('close-request.txt', {
+        to => [ $self->contact_email ],
+        update => $update,
+        report => $update->problem,
+        requested_state => $state,
+        admin_url => $c->cobrand->base_url . '/admin/report_edit/' . $update->problem->id,
+        report_url => $c->cobrand->base_url . '/report/' . $update->problem->id,
+    });
+    $update->set_extra_metadata(greece_close_request_sent => 1);
+    $update->update;
 }
 
 # A report held for a moderator: tell the site's contact address, with the admin link.

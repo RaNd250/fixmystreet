@@ -24,6 +24,7 @@
     var card = document.getElementById('gr-dimos');
     var cardName = document.getElementById('gr-dimos-name');
     var cardList = document.getElementById('gr-dimos-contacts');
+    var fixLink = document.getElementById('gr-dimos-fix');
     // The classes go on <body>: the how-to steps come after #front-main, outside it (base index.html).
     var front = document.getElementById('front-main') ? document.body : null;
     var searchForm = document.getElementById('postcodeForm');
@@ -100,7 +101,8 @@
         var gpsMarker = new maplibregl.Marker({ element: gpsEl });
 
         var index = null, cache = {}, current = null, lookupSeq = 0;
-        fetch(dataBase + 'index.json').then(function (r) { return r.json(); }).then(function (d) {
+        // The versioned address when the page gives one, so a changed file is not served from a cache.
+        fetch(box.getAttribute('data-index') || dataBase + 'index.json').then(function (r) { return r.json(); }).then(function (d) {
             index = d;
             update();
         }, function () {});
@@ -189,6 +191,17 @@
                 a.target = '_blank';
                 a.rel = 'noopener';
                 item(t('Ιστότοπος: ', 'Website: ')).appendChild(a);
+            }
+            // The municipality's police station (or its police directorate), as the police complaints go there.
+            if (hit.d.a) {
+                var police = item(hit.d.a.n + ': ');
+                police.className = 'gr-dimos__police';
+                if (hit.d.a.e) { police.appendChild(link('mailto:' + hit.d.a.e, hit.d.a.e)); }
+                if (hit.d.a.e && hit.d.a.t) { police.appendChild(document.createTextNode(' · ')); }
+                if (hit.d.a.t) { police.appendChild(link('tel:' + hit.d.a.t.replace(/\s+/g, ''), hit.d.a.t)); }
+            }
+            if (fixLink) {
+                fixLink.href = '/contact?subject=' + encodeURIComponent(t('Διόρθωση στοιχείων: ', 'Correction: ') + hit.d.n);
             }
             card.hidden = false;
         }

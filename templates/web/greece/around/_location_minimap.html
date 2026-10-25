@@ -1,12 +1,13 @@
 [%# Minimap that centres on the visitor's location, so a report can start without typing an address.
-    It outlines the municipality under the pin and shows its contact details.
+    It outlines the municipality under the pin and shows its contact details, its police station's (or,
+    where there are several, the police directorate's), and a link to tell us what is wrong or missing.
     Hidden until minimap.js confirms geolocation, WebGL and the basemap style are available.
     Once the location is found, the address search and the how-to steps below give way to it, with
     «Αναζήτηση διεύθυνσης» to bring the search back (minimap.js, minimap.css .gr-located).
     Its CSS is loaded by header/css.html on every page: set here, it came too late on pages that
     print the header first (e.g. /around with several matching places), and without a height the
     map and its box grew each other forever. %]
-<div class="gr-minimap" id="gr-minimap-box" data-dimoi="/cobrands/greece/dimoi/" hidden>
+<div class="gr-minimap" id="gr-minimap-box" data-dimoi="/cobrands/greece/dimoi/" data-index="[% version('/cobrands/greece/dimoi/index.json') %]" hidden>
     <div class="gr-minimap__frame">
         <div class="gr-minimap__map" id="gr-minimap" role="application" aria-label="[% c.cobrand.greece_t('Χάρτης για την επιλογή σημείου', 'Map to choose the place') %]"></div>
         <span class="gr-minimap__pin" aria-hidden="true"></span>
@@ -19,6 +20,8 @@
     <div class="gr-dimos" id="gr-dimos" aria-live="polite" hidden>
         <strong class="gr-dimos__name" id="gr-dimos-name"></strong>
         <ul class="gr-dimos__contacts" id="gr-dimos-contacts"></ul>
+        [%# To /contact with the municipality in the subject (minimap.js sets it). ~%]
+        <p class="gr-dimos__fix"><a id="gr-dimos-fix" href="/contact">[% c.cobrand.greece_t('Είναι κάτι λάθος ή λείπει; Ενημέρωσέ μας', 'Something wrong or missing? Let us know') %]</a></p>
     </div>
 </div>
 <p class="gr-minimap-or" id="gr-minimap-or" hidden>[% c.cobrand.greece_t('ή αναζήτησε διεύθυνση', 'or search for an address') %]</p>
