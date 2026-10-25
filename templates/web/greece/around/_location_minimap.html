@@ -1,6 +1,8 @@
 [%# Minimap that centres on the visitor's location, so a report can start without typing an address.
     It outlines the municipality under the pin and shows its contact details.
     Hidden until minimap.js confirms geolocation, WebGL and the basemap style are available.
+    Once the location is found, the address search and the how-to steps below give way to it, with
+    «Αναζήτηση διεύθυνσης» to bring the search back (minimap.js, minimap.css .gr-located).
     Its CSS is loaded by header/css.html on every page: set here, it came too late on pages that
     print the header first (e.g. /around with several matching places), and without a height the
     map and its box grew each other forever. %]
@@ -20,5 +22,6 @@
     </div>
 </div>
 <p class="gr-minimap-or" id="gr-minimap-or" hidden>[% c.cobrand.greece_t('ή αναζήτησε διεύθυνση', 'or search for an address') %]</p>
+<p class="gr-minimap-search" id="gr-minimap-search" hidden><button type="button" class="gr-minimap-search__btn" aria-controls="postcodeForm">[% c.cobrand.greece_t('Αναζήτηση διεύθυνσης', 'Search for an address') %]</button></p>
 <script defer src="[% version('/cobrands/greece/vendor/maplibre-gl-4.7.1/maplibre-gl.js') %]"></script>
 <script defer src="[% version('/cobrands/greece/minimap.js') %]"></script>

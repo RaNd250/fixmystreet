@@ -62,6 +62,22 @@
 .gr-minimap__actions .btn { flex: 1 1 12em; margin: 0; text-align: center; }
 .gr-minimap-or { margin: 1em 0 0.5em; text-align: center; font-weight: bold; }
 
+/* Location found (minimap.js located()): the address search and the how-to steps fade out, then go;
+   the statistics under them stay. «Αναζήτηση διεύθυνσης» brings the search back. */
+.gr-minimap-search[hidden] { display: none !important; }
+.gr-minimap-search { margin: 0.75em 0 0; text-align: center; }
+.gr-minimap-search__btn {
+    padding: 0.4em 0.8em; border: 0; background: none; color: var(--gr-accent, #1d5fd6);
+    font: inherit; font-weight: bold; text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+}
+body.gr-leaving #postcodeForm,
+body.gr-leaving #front-howto > h2,
+body.gr-leaving #front-howto > .big-numbers { opacity: 0; transition: opacity 0.25s ease; }
+body.gr-located #postcodeForm:not(.gr-search-open),
+body.gr-located #front-howto > h2,
+body.gr-located #front-howto > .big-numbers { display: none; }
+body.gr-located #postcodeForm.gr-search-open { animation: gr-fade-in 0.3s ease; }
+
 @media (min-width: 48em) {
     .gr-minimap__map { height: 320px; }
 }

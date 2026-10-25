@@ -356,7 +356,8 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 
 @media (max-width: 47.99em) {
     #front-howto, #front_stats { margin-top: 0.5em; }
-    #front_stats { padding: 0 1em 1em; gap: 8px; }
+    /* border-box: with its full width plus this padding, the third box ran off the right edge. */
+    #front_stats { box-sizing: border-box; padding: 0 1em 1em; gap: 8px; }
     #front_stats div { padding: 0.8em 0.4em; }
     .postcode-form-box { margin: 0.5em 0 0; padding: 1em 0; }
 }
@@ -710,7 +711,7 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
 
 /* Home page address box as an expandable search (xsearch.js): it widens with a spring when focused or
    filled, on computers; on phones it is always full width. */
-.postcode-form-box .gr-xsearch { display: flex; align-items: center; gap: 2px; padding-left: 12px; cursor: text; }
+.postcode-form-box .gr-xsearch { box-sizing: border-box; display: flex; align-items: center; gap: 2px; padding-left: 12px; cursor: text; }
 .postcode-form-box .gr-xsearch input#pc { flex: 1 1 0%; width: auto; max-width: none; min-width: 0; padding-left: 0.5em; background: transparent; border: 0; }
 .postcode-form-box .gr-xsearch input#sub { flex: 0 0 auto; width: auto; min-width: 0; }
 .gr-xsearch__icon { display: inline-flex; color: var(--gr-ink-3); flex: none; transition: color var(--gr-fast) ease; }

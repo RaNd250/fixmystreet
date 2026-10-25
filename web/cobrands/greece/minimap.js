@@ -24,6 +24,40 @@
     var card = document.getElementById('gr-dimos');
     var cardName = document.getElementById('gr-dimos-name');
     var cardList = document.getElementById('gr-dimos-contacts');
+    // The classes go on <body>: the how-to steps come after #front-main, outside it (base index.html).
+    var front = document.getElementById('front-main') ? document.body : null;
+    var searchForm = document.getElementById('postcodeForm');
+    var searchLine = document.getElementById('gr-minimap-search');
+    var leaving = null;
+
+    // Once the location is found, the address search and the how-to steps fade out and give way to the
+    // map; «Αναζήτηση διεύθυνσης» brings the search back. If finding the location fails, all of it shows
+    // again, since the messages point to the address search.
+    function located(yes) {
+        if (!front || !searchLine) { return; }
+        clearTimeout(leaving);
+        orLine.hidden = yes;
+        searchLine.hidden = !yes;
+        if (!yes) {
+            front.classList.remove('gr-leaving', 'gr-located');
+            if (searchForm) { searchForm.classList.remove('gr-search-open'); }
+        } else if (!front.classList.contains('gr-located')) {
+            front.classList.add('gr-leaving');
+            leaving = setTimeout(function () {
+                front.classList.remove('gr-leaving');
+                front.classList.add('gr-located');
+            }, 250);
+        }
+    }
+    if (searchLine) {
+        searchLine.querySelector('button').addEventListener('click', function () {
+            searchLine.hidden = true;
+            orLine.hidden = false;
+            if (searchForm) { searchForm.classList.add('gr-search-open'); }
+            var pc = document.getElementById('pc');
+            if (pc) { pc.focus(); }
+        });
+    }
 
     function hasWebGL() {
         try {
@@ -189,8 +223,10 @@
                 locateBtn.disabled = false;
                 locateBtn.textContent = t('Ξανά στη θέση μου', 'Back to my location');
                 status.textContent = t('Μετακίνησε τον χάρτη ώστε η κόκκινη καρφίτσα να δείχνει ακριβώς το πρόβλημα.', 'Move the map so that the red pin points exactly at the problem.');
+                located(true);
             }, function (err) {
                 locateBtn.disabled = false;
+                located(false);
                 status.textContent = errors[err.code] || t('Κάτι πήγε στραβά με την εύρεση της θέσης. Γράψε μια διεύθυνση παρακάτω.', 'Something went wrong finding your location. Enter an address below.');
             }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
         }
