@@ -373,6 +373,37 @@ sub language_override {
     return $chosen eq 'en-gb' ? 'en-gb' : 'el';
 }
 
+# The police categories' questions and notices (data/greece/contacts/police.sql) are stored in Greek;
+# with the site in English the report form shows these instead, by field code and answer key. The
+# answers sent are the same keys either way.
+my %FIELD_EN = (
+    xorisempodia => { description => '<p>Parking on a disabled ramp or bay, on the pavement or on a crossing is recorded by <strong>Χωρίς Εμπόδια</strong> (xorisempodia.gr): no account and no photo needed, and it gets a text message to 100 ready for you, which you send yourself from your phone.</p><p><a class="btn btn--primary" href="https://xorisempodia.gr/reports/new" target="_blank" rel="noopener">Record it on xorisempodia.gr</a></p>' },
+    idiotiki => { description => 'Reports in this category are not published on the site. They are sent, with your name and contact details, only to the responsible Hellenic Police service.' },
+    paravasi => { description => 'What is happening?', values => {
+        fortistis => 'Parked in an electric vehicle charging bay without charging',
+        eisodos => 'Parked in front of a vehicle entrance or exit (garage)',
+        diplo => 'Double parking, or a vehicle blocking the road',
+        empodia => 'Illegal obstacles or cones put out by a shop',
+        p72 => 'Unauthorised road markings and P-72 sign',
+    } },
+    pinakida => { description => 'Registration number (number plate), if it is about a particular vehicle' },
+);
+sub munge_report_new_category_list {
+    my ($self, $options, $contacts, $extras) = @_;
+    return unless $self->greece_t(0, 1);
+    for my $metas (values %$extras) {
+        # Copies: the hashes are the contacts' own.
+        @$metas = map {
+            my $en = $FIELD_EN{$_->{code} // ''};
+            !$en ? $_ : {
+                %$_,
+                description => $en->{description},
+                $_->{values} ? (values => [ map { +{ %$_, name => $en->{values}{$_->{key}} // $_->{name} } } @{$_->{values}} ]) : (),
+            };
+        } @$metas;
+    }
+}
+
 # Who is voting 👍/👎 on a report (App::Controller::GreeceVote, Problem::greece_votes): a signed-in
 # voter is their account; anyone else is a random id in a long-lived cookie, kept here only as its
 # hash. Undef when there is none yet and $create is false.
