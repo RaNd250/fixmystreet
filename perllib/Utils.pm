@@ -134,8 +134,9 @@ sub cleanup_text {
     my $input = shift || '';
     my $args  = shift || {};
 
-    # lowercase everything if looks like it might be SHOUTING
-    $input = lc $input if $input !~ /[a-z]/;
+    # lowercase everything if looks like it might be SHOUTING (no lowercase letter
+    # in any script, so that text in e.g. Greek or Cyrillic is not lowercased)
+    $input = lc $input if $input !~ /\p{Ll}/;
 
     # clean up language and tradmarks
     for ($input) {

@@ -136,7 +136,7 @@ sub generate_dashboard {
     my %data;
 
     my $rs = FixMyStreet::DB->resultset('Problem')->search({
-        cobrand_data => { -not_in => ["waste", "noise", "claim"] },
+        cobrand_data => { -not_in => ["waste", "noise", "claim", "licence"] },
     });
     $rs = $rs->to_body($body) if $body;
 
@@ -219,12 +219,20 @@ sub generate_dashboard {
     }
 
     my $week_ago = $dtf->format_datetime(DateTime->now->subtract(days => 7));
+    # Only reports the public can see: hidden and private ones counted here before, so the
+    # categories added up to more than the reports on the map.
+    my %public = (
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        non_public => 0,
+    );
     my $last_seven_days = $rs->search({
         confirmed => { '>=', $week_ago },
+        %public,
     })->count;
     my $thamesmead = FixMyStreet::DB->resultset('Body')->search({ name => 'Thamesmead' })->first;
     my @top_five_categories = $rs->search({
         confirmed => { '>=', $week_ago },
+        %public,
         category => { '!=', 'Other' },
         $thamesmead ? (bodies_str => { '!=', $thamesmead->id }) : (),
     }, {
