@@ -1,6 +1,7 @@
 [%# A municipality's reports of the last hours in one email (sent every 6 hours instead of one email
     per report; bin/greece/send-digest). Variables: body_name, period (e.g. «26/10/2026 06:00–12:00»),
-    items: [{ report, url, gmaps_url, address, email, phone, photos, video_seconds }], sent_to. ~%]
+    items: [{ report, url, gmaps_url, address, detail, email, email_unconfirmed, phone, photos, video_seconds }],
+    sent_to, would_go_to (a staging site sends to the site's own address instead). ~%]
 [%
 email_summary = items.size _ (items.size == 1 ? " νέα αναφορά" : " νέες αναφορές") _ " για " _ body_name _ ", " _ period;
 email_footer = "Το μήνυμα στάλθηκε αυτόματα από το " _ site_name _ ".";
@@ -26,12 +27,12 @@ small = "margin: 0 0 6px 0; font-size: 14px; line-height: 19px; color: #475569;"
       <span style="float: right; font-weight: 400; color: #cbd5e1;">αρ. [% r.greece_ref | html %]</span></td></tr>
     <tr><th style="[% tth %]">Ημερομηνία</th><td style="[% ttd %]">[% r.greece_local_time | html %]</td></tr>
     <tr><th style="[% tth %]">Τοποθεσία</th><td style="[% ttd %]">[% IF it.address %][% it.address | html %]<br>[% END %]<a href="[% it.gmaps_url %]">Άνοιγμα στον χάρτη</a></td></tr>
-    <tr><th style="[% tth %]">Περιγραφή</th><td style="[% ttd %]">[% r.detail | html | replace('\n', '<br>') %]</td></tr>
+    <tr><th style="[% tth %]">Περιγραφή</th><td style="[% ttd %]">[% (it.detail || r.detail) | html | replace('\n', '<br>') %]</td></tr>
     [%~ IF it.photos OR it.video_seconds %]
     <tr><th style="[% tth %]">Υλικό</th><td style="[% ttd %]">[% IF it.photos %]📷 [% it.photos %] [% it.photos == 1 ? 'φωτογραφία' : 'φωτογραφίες' %][% END %][% IF it.photos AND it.video_seconds %] · [% END %][% IF it.video_seconds %]🎬 βίντεο [% it.video_seconds | format('%d') %]" (στην πλατφόρμα)[% END %]</td></tr>
     [%~ END %]
     <tr><th style="[% tth %]">Πολίτης</th><td style="[% ttd %]">[% r.anonymous ? 'Ανώνυμα' : r.name | html %]
-      [%~ IF it.email %]<br><a href="mailto:[% it.email | html %]?subject=[% ('Η αναφορά σας ' _ r.greece_ref) | uri %]">[% it.email | html %]</a>[% END ~%]
+      [%~ IF it.email %]<br><a href="mailto:[% it.email | html %]?subject=[% ('Η αναφορά σας ' _ r.greece_ref) | uri %]">[% it.email | html %]</a>[% IF it.email_unconfirmed %] <span style="color: #64748b;">(χωρίς επιβεβαίωση)</span>[% END %][% END ~%]
       [%~ IF it.phone %]<br><a href="tel:[% it.phone | html %]">[% it.phone | html %]</a>[% END %]</td></tr>
     <tr><td colspan="2" style="padding: 10px 12px; text-align: right;"><a style="[% button_style %] font-size: 14px; border-width: 8px 16px;" href="[% it.url %]">Άνοιγμα αναφοράς</a></td></tr>
   </table>
@@ -41,6 +42,7 @@ small = "margin: 0 0 6px 0; font-size: 14px; line-height: 19px; color: #475569;"
   στη σελίδα της αναφοράς. Οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν στην ομάδα του [% site_name %].</p>
   <div style="margin: 16px 0 0 0; padding: 12px 16px; border: 1px solid #dbe4f5; border-radius: 10px; background-color: #f2f6fd;">
     <p style="[% secondary_p_style %] margin-bottom: 0;">
+      [%~ IF would_go_to %]Δοκιμαστική λειτουργία: κανονικά θα πήγαινε στη διεύθυνση <strong>[% would_go_to | html %]</strong>. [% END ~%]
       [%~ IF sent_to %]Στάλθηκε στη διεύθυνση <strong>[% sent_to | html %]</strong>. [% END ~%]
       Αν δεν είναι η σωστή διεύθυνση του Δήμου για αναφορές πολιτών, στείλτε μας τη σωστή στο
       <a href="mailto:[% cobrand.contact_email | html %]?subject=[% ('MAIL ΔΗΜΟΥ ' _ body_name) | uri %]">[% cobrand.contact_email | html %]</a>

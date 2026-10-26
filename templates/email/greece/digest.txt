@@ -10,10 +10,10 @@ Subject: [% items.size %] [% items.size == 1 ? 'νέα αναφορά' : 'νέε
 [% loop.count %]. [% r.category %] · αρ. [% r.greece_ref %] · [% r.greece_local_time %]
 Θέση: [% it.address ? it.address _ ' · ' : '' %][% it.gmaps_url %]
 
-[% r.detail %]
+[% it.detail || r.detail %]
 
 [% IF it.photos %]Φωτογραφίες: [% it.photos %]. [% END %][% IF it.video_seconds %]Βίντεο: [% it.video_seconds | format('%d') %]" (στην πλατφόρμα). [% END %]
-Από: [% r.anonymous ? 'Ανώνυμα' : r.name %][% IF it.email %] · [% it.email %][% END %][% IF it.phone %] · [% it.phone %][% END %]
+Από: [% r.anonymous ? 'Ανώνυμα' : r.name %][% IF it.email %] · [% it.email %][% IF it.email_unconfirmed %] (χωρίς επιβεβαίωση)[% END %][% END %][% IF it.phone %] · [% it.phone %][% END %]
 Αναφορά: [% it.url %]
 [% END %]
 ----------
@@ -21,7 +21,8 @@ Subject: [% items.size %] [% items.size == 1 ? 'νέα αναφορά' : 'νέε
 Για να απαντήσετε στον πολίτη, γράψτε στο email του (όπου το έδωσε) ή αφήστε μια ενημέρωση στη σελίδα
 της αναφοράς. Οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν στην ομάδα του [% site_name %].
 
-[% IF sent_to %]Στάλθηκε στη διεύθυνση [% sent_to %]. [% END %]Αν δεν είναι η σωστή διεύθυνση του Δήμου,
+[% IF would_go_to %]Δοκιμαστική λειτουργία: κανονικά θα πήγαινε στη διεύθυνση [% would_go_to %].
+[% END %][% IF sent_to %]Στάλθηκε στη διεύθυνση [% sent_to %]. [% END %]Αν δεν είναι η σωστή διεύθυνση του Δήμου,
 στείλτε μας τη σωστή στο [% cobrand.contact_email %] γράφοντας: MAIL ΔΗΜΟΥ:ΧΧΧ@ΥΥΥ.ΖΖΖ
 
 [% signature %]

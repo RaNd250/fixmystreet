@@ -4,6 +4,7 @@ use base 'FixMyStreet::Cobrand::Default';
 use strict;
 use warnings;
 use utf8;
+use DateTime ();
 use Fcntl ();
 use JSON::MaybeXS ();
 
@@ -369,6 +370,28 @@ sub greece_mark_email_confirmed {
     my $ok = ($c->user_exists && lc($c->user->email // '') eq $email)
         || lc($c->session->{greece_otp_email} // '') eq $email;
     $report->set_extra_metadata(greece_email_confirmed => 1) if $ok;
+}
+
+# A municipality's reports go in its digest, at 07:00, 13:00 and 19:00 (bin/greece/send-digest; its
+# bodies have send_method Noop, data/greece/contacts/digest.sql). For a report still waiting for it,
+# when the next one goes, e.g. «13:00» or «αύριο 07:00»; nothing for a report sent at once.
+sub greece_digest_next {
+    my ($self, $report) = @_;
+    return if !$report || $report->whensent || !$report->bodies_str;
+    my @ids = grep { /^\d+$/ } split /,/, $report->bodies_str;
+    my @bodies = FixMyStreet::DB->resultset('Body')->search({ id => \@ids })->all;
+    return unless @bodies && !grep { ($_->send_method // '') ne 'Noop' || ($_->extra || {})->{greece_police} } @bodies;
+    my $now = DateTime->now(time_zone => 'Europe/Athens');
+    my ($next) = grep { $_ > $now->hour } 7, 13, 19;
+    return sprintf('%02d:00', $next) if $next;
+    return $self->greece_t('αύριο', 'tomorrow') . ' 07:00';
+}
+
+# Whether the municipalities' digest is on (any municipality with send_method Noop), for the FAQ.
+sub greece_digest_active {
+    my $self = shift;
+    return $self->{greece_digest_active} //= FixMyStreet::DB->resultset('Body')->search({
+        deleted => 0, send_method => 'Noop', name => { -like => 'Δήμος %' } })->count ? 1 : 0;
 }
 
 # Who sees a report's video: superusers, and staff of a body the report was sent to.

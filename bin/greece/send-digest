@@ -1,0 +1,180 @@
+#!/usr/bin/env perl
+# Sends the municipalities' reports as one email per destination address, three times a day
+# (owner, 2026-10-26): at 07:00, 13:00 and 19:00 Athens time, each with what came in since the
+# last one (so the 07:00 email has the night's). Police reports are not held: they go at once,
+# through send-reports, as before.
+#
+# How the two do not overlap: the municipalities' bodies have send_method Noop
+# (data/greece/contacts/digest.sql), which send-reports leaves alone; this script takes the open,
+# visible, unsent reports of those bodies (a report held for a moderator joins the next email once
+# it is approved). It groups them by the address of the report's category at each body (a report
+# with two addresses goes in both emails), sends one email per address (templates/email/greece/
+# digest.*), notes each address done in the report (greece_digest_sent, so a run cut short does
+# not send it twice), and marks the report sent when all its addresses are done.
+#
+# An email for many reports cannot have each reporter in Cc or as Reply-To, as one report's email
+# did: their email is in the table, with «(χωρίς επιβεβαίωση)» where it was not confirmed.
+# On a staging site that does not send reports (STAGING_FLAGS send_reports 0) the emails go to the
+# site's contact address, saying where they would have gone.
+#
+# Runs inside the app container, from the host's cron every hour (it only sends in those hours,
+# so the change of summer time needs nothing); conf/greece/cron.d/fixmystreets-digest:
+#   docker exec -i -w /var/www/fixmystreet/fixmystreet/bin fixmystreet-fixmystreet-1 ./cron-wrapper perl - [options] \
+#       < /opt/fixmystreet/bin/greece/send-digest
+# Options: --force (any hour), --dry-run (say what would go, send and mark nothing),
+#          --to=<address> (every email to that address, nothing marked; for a look).
+
+use strict;
+use warnings;
+use utf8;
+
+use FixMyStreet;
+use FixMyStreet::DB;
+use FixMyStreet::Cobrand;
+use FixMyStreet::Email;
+use DateTime;
+use Fcntl qw(:flock);
+use Getopt::Long qw(GetOptionsFromArray);
+use List::Util qw(min);
+
+binmode STDOUT, ':utf8';
+
+our @HOURS = (7, 13, 19);    # Europe/Athens
+
+sub main {
+    my @args = @_;
+    my %opt;
+    GetOptionsFromArray(\@args, \%opt, 'force', 'dry-run', 'to=s') or return 2;
+    my $tz = 'Europe/Athens';
+    my $now = DateTime->now(time_zone => $tz);
+    return 0 unless $opt{force} || $opt{'dry-run'} || grep { $_ == $now->hour } @HOURS;
+
+    open my $lock, '>', '/tmp/fms-greece-digest.lock' or die "lock: $!\n";
+    flock($lock, LOCK_EX | LOCK_NB) or do { print "another run is going\n"; return 0 };
+
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('greece')->new;
+    $cobrand->set_lang_and_domain('el', 1);
+    my $schema = FixMyStreet::DB->schema;
+    $schema->cobrand($cobrand);
+
+    my %digest_body = map { $_->id => $_ }
+        grep { !(($_->extra || {})->{greece_police}) }
+        $schema->resultset('Body')->search({ deleted => 0, send_method => 'Noop' })->all;
+    return 0 unless %digest_body;
+
+    my @reports = $schema->resultset('Problem')->search({
+        state => [ FixMyStreet::DB::Result::Problem->open_states ],
+        send_state => 'unprocessed',
+        whensent => undef,
+        bodies_str => { '!=', undef },
+    }, { order_by => [ 'confirmed', 'id' ] })->all;
+
+    # address => { bodies => { name => 1 }, items => [ { report, ... } ] }
+    my (%group, %pending);
+    for my $r (@reports) {
+        my @ids = grep { /^\d+$/ } split /,/, $r->bodies_str;
+        my @bodies = grep { $_ } map { $digest_body{$_} } @ids;
+        next unless @bodies && @bodies == @ids;    # only reports wholly for these bodies
+        my %done = map { lc($_) => 1 } @{ $r->get_extra_metadata('greece_digest_sent') || [] };
+        my @to;
+        for my $body (@bodies) {
+            my $contact = $schema->resultset('Contact')->search({
+                body_id => $body->id, category => $r->category, state => { '!=' => 'deleted' } })->first;
+            unless ($contact && ($contact->email // '') =~ /\@/) {
+                print "report ", $r->id, ": no address for «", $r->category, "» at ", $body->name, "\n";
+                next;
+            }
+            for my $email (split /\s*,\s*/, lc $contact->email) {
+                $email =~ s/^\s+|\s+$//g;
+                next unless $email =~ /\@/;
+                push @to, [ $email, $body->name ];
+            }
+        }
+        next unless @to;
+        $pending{$r->id} = { report => $r, all => { map { $_->[0] => 1 } @to } };
+        my $item;
+        for (@to) {
+            my ($email, $name) = @$_;
+            next if $done{$email};
+            $item ||= digest_item($cobrand, $r);
+            my $g = $group{$email} ||= { bodies => {}, items => [], seen => {} };
+            $g->{bodies}{$name} = 1;
+            push @{ $g->{items} }, $item unless $g->{seen}{ $r->id }++;
+        }
+    }
+
+    my $staging = FixMyStreet->staging_flag('send_reports', 0);
+    my $sent = 0;
+    for my $email (sort keys %group) {
+        my $g = $group{$email};
+        my @items = @{ $g->{items} };
+        my $body_name = join ', ', sort keys %{ $g->{bodies} };
+        my $from = min map { local_epoch($_->{report}->confirmed) } @items;
+        my $period = DateTime->from_epoch(epoch => $from, time_zone => $tz)->strftime('%d/%m/%Y %H:%M')
+            . '–' . $now->strftime($now->ymd eq DateTime->from_epoch(epoch => $from, time_zone => $tz)->ymd ? '%H:%M' : '%d/%m/%Y %H:%M');
+        my $to = $opt{to} || ($staging ? $cobrand->contact_email : $email);
+        printf "%s: %d report(s) (%s) for %s%s\n", $email, scalar @items, join(',', map { $_->{report}->id } @items),
+            $body_name, $to ne $email ? " -> sent to $to" : '';
+        next if $opt{'dry-run'};
+        my $failed = FixMyStreet::Email::send_cron($schema, 'digest.txt', {
+            body_name => $body_name, cobrand => $cobrand, period => $period, items => \@items,
+            sent_to => $email, would_go_to => $to ne $email && !$opt{to} ? $email : '',
+        }, { To => [ [ $to, $body_name ] ] }, undef, 0, $cobrand, 'el');
+        if ($failed) { print "  sending failed\n"; next; }
+        $sent++;
+        next if $opt{to};
+        for my $it (@items) {
+            my $r = $it->{report};
+            $r->discard_changes;
+            my $done = $r->get_extra_metadata('greece_digest_sent') || [];
+            $r->set_extra_metadata(greece_digest_sent => [ @$done, $email ]);
+            $r->update;
+        }
+    }
+    return 0 if $opt{'dry-run'} || $opt{to};
+
+    for my $p (values %pending) {
+        my $r = $p->{report};
+        $r->discard_changes;
+        my %done = map { lc($_) => 1 } @{ $r->get_extra_metadata('greece_digest_sent') || [] };
+        next if grep { !$done{$_} } keys %{ $p->{all} };
+        $r->add_send_method('FixMyStreet::SendReport::Email');
+        $r->update({ send_state => 'sent', whensent => \'statement_timestamp()', lastupdate => \'statement_timestamp()' });
+    }
+    print "$sent email(s) sent\n" if $sent;
+    return 0;
+}
+
+# Times are stored as the server's wall-clock time, without a zone (as in Greece.pm greece_when).
+sub local_epoch {
+    my $dt = shift->clone;
+    $dt->set_time_zone(FixMyStreet->local_time_zone) if $dt->time_zone->is_floating;
+    return $dt->epoch;
+}
+
+# What the digest shows of one report.
+sub digest_item {
+    my ($cobrand, $r) = @_;
+    my $anonymous = $cobrand->greece_anonymous_report($r);
+    my $address = eval { $cobrand->find_closest($r) };
+    $address = ref $address ? ($address->summary // '') : ($address // '');
+    $address =~ s/, (Περιφερειακή Ενότητα|Περιφέρεια|Αποκεντρωμένη Διοίκηση)[^,]*//g;
+    $address =~ s/, Ελλάς$//;
+    my $user = $r->user;
+    return {
+        report => $r,
+        url => $cobrand->base_url_for_report($r) . $r->url,
+        gmaps_url => sprintf('https://maps.google.com/maps?q=%s,%s', $r->latitude, $r->longitude),
+        address => $address,
+        detail => $r->get_extra_metadata('greece_detail_full') || $r->detail,
+        email => $anonymous || !$user ? '' : $user->email // '',
+        email_unconfirmed => $anonymous || $r->get_extra_metadata('greece_email_confirmed') ? 0 : 1,
+        phone => ($user && !$anonymous ? $user->phone : '') || $r->get_extra_metadata('greece_phone') || '',
+        photos => $r->photo ? scalar(grep { /\S/ } split /,/, $r->photo) : 0,
+        video_seconds => $r->get_extra_metadata('greece_video_seconds') || 0,
+    };
+}
+
+exit main(@ARGV) unless caller;
+
+1;
