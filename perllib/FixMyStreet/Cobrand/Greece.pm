@@ -760,6 +760,18 @@ sub greece_2fa_gate {
     $c->detach;
 }
 
+# How many public reports a body has, for its /reports page: none, and it says «noindex»
+# (templates/web/greece/common_header_tags.html), so search engines do not list 300 empty pages.
+sub greece_body_public_reports {
+    my ($self, $body) = @_;
+    return 0 unless $body && $body->id;
+    return FixMyStreet::DB->resultset('Problem')->search({
+        non_public => 0,
+        state => [ FixMyStreet::DB::Result::Problem->visible_states ],
+        bodies_str => { '~' => '(^|,)' . $body->id . '(,|$)' },
+    })->count;
+}
+
 # Public reports per municipality, for the map on the reports page (templates/web/greece/reports/index.html,
 # reports-map.js): [{ n => name, u => '/reports/<name>', t => all, o => open, f => fixed }], most first,
 # only the municipalities that have any. Reports for the police (not public) are not counted.

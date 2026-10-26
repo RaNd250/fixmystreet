@@ -55,6 +55,11 @@ if ('serviceWorker' in navigator) {
     <meta name="robots" content="noindex,nofollow">
 [% ELSIF robots %]
     <meta name="robots" content="[% robots %]">
+[%# A municipality's reports page (/reports/<Δήμος>, action reports/body or reports/ward) without any
+    public report: «noindex» (greece_body_public_reports), so search engines do not list hundreds of
+    empty pages; bin/greece/sitemap.py leaves them out too. ~%]
+[% ELSIF body AND (c.action == 'reports/body' OR c.action == 'reports/ward') AND NOT c.cobrand.greece_body_public_reports(body) %]
+    <meta name="robots" content="noindex,follow">
 [% END %]
 
 <meta name="format-detection" content="telephone=no">
@@ -65,7 +70,7 @@ if ('serviceWorker' in navigator) {
 [% IF bodyclass.match('frontpage') %]
     <link rel="prefetch" href="[% version('/js/validation_rules.js') %]">
   [%~ IF NOT c.user_exists OR NOT (c.user.from_body OR c.user.is_superuser) %]
-    <link rel="prefetch" href="[% version('/vendor/jquery-3.7.1.min.js') %]">
+    <link rel="prefetch" href="[% version('/vendor/jquery-3.6.0.min.js') %]">
   [%~ END %]
     <link rel="prefetch" href="[% version('/vendor/jquery.multi-select.min.js') %]">
     <link rel="prefetch" href="[% version('/vendor/jquery.validate.min.js') %]">
