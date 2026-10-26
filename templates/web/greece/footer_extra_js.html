@@ -3,7 +3,8 @@
     assets.js holds FixMyStreet's message controller, which shows a category's stop message
     (disable_form) in place of the rest of the form, e.g. the link to xorisempodia.gr.
     report-skip-map.js: on phones a report from the home page's pin skips FixMyStreet's second map.
-    nearby-check.js: a notice when an open report is already within 100 m of the pin. ~%]
+    nearby-check.js: a notice when an open report is already within 100 m of the pin.
+    photo-crop.js: a photo can be cropped before it is uploaded. ~%]
 [% IF bodyclass.match('mappage');
     scripts.push(version('/cobrands/fixmystreet/assets.js'));
     scripts.push(version('/cobrands/greece/camera.js'));
@@ -11,6 +12,7 @@
     scripts.push(version('/cobrands/greece/report-stepper.js'));
     scripts.push(version('/cobrands/greece/report-skip-map.js'));
     scripts.push(version('/cobrands/greece/nearby-check.js'));
+    scripts.push(version('/cobrands/greece/photo-crop.js'));
 END ~%]
 [%# form-draft.js keeps the report form's text if the reporter leaves it by mistake, and forgets
     it on the confirmation page, so it is on every page. ~%]

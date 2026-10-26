@@ -1257,3 +1257,17 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
 @media (max-width: 480px) {
     .gr-meta__list dt { flex-basis: 8.6em; }
 }
+
+/* Photo crop before upload (photo-crop.js), in the camera dialog's frame */
+.gr-crop__stage { position: relative; display: flex; justify-content: center; overflow: hidden; border-radius: var(--gr-radius); background: #0b1220; }
+.gr-crop__img { display: block; max-width: 100%; max-height: min(62vh, 560px); user-select: none; -webkit-user-drag: none; pointer-events: none; }
+.gr-crop__box { position: absolute; box-sizing: border-box; border: 2px solid #fff; box-shadow: 0 0 0 9999px rgba(8, 15, 30, 0.55); cursor: move; touch-action: none; outline: none;
+    background-image: linear-gradient(rgba(255,255,255,0.35), rgba(255,255,255,0.35)), linear-gradient(rgba(255,255,255,0.35), rgba(255,255,255,0.35)), linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0.35)), linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0.35));
+    background-size: 1px 100%, 1px 100%, 100% 1px, 100% 1px; background-position: 33.3% 0, 66.6% 0, 0 33.3%, 0 66.6%; background-repeat: no-repeat; }
+.gr-crop__box:focus-visible { border-color: var(--gr-warm); }
+.gr-crop__h { position: absolute; width: 26px; height: 26px; margin: -13px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45); touch-action: none; }
+.gr-crop__h::after { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--gr-accent); }
+.gr-crop__h[data-h="nw"] { left: 0; top: 0; cursor: nwse-resize; }
+.gr-crop__h[data-h="ne"] { right: 0; top: 0; cursor: nesw-resize; }
+.gr-crop__h[data-h="sw"] { left: 0; bottom: 0; cursor: nesw-resize; }
+.gr-crop__h[data-h="se"] { right: 0; bottom: 0; cursor: nwse-resize; }
