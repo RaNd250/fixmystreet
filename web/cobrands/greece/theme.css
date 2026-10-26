@@ -1375,3 +1375,18 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 .gr-video-box > span:first-child { flex: 1 1 0; min-width: 0; }
 .gr-video-box { flex-wrap: nowrap; }
 .gr-video-box--bad, .gr-video-box:has(.gr-video-wait) { flex-wrap: wrap; }
+
+/* Video: the choice, the in-page recorder and the upload bar (video-upload.js) */
+.gr-video-choice { display: flex; flex-wrap: wrap; gap: 8px; }
+.gr-video-choice .btn { margin: 0; }
+.gr-video-up { display: flex; flex-direction: column; gap: 6px; }
+.gr-video-up__label { font-weight: 600; }
+.gr-video-up__label small { font-weight: 400; color: var(--gr-ink-3); }
+.gr-video-up__bar { display: block; height: 10px; border-radius: 999px; background: var(--gr-line); overflow: hidden; }
+.gr-video-up__fill { display: block; height: 100%; border-radius: 999px; background: var(--gr-accent); transition: width 0.3s ease; }
+.gr-rec .gr-camera__frame { position: relative; aspect-ratio: auto; max-height: 62vh; }
+.gr-rec .gr-camera__video { max-height: 62vh; }
+.gr-rec__time { position: absolute; top: 10px; left: 10px; padding: 4px 10px; border-radius: 999px; background: rgba(0, 0, 0, 0.6); color: #fff; font-weight: 700; font-variant-numeric: tabular-nums; }
+.gr-rec__dot { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 50%; background: #fff; }
+.gr-rec__go--on { background: var(--gr-danger) !important; border-color: var(--gr-danger) !important; }
+.gr-rec__go--on .gr-rec__dot { border-radius: 2px; }

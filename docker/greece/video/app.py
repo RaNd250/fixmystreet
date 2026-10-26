@@ -50,6 +50,27 @@ def probe(path):
     return json.loads(out.stdout or "{}")
 
 
+def num(x):
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def decoded_seconds(path):
+    """How long the video plays, by decoding it (at most 46 s of it): browser recordings (WebM from
+    MediaRecorder) often say nothing about their length."""
+    out = subprocess.run(
+        ["ffmpeg", "-v", "error", "-protocol_whitelist", "file", "-i", path, "-t", "46", "-map", "0:v:0",
+         "-f", "null", "-", "-progress", "pipe:1", "-nostats"],
+        capture_output=True, text=True, timeout=180)
+    secs = 0.0
+    for line in out.stdout.splitlines():
+        if line.startswith("out_time_us=") or line.startswith("out_time_ms="):
+            secs = max(secs, num(line.split("=", 1)[1]) / 1e6)
+    return secs
+
+
 def work(clip_id):
     folder = os.path.join(ROOT, "incoming", clip_id)
     src = os.path.join(folder, "upload")
@@ -63,8 +84,11 @@ def work(clip_id):
         streams = (info or {}).get("streams", [])
         if not info or not (names & FORMATS) or not any(s.get("codec_type") == "video" for s in streams):
             return status(clip_id, state="error", reason="not_video")
-        durations = [float(fmt.get("duration") or 0)] + [float(s.get("duration") or 0) for s in streams if s.get("codec_type") == "video"]
-        duration = max(durations)
+        duration = max([num(fmt.get("duration"))] + [num(s.get("duration")) for s in streams if s.get("codec_type") == "video"])
+        if duration <= 0:
+            duration = decoded_seconds(src)
+            if duration >= 46:
+                duration = 999
         if duration <= 0 or duration > MAX_SECONDS:
             return status(clip_id, state="error", reason="too_long" if duration > MAX_SECONDS else "not_video")
         has_audio = any(s.get("codec_type") == "audio" for s in streams)
