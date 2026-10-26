@@ -1333,3 +1333,22 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 #map_sidebar .govuk-checkboxes--small .govuk-checkboxes__label::after { top: 7px; left: 4px; width: 9px; height: 4px; border-width: 0 0 2px 2px; }
 #map_sidebar .govuk-checkboxes--small .govuk-checkboxes__input { width: 28px; height: 28px; left: -4px; top: -2px; }
 #map_sidebar .checkbox-group label.inline { font-size: 0.875rem; }
+
+/* Report form on computers (also the car's browser, 1920×1000): the «Τι συμβαίνει;» answers in two
+   columns like the categories, FixMyStreet's «Βοήθησε τον φορέα…» line (the notice below says what
+   matters) hidden, and a little less space around the bot check, so each step fits without scrolling. */
+@media (min-width: 48em) {
+    #map_sidebar .extra-category-questions > .form-section-description { display: none; }
+    #map_sidebar .gr-extra-notice { margin: 0 0 8px; font-size: 0.875rem; line-height: 1.4; }
+    #map_sidebar .gr-choice .govuk-radios { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    #map_sidebar .gr-choice .govuk-radios__item { min-height: 0; margin: 0; padding: 0 8px 0 34px; }
+    #map_sidebar .gr-choice .govuk-radios__label { padding: 6px 0; font-size: 0.8125rem; line-height: 1.25; }
+    #map_sidebar .gr-choice .govuk-radios__label:before { left: 9px; width: 16px; height: 16px; margin-top: -8px; }
+    #map_sidebar .gr-choice .govuk-radios__label:after { left: 13px; margin-top: -4px; border-width: 4px; }
+    #map_sidebar .gr-choice .govuk-radios__input { left: 0; width: 34px; height: 34px; margin-top: -17px; }
+    #map_sidebar .gr-turnstile:not(:empty) { margin: 0.5em 0 0.75em; }
+}
+@media (min-width: 48em) {
+    #map_sidebar .gr-reporter__contact { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+    #map_sidebar .gr-reporter__contact label { font-size: 0.875rem; }
+}
