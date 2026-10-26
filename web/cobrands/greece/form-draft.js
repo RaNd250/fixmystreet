@@ -54,7 +54,7 @@
         fields(form).forEach(function(el) {
             if (el.type === 'checkbox' || el.type === 'radio') {
                 if (el.checked) { values[el.name] = el.value; } else if (el.type === 'checkbox' && !(el.name in values)) { values[el.name] = null; }
-            } else if (el.value !== '') {
+            } else if (el.value !== '' && !(el.dataset && el.dataset.grDefault === el.value)) {   // not detail-default.js's ready text
                 values[el.name] = el.value;
                 any = any || /^(detail|pinakida)$/.test(el.name);
             }

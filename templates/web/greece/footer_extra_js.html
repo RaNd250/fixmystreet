@@ -5,7 +5,8 @@
     report-skip-map.js: on phones a report from the home page's pin skips FixMyStreet's second map.
     nearby-check.js: a notice when an open report is already within 100 m of the pin.
     photo-crop.js: a photo can be cropped before it is uploaded.
-    category-emoji.js: an emoji before each category on the report form. ~%]
+    category-emoji.js: an emoji before each category on the report form.
+    detail-default.js: a ready short description for the category, cleared by a tap. ~%]
 [% IF bodyclass.match('mappage');
     scripts.push(version('/cobrands/fixmystreet/assets.js'));
     scripts.push(version('/cobrands/greece/camera.js'));
@@ -15,6 +16,7 @@
     scripts.push(version('/cobrands/greece/nearby-check.js'));
     scripts.push(version('/cobrands/greece/photo-crop.js'));
     scripts.push(version('/cobrands/greece/category-emoji.js'));
+    scripts.push(version('/cobrands/greece/detail-default.js'));
 END ~%]
 [%# form-draft.js keeps the report form's text if the reporter leaves it by mistake, and forgets
     it on the confirmation page, so it is on every page. ~%]

@@ -1352,3 +1352,6 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
     #map_sidebar .gr-reporter__contact { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
     #map_sidebar .gr-reporter__contact label { font-size: 0.875rem; }
 }
+
+/* The ready-made description (detail-default.js), until the reporter writes their own. */
+#form_detail.gr-detail-default { color: var(--gr-ink-3); }
