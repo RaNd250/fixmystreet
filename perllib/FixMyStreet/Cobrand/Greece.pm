@@ -204,6 +204,14 @@ sub report_check_for_errors {
         && ($c->get_param('username_register') // '') !~ /\S/) {
         $more{username_register} = $self->greece_t('Για να φαίνεται δημόσια το όνομά σου, γράψε και το email σου.', 'To show your name publicly, enter your email too.');
     }
+    # A video needs a confirmed email (owner, 2026-10-26): signed in, or the emailed code (GreeceOTP).
+    if (($c->get_param('greece_video') // '') =~ /\S/) {
+        my $email = lc($c->user_exists ? $c->user->email // '' : $c->get_param('username_register') // '');
+        $email =~ s/\s+//g;
+        my $ok = $email ne '' && ($c->user_exists || lc($c->session->{greece_otp_email} // '') eq $email);
+        $more{username_register} = $self->greece_t('Για να σταλεί το βίντεο, γράψε το email σου και επιβεβαίωσέ το με τον κωδικό που θα σου έρθει.',
+            'To send the video, enter your email and confirm it with the code we send you.') unless $ok;
+    }
     $more{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
     # Its own key: FixMyStreet drops errors under «name» for anonymous reports (Report/New.pm).
     my $name_error = $self->greece_name_error($c->get_param('name'));
@@ -290,10 +298,11 @@ sub report_new_munge_before_insert {
         $report->set_extra_metadata(greece_phone => $phone) if $phone ne '';
     }
     $self->greece_bad_words($report);
+    $self->greece_nsfw($report, $report->photo);
     $self->greece_route_to_dimos($report);
     $self->greece_public_complaint($report);
-    $self->greece_claim_video($report);
     $self->greece_mark_email_confirmed($report);
+    $self->greece_claim_video($report);
     return unless $c;
     my $before = $c->stash->{greece_account_before} or return;
     my $user = $report->user;
@@ -310,10 +319,12 @@ sub report_new_munge_before_insert {
 # (greece_public_complaint).
 # A video added on the form (App::Controller::GreeceVideo): the report takes it if it is ready and
 # no other report has taken it (the claimed/<id> marker is created exclusively), and keeps its id and
-# length. It is never published; greece_may_see_video says who sees it.
+# length, and only when the reporter's email is confirmed (greece_mark_email_confirmed; the form says so,
+# report_check_for_errors). It is never published; greece_may_see_video says who sees it.
 sub greece_claim_video {
     my ($self, $report) = @_;
     my $c = $self->{c} or return;
+    return unless $report->get_extra_metadata('greece_email_confirmed');
     my $id = $c->get_param('greece_video') // '';
     return unless $id =~ /^[0-9a-f]{32}$/;
     my $root = '/var/lib/fms-videos';
@@ -482,6 +493,26 @@ sub greece_bad_words {
     }
 }
 
+# A photo with nudity (the anonymiser's NudeNet, FixMyStreet::PhotoStorage::Greece) holds the report
+# or update for a moderator, as GREECE_MODERATE bad words do (owner, 2026-10-26): the classes found are
+# kept in greece_nsfw, and a report is hidden and flagged here; an update in update_email_shortlisted_user.
+# Its photos are not served while it is hidden (App::Controller::Photo shows visible states only).
+sub greece_nsfw {
+    my ($self, $obj, $photos) = @_;
+    my @ids = grep { /^[0-9a-f]{40}\.jpeg\z/ } split /,/, ($photos // '');
+    return unless @ids && eval { require FixMyStreet::PhotoStorage::Greece; 1 };
+    my %classes;
+    for my $found (map { FixMyStreet::PhotoStorage::Greece->nsfw($_) } @ids) {
+        $classes{$_->{class}} = 1 for @$found;
+    }
+    return unless %classes;
+    $obj->set_extra_metadata(greece_nsfw => [ sort keys %classes ]);
+    return 1 unless $obj->isa('FixMyStreet::DB::Result::Problem');
+    $obj->state('hidden');
+    $obj->flagged(1);
+    return 1;
+}
+
 # Updates get the same filter. FixMyStreet has no hook before an update is saved, but calls
 # process_open311_extras for an update once its text and requested state are set: mask the words there,
 # and with GREECE_MODERATE or more keep the update from changing the report's state. Once it is saved
@@ -508,6 +539,11 @@ sub process_open311_extras {
             $update->problem_state($problem->state);
         }
     }
+    if ($self->greece_nsfw($update, $c->stash->{upload_fileid})) {
+        $update->mark_fixed(0);
+        $update->mark_open(0);
+        $update->problem_state($problem->state) if $problem;
+    }
     my $count = 0;
     for my $field (qw(text name)) {
         my ($masked, $n) = greece_mask_bad_words($update->$field);
@@ -528,8 +564,8 @@ sub update_email_shortlisted_user {
     my ($self, $update) = @_;
     $self->greece_close_request_email($update);
     $self->greece_update_to_body($update);
-    my $count = $update->get_extra_metadata('greece_bad_words') or return;
-    return unless $count >= GREECE_MODERATE && $update->state ne 'hidden';
+    my $count = $update->get_extra_metadata('greece_bad_words') || 0;
+    return unless ($count >= GREECE_MODERATE || $update->get_extra_metadata('greece_nsfw')) && $update->state ne 'hidden';
     $update->update({ state => 'hidden' });
     my $c = $self->{c} or return;
     $c->send_email('moderation-update.txt', {
@@ -598,7 +634,8 @@ sub greece_close_request_email {
 sub greece_moderation_email {
     my ($self, $report) = @_;
     my $c = $self->{c} or return;
-    return unless $report->state eq 'hidden' && $report->flagged && $report->get_extra_metadata('greece_bad_words');
+    return unless $report->state eq 'hidden' && $report->flagged
+        && ($report->get_extra_metadata('greece_bad_words') || $report->get_extra_metadata('greece_nsfw'));
     $c->send_email('moderation.txt', {
         to => [ $self->contact_email ],
         report => $report,

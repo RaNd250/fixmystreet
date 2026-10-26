@@ -11,7 +11,7 @@
  * App::Controller::GreeceVideo, with a progress bar (per cent and MB), then is checked and re-encoded
  * to 720p without metadata while the box says so; then «✓ Βίντεο 0:32» with ✕ to take it off. The
  * report carries its id in greece_video; it is never published, only the service sees it. Sending
- * the report waits for the video.
+ * the report waits for the video. A video needs a confirmed email (email-otp.js; owner, 2026-10-26).
  */
 (function() {
     'use strict';
@@ -239,7 +239,10 @@
                     }).then(function(s) {
                         state = 'ready'; hidden.value = id; btn.disabled = true;
                         show('<span>✓ ' + t('Βίντεο', 'Video') + ' ' + mmss(s.duration) + ' · ' +
-                            t('το βλέπει μόνο η υπηρεσία', 'seen only by the service') + '</span><button type="button" class="gr-video-x" aria-label="' +
+                            t('το βλέπει μόνο η υπηρεσία', 'seen only by the service') +
+                            (document.querySelector('.gr-reporter__contact #form_username_register')   // not signed in
+                                ? '<br><small>' + t('Θα χρειαστεί επιβεβαιωμένο email για την αποστολή.', 'A confirmed email will be needed to send it.') + '</small>' : '') +
+                            '</span><button type="button" class="gr-video-x" aria-label="' +
                             t('Αφαίρεση βίντεο', 'Remove video') + '">✕</button>', 'gr-video-box--ok');
                         box.querySelector('.gr-video-x').onclick = reset;
                     });

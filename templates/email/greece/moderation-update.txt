@@ -1,9 +1,14 @@
-[%# To the site's contact address: an update held for a moderator because of bad words (Greece.pm). ~%]
-Subject: Ενημέρωση στην αναφορά [% report.greece_ref %] σε έλεγχο: ακατάλληλες λέξεις
+[%# To the site's contact address: an update held for a moderator because of bad words or a photo with nudity (Greece.pm). ~%]
+[% SET nsfw_el = { MALE_GENITALIA_EXPOSED => 'ανδρικά γεννητικά όργανα', FEMALE_GENITALIA_EXPOSED => 'γυναικεία γεννητικά όργανα', ANUS_EXPOSED => 'πρωκτό', FEMALE_BREAST_EXPOSED => 'γυμνό στήθος', BUTTOCKS_EXPOSED => 'γυμνούς γλουτούς' } ~%]
+[% SET nsfw = update.get_extra_metadata('greece_nsfw'); SET bad = update.get_extra_metadata('greece_bad_words') ~%]
+[% SET found = [] ~%]
+[% IF nsfw; SET names = []; FOR k IN nsfw; names.push(nsfw_el.$k || k); END; found.push('φωτογραφία όπου η αυτόματη αναγνώριση βρήκε ' _ names.join(', ')); END ~%]
+[% IF bad; found.push(bad _ ' ακατάλληλες λέξεις'); END ~%]
+Subject: Ενημέρωση στην αναφορά [% report.greece_ref %] σε έλεγχο: [% nsfw ? 'φωτογραφία με γυμνό' : 'ακατάλληλες λέξεις' %]
 
-Μια ενημέρωση στην αναφορά [% report.greece_ref %] ([% report.category %]) είχε [% update.get_extra_metadata('greece_bad_words') %] ακατάλληλες λέξεις και κρατήθηκε κρυφή: δεν φαίνεται στον ιστότοπο και δεν αλλάζει την κατάσταση της αναφοράς.
+Μια ενημέρωση στην αναφορά [% report.greece_ref %] ([% report.category %]) είχε [% found.join(' και ') %] και κρατήθηκε κρυφή: δεν φαίνεται στον ιστότοπο και δεν αλλάζει την κατάσταση της αναφοράς.
 
-Κείμενο, με *** στη θέση τους:
+Κείμενο[% IF bad %], με *** στη θέση τους[% END %]:
 
 [% update.text %]
 

@@ -3,6 +3,8 @@
  * (App::Controller::GreeceOTP); typed back, the email is confirmed for this report and the service
  * gets the reporter in Cc (Greece.pm munge_sendreport_params). Optional: without it the report is
  * sent all the same, only without the Cc. Changing the email afterwards undoes it.
+ * With a video (video-upload.js) it is required (owner, 2026-10-26): the form is not sent until the
+ * email is confirmed, and the server refuses it too (Greece.pm report_check_for_errors).
  */
 (function() {
     'use strict';
@@ -23,10 +25,17 @@
         box.className = 'gr-otp';
         input.parentNode.appendChild(box);
         var confirmed = '';
+        var form = input.form;
+        function hasVideo() {
+            var v = form && form.querySelector('input[name="greece_video"]');
+            return !!(v && v.value);
+        }
 
         function idle() {
             box.innerHTML = '<button type="button" class="gr-otp__ask">' + t('Επιβεβαίωση email', 'Confirm email') + '</button>' +
-                '<span class="gr-otp__why">' + t('προαιρετικό · για να σε έχει η υπηρεσία σε κοινοποίηση', 'optional · so the service copies you in') + '</span>';
+                '<span class="gr-otp__why">' + (hasVideo()
+                    ? t('απαιτείται για το βίντεο', 'required for the video')
+                    : t('προαιρετικό · για να σε έχει η υπηρεσία σε κοινοποίηση', 'optional · so the service copies you in')) + '</span>';
             box.hidden = !EMAIL.test(input.value.trim());
             box.querySelector('.gr-otp__ask').onclick = send;
         }
@@ -65,6 +74,20 @@
                 code.addEventListener('input', function() { if (/^\d{6}$/.test(code.value)) { check(); } });
                 code.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); check(); } });
             });
+        }
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (!hasVideo() || (confirmed && input.value.trim().toLowerCase() === confirmed)) { return; }
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                if (!box.querySelector('.gr-otp__code')) { idle(); box.hidden = false; }
+                say(EMAIL.test(input.value.trim())
+                    ? t('Για να σταλεί το βίντεο, επιβεβαίωσε πρώτα το email σου.', 'To send the video, confirm your email first.')
+                    : t('Για να σταλεί το βίντεο, γράψε το email σου και επιβεβαίωσέ το.', 'To send the video, enter your email and confirm it.'),
+                    'gr-otp__msg--bad');
+                input.scrollIntoView({ block: 'center' });
+                input.focus();
+            }, true);
         }
         input.addEventListener('input', function() {
             if (confirmed && input.value.trim().toLowerCase() !== confirmed) { confirmed = ''; }
