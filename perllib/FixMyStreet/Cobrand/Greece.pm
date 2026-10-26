@@ -52,6 +52,8 @@ sub munge_sendreport_params {
     # Otherwise replies go to the site's contact address and the letter says an email was given.
     my $name = $row->name // '';
     $name = '' if $name eq ($self->anonymous_account->{name} // '') || $name =~ /^\s*$/;
+    # Never an abusive or masked name in «Από» (greece_name_error refuses them on the forms).
+    $name = '' if $name =~ /\*\*\*/ || (greece_mask_bad_words($name))[1];
     my $sender = $self->do_not_reply_email;
     $params->{From} = [ $sender, ($name ne '' ? $name : 'Ανώνυμος') . ' - μέσω FixMyStreets' ];
     my $confirmed = !$self->greece_anonymous_report($row) && $row->get_extra_metadata('greece_email_confirmed');
@@ -177,7 +179,11 @@ sub check_login_disallowed {
 
 sub extra_contact_validation {
     my ($self, $c) = @_;
-    return $self->greece_turnstile_ok($c) ? () : (turnstile => $self->greece_turnstile_error);
+    my %errors;
+    $errors{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
+    my $name_error = $self->greece_name_error($c->get_param('name'));
+    $errors{name} = $name_error if $name_error;
+    return %errors;
 }
 
 # Whether the report was made without an email (filed under anonymous_account).
@@ -215,14 +221,19 @@ sub report_check_for_errors {
 sub new_report_detail_field_label { $_[0]->greece_t('Σύντομη περιγραφή', 'Short description') }
 sub new_report_detail_field_hint { '' }
 
-# A name given on a report or update needs at least 4 characters (not counting spaces at either end),
-# so «Γ.» or «aa» do not reach a municipality or the police as the reporter's name. Empty is fine: the
-# report then goes anonymously.
+# A name given on a report, update or contact message needs at least 4 characters (not counting
+# spaces at either end) and no abusive words, so «Γ.», «aa» or an insult do not reach a municipality
+# or the police as the reporter's name. Empty is fine: the report then goes anonymously.
 sub greece_name_error {
     my ($self, $name) = @_;
     $name = $name // '';
     $name =~ s/^\s+|\s+$//g;
-    return if $name eq '' || length $name >= 4;
+    return if $name eq '';
+    # The name goes in the letters' «Από» (munge_sendreport_params): no abusive words in it.
+    my (undef, $bad) = greece_mask_bad_words($name);
+    return $self->greece_t('Το όνομα δεν επιτρέπεται. Γράψε το πραγματικό σου όνομα ή άφησέ το «Ανώνυμος».',
+        'That name is not allowed. Write your real name, or leave it as «Anonymous».') if $bad;
+    return if length $name >= 4;
     return $self->greece_t('Το όνομα θέλει τουλάχιστον 4 χαρακτήρες.', 'The name needs at least 4 characters.');
 }
 
