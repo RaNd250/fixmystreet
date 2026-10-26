@@ -129,6 +129,20 @@ sub greece_turnstile_error {
         'The security check did not finish. Wait a moment for it to finish and send again.');
 }
 
+# The name is optional everywhere (owner, 2026-10-26): the forms show «Ανώνυμος» in grey
+# (name-default.js), and a report, update or contact message sent with no name, or with that one, is
+# sent as «Ανώνυμος πολίτης» — also when an email is given, which FixMyStreet would otherwise refuse
+# without a name. Not when signed in. Runs early on every request (check_login_disallowed below), only on those POSTs.
+my %GREECE_NO_NAME = map { $_ => 1 } ('', 'ανώνυμος', 'ανωνυμος', 'anonymous');
+sub greece_default_name {
+    my ($self, $c) = @_;
+    return unless $c->req->method eq 'POST' && $c->req->path =~ m{^(report/new|report/update|contact/submit)/?$};
+    return if $c->user_exists;   # an account's own name is never replaced
+    my $name = $c->req->params->{name} // '';
+    $name =~ s/^\s+|\s+$//g;
+    $c->req->params->{name} = 'Ανώνυμος πολίτης' if $GREECE_NO_NAME{lc $name};
+}
+
 # Alert sign-ups (follow a report, local alerts) email a confirmation link to the address typed, so
 # they pass the Turnstile check too (owner, 2026-10-26: «παντού»). FixMyStreet has no hook in
 # /alert/subscribe; this one runs early on every request (Root auto), and only acts on that POST.
@@ -136,6 +150,7 @@ sub greece_turnstile_error {
 sub check_login_disallowed {
     my $self = shift;
     my $c = $self->{c} or return 0;
+    $self->greece_default_name($c);
     return 0 unless $c->req->method eq 'POST' && $c->req->path =~ m{^alert/subscribe/?$};
     return 0 if $c->user_exists || $c->get_param('rss') || ($c->get_param('rznvy') // '') eq '';
     return 0 if $self->greece_turnstile_ok($c);
@@ -441,6 +456,7 @@ sub process_open311_extras {
 sub update_email_shortlisted_user {
     my ($self, $update) = @_;
     $self->greece_close_request_email($update);
+    $self->greece_update_to_body($update);
     my $count = $update->get_extra_metadata('greece_bad_words') or return;
     return unless $count >= GREECE_MODERATE && $update->state ne 'hidden';
     $update->update({ state => 'hidden' });
@@ -451,6 +467,41 @@ sub update_email_shortlisted_user {
         report => $update->problem,
         admin_url => $c->cobrand->base_url . '/admin/update_edit/' . $update->id,
     });
+}
+
+# A published update also goes to the service the report was sent to, as a follow-up on the same
+# matter (owner, 2026-10-26), by email to the category's address there; not to the police (police
+# bodies are tagged greece_police), not before the report itself was sent, not an update by that
+# body's own staff, and once. On a staging site that does not send reports (STAGING_FLAGS
+# send_reports 0) it goes to the site's contact address instead, saying where it would have gone.
+sub greece_update_to_body {
+    my ($self, $update) = @_;
+    return if $update->state ne 'confirmed' || $update->get_extra_metadata('greece_body_sent');
+    my $problem = $update->problem or return;
+    return unless $problem->whensent;
+    my $c = $self->{c} or return;
+    my @body_ids = grep { /^\d+$/ } split /,/, ($problem->bodies_str // '');
+    my @bodies = FixMyStreet::DB->resultset('Body')->search({ id => \@body_ids, deleted => 0 })->all;
+    @bodies = grep { !(($_->extra || {})->{greece_police}) } @bodies;
+    return unless @bodies;
+    my $user = $update->user;
+    return if $user && $user->from_body && grep { $_->id == $user->from_body->id } @bodies;
+    my @emails = map { split /\s*,\s*/, ($_->email // '') } FixMyStreet::DB->resultset('Contact')->search({
+        body_id => [ map { $_->id } @bodies ], category => $problem->category, state => { '!=' => 'deleted' },
+    })->all;
+    my %seen; @emails = grep { /\@/ && !$seen{lc $_}++ } @emails;
+    return unless @emails;
+    my $staging = FixMyStreet->staging_flag('send_reports', 0);
+    $c->send_email('update-to-body.txt', {
+        to => $staging ? [ $self->contact_email ] : \@emails,
+        update => $update,
+        report => $problem,
+        bodies_name => join(', ', map { $_->name } @bodies),
+        would_go_to => $staging ? join(', ', @emails) : '',
+        report_url => $self->base_url_for_report($problem) . $problem->url,
+    });
+    $update->set_extra_metadata(greece_body_sent => 1);
+    $update->update;
 }
 
 # A request to close a report, from an update (process_open311_extras): to the contact address once,

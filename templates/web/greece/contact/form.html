@@ -67,9 +67,9 @@
 
   <div class="gr-cform__grid">
     <div class="gr-cform__field">
-      <label class="govuk-label" for="form_name">[% loc('Your name') %]</label>
+      <label class="govuk-label" for="form_name">[% loc('Your name') %] <span class="gr-cform__opt">[% loc('optional') %]</span></label>
       [% IF field_errors.name %]<div class="form-error">[% field_errors.name %]</div>[% END %]
-      <input type="text" class="govuk-input required" name="name" autocomplete="name" id="form_name" value="[% form_name | html %]" size="30" data-msg-required="[% c.cobrand.greece_t('Γράψε το όνομά σου.', 'Enter your name.') %]">
+      <input type="text" class="govuk-input" name="name" autocomplete="name" id="form_name" value="[% form_name | html %]" size="30">
     </div>
     <div class="gr-cform__field">
       <label class="govuk-label" for="form_email">[% loc('Your email') %]</label>

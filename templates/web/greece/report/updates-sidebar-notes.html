@@ -1,6 +1,10 @@
 [%# Above the update form. FixMyStreet's two sentences mixed «Παρακαλούμε» with «σημείωσε» and the
     second had no full stop. ~%]
 <p>
-    [% c.cobrand.greece_t('Οι ενημερώσεις δημοσιεύονται εδώ και δεν στέλνονται στην υπηρεσία.', 'Updates are published here and are not sent to the service.') %]
+    [% IF problem.category == 'Στάθμευση σε φορτιστή EV ή εμπόδιο στη διέλευση' %]
+    [% c.cobrand.greece_t('Οι ενημερώσεις δημοσιεύονται εδώ και δεν στέλνονται στην αστυνομία.', 'Updates are published here and are not sent to the police.') %]
+    [% ELSE %]
+    [% c.cobrand.greece_t('Οι ενημερώσεις δημοσιεύονται εδώ και στέλνονται και στην υπηρεσία που έλαβε την αναφορά.', 'Updates are published here and also sent to the service that received the report.') %]
+    [% END %]
     <a href="[% c.cobrand.privacy_policy_url %]">[% c.cobrand.greece_t('Πολιτική απορρήτου', 'Privacy policy') %]</a>
 </p>

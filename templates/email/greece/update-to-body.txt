@@ -1,0 +1,29 @@
+[%# A published update on a report, to the service the report was sent to (Greece.pm
+    greece_update_to_body). Replies go to the site's contact address, not to the citizen. ~%]
+Subject: Ενημέρωση για την αναφορά [% report.greece_ref %]: [% report.title %]
+
+Προς: [% bodies_name %]
+
+[% IF would_go_to %](Δοκιμαστικός ιστότοπος: σε κανονική λειτουργία το μήνυμα θα πήγαινε στο [% would_go_to %].)
+
+[% END %]Υπάρχει νέα ενημέρωση για την αναφορά [% report.greece_ref %] ([% report.category %]),
+που σας στάλθηκε στις [% report.greece_local_time %].
+
+«[% update.text %]»
+
+[% IF update.mark_fixed OR update.get_extra_metadata('greece_close_requested') %]Ο πολίτης σημειώνει ότι το πρόβλημα διορθώθηκε.
+
+[% END %][% IF update.photo %]Η ενημέρωση έχει φωτογραφία, στη σελίδα της αναφοράς.
+
+[% END %]Από: [% update.anonymous ? 'ανώνυμος πολίτης' : update.name %]
+
+Η αναφορά και όλες οι ενημερώσεις της:
+
+    [% report_url %]
+
+----------
+
+Για να ενημερώσετε τον πολίτη, γράψτε μια ενημέρωση στη σελίδα της αναφοράς. Οι απαντήσεις σε αυτό
+το email πηγαίνουν στην ομάδα του [% site_name %].
+
+[% signature %]

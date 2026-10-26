@@ -1355,3 +1355,4 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 
 /* The ready-made description (detail-default.js), until the reporter writes their own. */
 #form_detail.gr-detail-default { color: var(--gr-ink-3); }
+#form_name.gr-name-default { color: var(--gr-ink-3); }
