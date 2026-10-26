@@ -43,7 +43,7 @@ OpenLayers.Layer.Greece = OpenLayers.Class(OpenLayers.Layer.OSM, {
         'Στάθμευση σε ράμπα ή θέση ΑμεΑ, πεζοδρόμιο ή διάβαση': '♿', 'Parking on a disabled ramp or bay, pavement or crossing': '♿',
         'Στάθμευση σε φορτιστή EV ή εμπόδιο στη διέλευση': '🔌', 'Parking at an EV charger or blocking the way': '🔌',
         'Κατάληψη κοινόχρηστου χώρου': '🚧',
-        'Θέματα καθαριότητας': '🗑️', 'Cleaning issues': '🗑️',
+        'Φρεάτια και καθαριότητα': '🗑️', 'Drains and cleaning': '🗑️',
         'Πράσινο και δέντρα': '🌳', 'Trees and green spaces': '🌳',
         'Οδοφωτισμός': '💡', 'Street lighting': '💡'
     };

@@ -11,10 +11,14 @@
         'Πρόβλημα με πεζοδρόμιο': '🚶',
         'Στάθμευση σε ράμπα ή θέση ΑμεΑ, πεζοδρόμιο ή διάβαση': '♿',
         'Στάθμευση σε φορτιστή EV ή εμπόδιο στη διέλευση': '🔌',
-        'Θέματα καθαριότητας': '🗑️',
+        'Φρεάτια και καθαριότητα': '🗑️',
         'Πράσινο και δέντρα': '🌳',
         'Οδοφωτισμός': '💡',
         'Άλλο': '📝'
+    };
+    // A picture beside the emoji, where one says more (owner, 2026-10-27: a storm drain for «Φρεάτια»).
+    var PICTURE = {
+        'Φρεάτια και καθαριότητα': '/cobrands/greece/images/cat-drain.png?2'
     };
     // «Τι συμβαίνει;» (the paravasi question; keys as in Greece.pm %SMS_VEHICLE / %SMS_OTHER).
     var ANSWER = {
@@ -31,6 +35,13 @@
             span.className = 'gr-cat-emoji';
             span.setAttribute('aria-hidden', 'true');
             span.textContent = e;
+            var pic = input.name === 'category' && PICTURE[input.value];
+            if (pic) {
+                var img = document.createElement('img');
+                img.className = 'gr-cat-pic';
+                img.src = pic; img.alt = ''; img.width = 24; img.height = 24;
+                span.appendChild(img);
+            }
             label.insertBefore(span, label.firstChild);
         });
     }

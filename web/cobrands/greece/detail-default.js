@@ -11,7 +11,7 @@
     var TEXT = {
         'Λακκούβα ή φθορά οδοστρώματος': ['Λακκούβα στο οδόστρωμα, επικίνδυνη για οχήματα και δίκυκλα.', 'Pothole in the road, dangerous for vehicles and bikes.'],
         'Πρόβλημα με πεζοδρόμιο': ['Σπασμένο πεζοδρόμιο, δύσκολη και επικίνδυνη η διέλευση πεζών.', 'Broken pavement, hard and unsafe for pedestrians.'],
-        'Θέματα καθαριότητας': ['Σκουπίδια ή μπάζα στο σημείο, χρειάζεται αποκομιδή.', 'Rubbish or rubble here, needs collecting.'],
+        'Φρεάτια και καθαριότητα': ['Βουλωμένο φρεάτιο ή σκουπίδια στο σημείο, χρειάζεται καθαρισμό.', 'Blocked drain or rubbish here, needs cleaning.'],
         'Πράσινο και δέντρα': ['Δέντρο ή πράσινο που χρειάζεται κλάδεμα ή φροντίδα.', 'A tree or green space that needs pruning or care.'],
         'Οδοφωτισμός': ['Σβηστός ή χαλασμένος φανοστάτης, ο δρόμος είναι σκοτεινός.', 'Street light out or broken, the street is dark.'],
         'Στάθμευση σε φορτιστή EV ή εμπόδιο στη διέλευση': ['Παράνομα σταθμευμένο όχημα που εμποδίζει.', 'Illegally parked vehicle in the way.']

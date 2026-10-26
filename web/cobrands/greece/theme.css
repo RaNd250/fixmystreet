@@ -1402,3 +1402,6 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 .gr-otp__msg { margin: 4px 0 0; }
 .gr-otp__msg--ok { color: #15803d; font-weight: 600; }
 .gr-otp__msg--bad { color: var(--gr-danger); }
+
+/* A category's picture beside its emoji (category-emoji.js PICTURE). */
+.gr-cat-emoji .gr-cat-pic { width: 1.7em; height: 1.7em; margin-left: 0.2em; vertical-align: -0.45em; object-fit: contain; }
