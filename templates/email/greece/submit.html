@@ -14,13 +14,14 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% only_column_style %]" id="primary_column">
-  [%# One column (owner, 2026-10-26): a short heading, the report's details in a table that staff can
+  [%# Greek capitals are written without accents, not made by CSS text-transform (which keeps them in
+      some mail clients). One column (owner, 2026-10-26): a short heading, the report's details in a table that staff can
       read at a glance, the button, the address-correction note, then the map across the email and
       the photo. Table styles are local; colours as on fixmystreets.gr. ~%]
   [% tth = "padding: 10px 12px; width: 34%; vertical-align: top; text-align: left; font-size: 14px; line-height: 20px; font-weight: 600; color: #475569; background-color: #f6f8fc; border-bottom: 1px solid #e3e8f0;";
      ttd = "padding: 10px 12px; vertical-align: top; text-align: left; font-size: 15px; line-height: 22px; font-weight: normal; color: #0f172a; border-bottom: 1px solid #e3e8f0;" %]
   [% start_padded_box | safe %]
-  <p style="margin: 0 0 6px 0; font-size: 13px; line-height: 18px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #1f5fd6;">Νέα αναφορά πολίτη</p>
+  <p style="margin: 0 0 6px 0; font-size: 13px; line-height: 18px; font-weight: 700; letter-spacing: 0.04em; color: #1f5fd6;">ΝΕΑ ΑΝΑΦΟΡΑ ΠΟΛΙΤΗ</p>
   <h1 style="[% h1_style %]">[% report.title | html %]</h1>
   <p style="[% p_style %]">[% missing %][% multiple %]Προς: <strong>[% bodies_name | html %]</strong>. Χρήστης του [% site_name %] υπέβαλε την παρακάτω αναφορά για ένα τοπικό πρόβλημα.</p>
 
