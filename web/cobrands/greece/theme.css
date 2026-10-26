@@ -1271,3 +1271,6 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
 .gr-crop__h[data-h="ne"] { right: 0; top: 0; cursor: nesw-resize; }
 .gr-crop__h[data-h="sw"] { left: 0; bottom: 0; cursor: nesw-resize; }
 .gr-crop__h[data-h="se"] { right: 0; bottom: 0; cursor: nwse-resize; }
+.gr-nearby__priv { margin: 6px 0 0 !important; }
+.gr-nearby__priv:first-of-type { margin-top: 0 !important; }
+.gr-nearby__priv strong { display: inline; }

@@ -2,8 +2,10 @@
  * Report form: when an open report is already within 100 m of the pin (FixMyStreet's /around/nearby,
  * mode "suggestions", whose distance Greece.pm nearby_distances sets to 100 m; any category; only
  * public reports), a notice at the top of the form asks the reporter to check it is not the same
- * problem, with links to those reports. It follows the pin as it moves, and can be closed. It only
- * warns: the report can still be sent.
+ * problem, with links to those reports. Police complaints are not public: for them only a count and
+ * how long ago comes from /greece/nearby-private (App::Controller::GreeceNearby, last 24 hours), shown
+ * without links. It follows the pin as it moves, and can be closed. It only warns: the report can
+ * still be sent.
  */
 (function() {
     'use strict';
@@ -29,26 +31,44 @@
         if (old) { old.parentNode.removeChild(old); }
     }
 
-    function show(form, lat, lon, pins, key) {
+    function ago(min) {
+        if (min < 2) { return t('μόλις τώρα', 'just now'); }
+        if (min < 60) { return t('πριν από ' + min + ' λεπτά', min + ' minutes ago'); }
+        var h = Math.round(min / 60);
+        return h === 1 ? t('πριν από 1 ώρα', '1 hour ago') : t('πριν από ' + h + ' ώρες', h + ' hours ago');
+    }
+
+    function show(form, lat, lon, data, key) {
         remove();
-        if (!pins.length || key === closedKey) { return; }
-        var items = pins.slice(0, 3).map(function(p) {
-            var d = Math.max(5, Math.round(metres(lat, lon, p[0], p[1]) / 5) * 5);
-            return '<li><a href="/report/' + encodeURIComponent(p[3]) + '" target="_blank" rel="noopener">' +
-                esc(p[4] || t('Αναφορά', 'Report')) + '</a> <span>~' + d + ' ' + t('μ.', 'm') + '</span></li>';
-        }).join('');
+        var pins = data.pins, priv = data.priv || { count: 0 };
+        if ((!pins.length && !priv.count) || key === closedKey) { return; }
+        var html = '<button type="button" class="gr-nearby__close" aria-label="' + t('Κλείσιμο', 'Close') + '">×</button>';
+        if (pins.length) {
+            var items = pins.slice(0, 3).map(function(p) {
+                var d = Math.max(5, Math.round(metres(lat, lon, p[0], p[1]) / 5) * 5);
+                return '<li><a href="/report/' + encodeURIComponent(p[3]) + '" target="_blank" rel="noopener">' +
+                    esc(p[4] || t('Αναφορά', 'Report')) + '</a> <span>~' + d + ' ' + t('μ.', 'm') + '</span></li>';
+            }).join('');
+            html += '<strong>' + (pins.length > 1
+                    ? t('Υπάρχουν ήδη ' + pins.length + ' ενεργές αναφορές κοντά', 'There are already ' + pins.length + ' open reports nearby')
+                    : t('Υπάρχει ήδη ενεργή αναφορά κοντά', 'There is already an open report nearby')) + '</strong>' +
+                '<p>' + t('Σε απόσταση έως 100 μ. Δες μήπως είναι το ίδιο πρόβλημα· αν ναι, πρόσθεσε εκεί μια ενημέρωση αντί για νέα αναφορά.',
+                    'Within 100 m. Check whether it is the same problem; if so, add an update there instead of a new report.') + '</p>' +
+                '<ul>' + items + '</ul>';
+        }
+        if (priv.count) {
+            html += '<p class="gr-nearby__priv"><strong>' + (priv.count > 1
+                    ? t(priv.count + ' καταγγελίες στην αστυνομία', priv.count + ' complaints to the police')
+                    : t('Καταγγελία στην αστυνομία', 'A complaint to the police')) + '</strong> ' +
+                t('έγινε ήδη σε απόσταση έως 100 μ., ', 'already made within 100 m, ') +
+                (priv.minutes != null ? ago(priv.minutes) : '') + '. ' +
+                t('Αν είναι για το ίδιο όχημα ή εμπόδιο, δεν χρειάζεται δεύτερη.', 'If it is about the same vehicle or obstacle, a second one is not needed.') + '</p>';
+        }
         var box = document.createElement('div');
         box.id = 'gr-nearby';
         box.className = 'gr-nearby';
         box.setAttribute('role', 'status');
-        box.innerHTML =
-            '<button type="button" class="gr-nearby__close" aria-label="' + t('Κλείσιμο', 'Close') + '">×</button>' +
-            '<strong>' + (pins.length > 1
-                ? t('Υπάρχουν ήδη ' + pins.length + ' ενεργές αναφορές κοντά', 'There are already ' + pins.length + ' open reports nearby')
-                : t('Υπάρχει ήδη ενεργή αναφορά κοντά', 'There is already an open report nearby')) + '</strong>' +
-            '<p>' + t('Σε απόσταση έως 100 μ. Δες μήπως είναι το ίδιο πρόβλημα· αν ναι, πρόσθεσε εκεί μια ενημέρωση αντί για νέα αναφορά.',
-                'Within 100 m. Check whether it is the same problem; if so, add an update there instead of a new report.') + '</p>' +
-            '<ul>' + items + '</ul>';
+        box.innerHTML = html;
         box.querySelector('.gr-nearby__close').addEventListener('click', function() {
             closedKey = key;
             remove();
@@ -75,13 +95,17 @@
         busy = true;
         var url = '/around/nearby?mode=suggestions&pin_size=normal&latitude=' + encodeURIComponent(lat) +
             '&longitude=' + encodeURIComponent(lon);
-        fetch(url, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
-            .then(function(r) { return r.ok ? r.json() : { pins: [] }; })
-            .then(function(data) {
-                lastPins = Array.isArray(data.pins) ? data.pins : [];
+        function get(u, empty) {
+            return fetch(u, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+                .then(function(r) { return r.ok ? r.json() : empty; })
+                .catch(function() { return empty; });
+        }
+        var q = 'latitude=' + encodeURIComponent(lat) + '&longitude=' + encodeURIComponent(lon);
+        Promise.all([get(url, { pins: [] }), get('/greece/nearby-private?' + q, { count: 0 })])
+            .then(function(res) {
+                lastPins = { pins: Array.isArray(res[0].pins) ? res[0].pins : [], priv: res[1] || { count: 0 } };
                 show(form, lat, lon, lastPins, key);
             })
-            .catch(function() { /* the notice is only a help */ })
             .then(function() { busy = false; });
     }
 
