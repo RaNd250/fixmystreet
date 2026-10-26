@@ -1289,3 +1289,22 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
 #key-tools a, #key-tools button { font-size: 0.8125rem !important; }
 .footer-marketing a, .gr-footer-line a, #site-footer a, .footer a { display: inline-block; padding: 4px 0; }
 a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: inline-block; padding: 4px 0; }
+
+/* Report form on computers: the categories in two columns, as on phones, and tighter spacing, so a
+   category's message (e.g. ΑμεΑ → Χωρίς Εμπόδια) is seen without scrolling on a 768px-high screen. */
+@media (min-width: 48em) {
+    #map_sidebar #form_category_fieldset { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    #map_sidebar #form_category_fieldset > legend { grid-column: 1 / -1; margin: 6px 0 2px; }
+    #map_sidebar #form_category_fieldset > :not(.govuk-radios__item):not(legend) { grid-column: 1 / -1; }
+    #map_sidebar #form_category_fieldset .govuk-radios__item { min-height: 0; margin: 0; padding: 0 8px 0 34px; }
+    #map_sidebar #form_category_fieldset .govuk-radios__label { padding: 6px 0; font-size: 0.8125rem; line-height: 1.25; }
+    #map_sidebar #form_category_fieldset .govuk-radios__label:before { left: 9px; width: 16px; height: 16px; margin-top: -8px; }
+    #map_sidebar #form_category_fieldset .govuk-radios__label:after { left: 13px; margin-top: -4px; border-width: 4px; }
+    #map_sidebar #form_category_fieldset .govuk-radios__input { left: 0; width: 34px; height: 34px; margin-top: -17px; }
+    #map_sidebar .gr-cat-emoji { font-size: 1em; margin-right: 0.3em; }
+    #map_sidebar .gr-stepper { margin: 0.1em 0 0.4em; }
+    #map_sidebar #js-category-stopper { margin: 8px 0 0; padding: 12px 14px; font-size: 0.875rem; line-height: 1.4; }
+    #map_sidebar #js-category-stopper p { margin: 0 0 8px; }
+    #map_sidebar #js-category-stopper p:last-child { margin: 0; }
+    #map_sidebar .js-reporting-page--category:has(#js-category-stopper) .floating-button-spacer { display: none; }
+}
