@@ -1,0 +1,14 @@
+[%# A municipality's page without FixMyStreet's RSS link («Λήψη ενημερώσεων για προβλήματα σε αυτό το
+    "υπηρεσία"», broken Greek, and a feed few citizens use): email alerts are on /alert. The list of
+    wards stays, where there is one. ~%]
+[% IF children.size %]
+<div id="key-tools-wrapper" class="shadow-wrap">
+    <ul id="key-tools" class="js-key-tools">
+        [% TRY %]
+            [% INCLUDE 'reports/_rss_other_districts.html' %]
+        [% CATCH %]
+            <li><a href="#council_wards" id="key-tool-wards" class="has-inline-svg">[% ward_text %][% INCLUDE 'icons/chevron-right.html' width='1.5em' height='1.5em' %]</a></li>
+        [% END %]
+    </ul>
+</div>
+[% END %]
