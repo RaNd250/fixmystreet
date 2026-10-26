@@ -31,3 +31,24 @@
   [% IF !problem.used_map %]<p class="gr-meta__note">[% c.cobrand.greece_t('Δεν φαίνεται καρφίτσα, γιατί η θέση δεν δόθηκε στον χάρτη.', 'No pin is shown, as the place was not given on the map.') %]</p>[% END %]
   [% IF problem.non_public AND c.user.has_permission_to('report_view_private', problem.bodies_str_ids) %]<p class="gr-meta__note"><strong>[% c.cobrand.greece_t('Η αναφορά είναι ιδιωτική.', 'This report is private.') %]</strong></p>[% END %]
 </div>
+[%# Follow the report by email (owner, 2026-10-26), apart from giving an update: FixMyStreet's
+    /alert/subscribe (type updates), which emails a confirmation link to the address given; signed
+    in, one press. Not for a hidden report. ~%]
+[% IF problem.state != 'hidden' %]
+<form class="gr-follow" action="[% c.uri_for('/alert/subscribe') %]" method="post">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="hidden" name="id" value="[% problem.id %]">
+    <input type="hidden" name="type" value="updates">
+    <label class="gr-follow__title" for="gr_follow_email">🔔 [% c.cobrand.greece_t('Παρακολούθησε την αναφορά', 'Follow this report') %]</label>
+    <p class="gr-follow__hint">[% c.cobrand.greece_t('Σου στέλνουμε email όταν αλλάζει κάτι.', 'We email you when something changes.') %]</p>
+    <div class="gr-follow__row">
+    [% IF c.user_exists %]
+        <button class="btn btn--primary" type="submit" name="alert" value="1">[% c.cobrand.greece_t('Παρακολούθηση', 'Follow') %]</button>
+    [% ELSE %]
+        <input type="email" class="form-control" name="rznvy" id="gr_follow_email" autocomplete="email" required
+            placeholder="[% c.cobrand.greece_t('Το email σου', 'Your email') %]">
+        <button class="btn btn--primary" type="submit" name="alert" value="1">[% c.cobrand.greece_t('Παρακολούθηση', 'Follow') %]</button>
+    [% END %]
+    </div>
+</form>
+[% END %]

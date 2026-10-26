@@ -1308,3 +1308,28 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
     #map_sidebar #js-category-stopper p:last-child { margin: 0; }
     #map_sidebar .js-reporting-page--category:has(#js-category-stopper) .floating-button-spacer { display: none; }
 }
+
+/* «Να φαίνεται το όνομά μου»: a small box and text under the name field. */
+.gr-showname { margin: 4px 0 10px; }
+.gr-showname .govuk-checkboxes__item { min-height: 24px; padding-left: 26px; }
+.gr-showname .govuk-checkboxes__label { padding: 2px 0 2px 4px; font-size: 0.875rem; line-height: 1.35; color: var(--gr-ink-2); }
+.gr-showname .govuk-checkboxes__label::before { width: 18px; height: 18px; top: 2px; left: 0; border-width: 2px; border-radius: 4px; }
+.gr-showname .govuk-checkboxes__label::after { top: 7px; left: 4px; width: 9px; height: 4px; border-width: 0 0 2px 2px; }
+.gr-showname .govuk-checkboxes__input { width: 28px; height: 28px; left: -4px; top: -2px; }
+
+/* Report page: follow by email (report/_main_sent_info.html) */
+.gr-follow { margin: 0 0 14px; padding: 10px 14px; border: 1px solid var(--gr-line); border-radius: var(--gr-radius-s); background: var(--gr-surface); }
+.gr-follow__title { display: block; margin: 0; font-weight: 700; font-size: 0.9375rem; }
+.gr-follow__hint { margin: 2px 0 8px; color: var(--gr-ink-3); font-size: 0.8125rem; }
+.gr-follow__row { display: flex; gap: 8px; }
+.gr-follow__row .form-control { flex: 1 1 auto; min-width: 0; margin: 0; }
+.gr-follow__row .btn { flex: 0 0 auto; margin: 0; white-space: nowrap; }
+
+/* Small checkboxes in the report and update forms («Αυτό το πρόβλημα έχει διορθωθεί», «Ειδοποίησέ με…»),
+   like «Να φαίνεται το όνομά μου». */
+#map_sidebar .govuk-checkboxes--small .govuk-checkboxes__item, #map_sidebar .checkbox-group { min-height: 24px; padding-left: 26px; position: relative; }
+#map_sidebar .govuk-checkboxes--small .govuk-checkboxes__label { padding: 2px 0 2px 4px; font-size: 0.875rem; line-height: 1.35; }
+#map_sidebar .govuk-checkboxes--small .govuk-checkboxes__label::before { width: 18px; height: 18px; top: 2px; left: 0; border-width: 2px; border-radius: 4px; }
+#map_sidebar .govuk-checkboxes--small .govuk-checkboxes__label::after { top: 7px; left: 4px; width: 9px; height: 4px; border-width: 0 0 2px 2px; }
+#map_sidebar .govuk-checkboxes--small .govuk-checkboxes__input { width: 28px; height: 28px; left: -4px; top: -2px; }
+#map_sidebar .checkbox-group label.inline { font-size: 0.875rem; }

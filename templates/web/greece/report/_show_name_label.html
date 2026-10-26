@@ -1,0 +1,9 @@
+[%# FixMyStreet's «Show my name publicly», shorter (owner: the text and its box were too big). ~%]
+<div class="govuk-form-group js-hide-if-private-category gr-showname">
+    <div class="govuk-checkboxes govuk-checkboxes--small">
+        <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF name_public %]>
+            <label class="govuk-label govuk-checkboxes__label" for="form_may_show_name">[% c.cobrand.greece_t('Να φαίνεται το όνομά μου', 'Show my name') %]</label>
+        </div>
+    </div>
+</div>
