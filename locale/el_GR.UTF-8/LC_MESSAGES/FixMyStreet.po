@@ -6934,7 +6934,7 @@ msgstr ""
 #: templates/web/base/report/new/top_message_some.html:10
 #: templates/web/base/report/new/top_message_some.html:11
 msgid "You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."
-msgstr "Μπορείς να μας βοηθήσεις με το να βρεις ένα email επικοινωνίας για τα τοπικά προβλήματα για %s και να μας την στείλεις με e-mail στο <a href='mailto:%s'>%s</a>."
+msgstr "Μπορείς να μας βοηθήσεις με το να βρεις ένα email επικοινωνίας για τα τοπικά προβλήματα για %s και να μας τη στείλεις με email στο <a href='mailto:%s'>%s</a>."
 
 #: templates/web/base/admin/bodies/form.html:107
 msgid "You can mark a body as deleted if you do not want it to be active on the site."
@@ -7076,11 +7076,11 @@ msgstr ""
 #: templates/web/base/report/new/duplicate_suggestions.html:45
 #: templates/web/zurich/report/new/fill_in_details_form.html:27
 msgid "Your email"
-msgstr "Το e-mail σου"
+msgstr "Το email σου"
 
 #: templates/web/base/auth/change_email.html:15
 msgid "Your email address"
-msgstr "Η διεύθυνση του e-mail σου"
+msgstr "Η διεύθυνση του email σου"
 
 #: templates/web/base/auth/create.html:53
 #: templates/web/base/auth/general.html:57

@@ -2,34 +2,29 @@
     here, or a new password by email (/auth/forgot), passes it first. ~%]
 [%
 IF forgotten;
-    title = loc('Forgot password');
+    title = c.cobrand.greece_t('Νέος κωδικός', 'New password');
 ELSIF expired_password;
     title = loc('Password expired');
 ELSE;
-    title = loc('Create an account');
+    title = c.cobrand.greece_t('Δημιουργία λογαριασμού', 'Create an account');
 END;
 
 INCLUDE 'header.html', bodyclass='authpage' %]
 
-[% TRY %][% INCLUDE 'auth/_create_title.html' %][% CATCH file %]
+[%# The base title read «Ξέχασα τον κωδικό ή συνδέσου», which is not a sentence (owner, 2026-10-26). ~%]
 <h1>
     [% title %]
   [% IF NOT expired_password %]
     <small>
-        [% tprintf(loc('or <a href="%s">sign in</a>'), '/auth') %]
+        [% forgotten ? c.cobrand.greece_t('Τον θυμάσαι;', 'Remember it?') : c.cobrand.greece_t('Έχεις ήδη λογαριασμό;', 'Have an account?') %]
+        <a href="/auth[% '?r=' _ c.req.params.r | html IF c.req.params.r %]">[% c.cobrand.greece_t('Σύνδεση', 'Sign in') %]</a>
     </small>
   [% END %]
 </h1>
-[% END %]
 
 [% IF forgotten %]
-<p>
-  [% IF c.cobrand.sms_authentication %]
-    [% loc('Sign in by email or text, providing a new password. When you click the link in your email or enter the SMS authentication code, your password will be updated.') %]</p>
-  [% ELSE %]
-    [% loc('Sign in by email instead, providing a new password. When you click the link in your email, your password will be updated.') %]
-  [% END %]
-</p>
+<p>[% c.cobrand.greece_t('Γράψε το email του λογαριασμού σου. Θα σου στείλουμε έναν σύνδεσμο για να ορίσεις νέο κωδικό.',
+    'Enter your account’s email. We will email you a link to choose a new password.') %]</p>
 [% ELSIF expired_password %]
 <p>
     <a href="/auth/sign_out">[% loc('Sign out') %]</a>
@@ -43,7 +38,9 @@ INCLUDE 'header.html', bodyclass='authpage' %]
 </p>
 [% END %]
 
-<form action="/auth/[% expired_password ? 'expired' : forgotten ? 'forgot' : 'create' %]" method="post" name="general_auth" class="validate">
+[%# A forgotten password: only the email here; the link opens the page where the new one is typed
+    twice (App::Controller::GreecePassword). ~%]
+<form action="[% expired_password ? '/auth/expired' : forgotten ? '/greece/password/forgot' : '/auth/create' %]" method="post" name="general_auth" class="validate">
 
     <input type="hidden" name="r" value="[% c.req.params.r | html %]">
 
@@ -55,7 +52,7 @@ INCLUDE 'header.html', bodyclass='authpage' %]
         [% SET username_label = loc('Your email or mobile') %]
         [% SET username_type = 'text' %]
     [% ELSE %]
-        [% SET username_label = loc('Your email') %]
+        [% SET username_label = c.cobrand.greece_t('Email', 'Email') %]
         [% SET username_type = 'email' %]
     [% END %]
 
@@ -67,21 +64,29 @@ INCLUDE 'header.html', bodyclass='authpage' %]
 
   [% END %]
 
+  [% IF NOT forgotten %]
   [% IF field_errors.password_register %]
     <p class='form-error'>[% field_errors.password_register %]</p>
   [% END %]
-    <label for="password_register">[% forgotten ? loc('New password:') : loc('Choose your password') %]</label>
+    <label for="password_register">[% forgotten ? c.cobrand.greece_t('Νέος κωδικός', 'New password') : c.cobrand.greece_t('Κωδικός', 'Password') %]</label>
 
     <div class="general-notes">
-        <p>[% tprintf(loc('Your password should include %d or more characters.'), c.cobrand.password_minimum_length) %]</p>
+        <p>[% c.cobrand.greece_t('Τουλάχιστον ' _ c.cobrand.password_minimum_length _ ' χαρακτήρες.', 'At least ' _ c.cobrand.password_minimum_length _ ' characters.') %]</p>
     </div>
+
+  [% END %]
 
     [% INCLUDE '_turnstile.html' %]
 
+  [% IF forgotten %]
+    <input class="btn btn--primary btn--block" type="submit" value="[% c.cobrand.greece_t('Αποστολή συνδέσμου', 'Send the link') %]">
+  [% ELSE %]
     <div class="form-txt-submit-box">
         <input class="required form-control js-password-validate" type="password" name="password_register" id="password_register" value="" autocomplete="new-password">
-        <input class="btn btn--primary" type="submit" name="sign_in_by_code" value="[% expired_password ? loc('Reset') : forgotten ? loc('Sign in') : loc('Create your account') %]">
+        <input class="btn btn--primary" type="submit" name="sign_in_by_code" value="[% expired_password ? loc('Reset') : forgotten ? c.cobrand.greece_t('Αποστολή συνδέσμου', 'Send the link') : c.cobrand.greece_t('Δημιουργία λογαριασμού', 'Create account') %]">
     </div>
+
+  [% END %]
 
 </form>
 
