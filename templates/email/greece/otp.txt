@@ -1,13 +1,23 @@
-[%# The 6-digit code that confirms a reporter's email (App::Controller::GreeceOTP). ~%]
-Subject: Κωδικός επιβεβαίωσης [% code %] για το [% site_name %]
+[%# The 6-digit code that confirms a reporter's email (App::Controller::GreeceOTP). Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Confirmation code [% code %] for [% site_name %][% ELSIF L == 'el' %]Κωδικός επιβεβαίωσης [% code %] για το [% site_name %][% ELSE %]Κωδικός επιβεβαίωσης [% code %] για το [% site_name %] / Confirmation code [% code %] for [% site_name %][% END %]
 
+[% IF L != 'en' ~%]
 Ο κωδικός επιβεβαίωσης του email σου είναι:
 
     [% code %]
 
-Γράψε τον στη φόρμα της αναφοράς. Ισχύει [% minutes %] λεπτά. Με επιβεβαιωμένο email, η υπηρεσία
-που θα λάβει την αναφορά σου θα σε έχει σε κοινοποίηση και θα σου απαντά απευθείας.
+Γράψε τον στη φόρμα της αναφοράς. Ισχύει [% minutes %] λεπτά. Αν δεν το ζήτησες εσύ, αγνόησε αυτό το μήνυμα.
 
-Αν δεν το ζήτησες εσύ, αγνόησε αυτό το μήνυμα.
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+The code that confirms your email is:
 
-[% signature %]
+    [% code %]
+
+Enter it in the report form. It works for [% minutes %] minutes. If you did not ask for it, ignore this email.
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

@@ -1,0 +1,31 @@
+[%# A report made for someone by the site's staff. Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Your report has been logged: [% report.title %][% ELSIF L == 'el' %]Η αναφορά σου καταχωρήθηκε: [% report.title %][% ELSE %]Η αναφορά σου καταχωρήθηκε: [% report.title %] / Your report has been logged: [% report.title %][% END %]
+
+[% IF L != 'en' ~%]
+Γεια σου[% IF report.name %] [% report.name %][% END %],
+
+η αναφορά σου προς [% report.body %] καταχωρήθηκε στο [% site_name %] με αριθμό [% report.greece_ref %].
+
+[% cobrand.base_url_for_report(report) %][% report.url %]
+
+Τίτλος: [% report.title %]
+
+[% report.detail %]
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+Hello[% IF report.name %] [% report.name %][% END %],
+
+your report to [% report.body %] has been logged on [% site_name %] as number [% report.greece_ref %].
+
+[% cobrand.base_url_for_report(report) %][% report.url %]
+
+Title: [% report.title %]
+
+[% report.detail %]
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

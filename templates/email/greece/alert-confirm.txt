@@ -1,0 +1,23 @@
+[%# Confirming an email alert (a report followed, or new reports in an area). Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Confirm your [% site_name %] alert[% ELSIF L == 'el' %]Επιβεβαίωσε την ειδοποίησή σου από το [% site_name %][% ELSE %]Επιβεβαίωσε την ειδοποίησή σου από το [% site_name %] / Confirm your [% site_name %] alert[% END %]
+
+[% IF L != 'en' ~%]
+Πάτησε τον παρακάτω σύνδεσμο για να ενεργοποιήσεις την ειδοποίηση με email που ζήτησες:
+
+[% token_url %]
+
+Αν ο σύνδεσμος δεν ανοίγει, αντίγραψέ τον στη γραμμή διευθύνσεων του browser. Αν δεν το ζήτησες εσύ, αγνόησε αυτό το μήνυμα.
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+Please click the link below to turn on the email alert you asked for:
+
+[% token_url %]
+
+If the link does not open, copy it into your browser's address bar. If you did not ask for it, ignore this email.
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

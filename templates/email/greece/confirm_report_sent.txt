@@ -1,0 +1,23 @@
+[%# The report has been sent to the service. Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Your report has been sent: [% title %][% ELSIF L == 'el' %]Η αναφορά σου στάλθηκε: [% title %][% ELSE %]Η αναφορά σου στάλθηκε: [% title %] / Your report has been sent: [% title %][% END %]
+
+[% IF L != 'en' ~%]
+Γεια σου,
+
+η αναφορά σου «[% title %]» στάλθηκε στην υπηρεσία: [% bodies_name %].
+
+Φαίνεται εδώ, όπου μπορείς να προσθέσεις και ενημερώσεις: [% url %]
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+Hello,
+
+your report "[% title %]" has been sent to: [% bodies_name %].
+
+It is here, where you can also add updates: [% url %]
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

@@ -807,6 +807,58 @@ sub greece_json {
     return JSON::MaybeXS->new(canonical => 1)->encode($data);
 }
 
+# The language of an email to a citizen (owner, 2026-10-27): 'el', 'en', or 'both' (Greek, then
+# English) when it is not clear. In a request from the recipient themselves, the language they chose
+# on the site (?lang= / gr_lang cookie), else their browser's (Accept-Language: Greek first, or English
+# with no Greek at all); this is kept on their account (extra greece_lang) for the emails sent later,
+# without a request (alerts, questionnaires). Emails to municipalities, the police and the site's team
+# stay in Greek. Templates: templates/email/greece/_lang.txt.
+sub greece_email_lang {
+    my ($self, $who) = @_;
+    my $email = '';
+    my $user;
+    if (ref $who && eval { $who->isa('FixMyStreet::DB::Result::User') }) {
+        $user = $who;
+        $email = lc($who->email // '');
+    } else {
+        my $first = ref $who eq 'ARRAY' ? $who->[0] : $who;
+        $first = $first->[0] if ref $first eq 'ARRAY';
+        $email = lc($first // '') unless ref $first;
+    }
+    $user ||= $email && FixMyStreet::DB->resultset('User')->find({ email => $email });
+    my $stored = $user && $user->in_storage ? ($user->get_extra_metadata('greece_lang') // '') : '';
+    my $c = $self->{c};
+    my $asked = '';
+    if ($c && eval { $c->req; 1 } && (!$c->user_exists || lc($c->user->email // '') eq $email)) {
+        $asked = $self->greece_request_lang($c);
+        if ($asked ne 'both' && $user && $user->in_storage && $stored ne $asked) {
+            $user->set_extra_metadata(greece_lang => $asked);
+            $user->update;
+        }
+    }
+    return $asked if $asked && $asked ne 'both';
+    return $stored if $stored eq 'el' || $stored eq 'en';
+    return 'both';
+}
+
+sub greece_request_lang {
+    my ($self, $c) = @_;
+    my $chosen = $c->req->query_params->{lang} // $c->req->cookie('gr_lang') && $c->req->cookie('gr_lang')->value // '';
+    return 'en' if $chosen =~ /^en/i;
+    return 'el' if $chosen =~ /^el/i;
+    my $header = $c->req->header('Accept-Language') // '';
+    my @tags;
+    for my $part (split /\s*,\s*/, $header) {
+        my ($tag, $q) = $part =~ /^\s*([A-Za-z]{1,8})(?:-[A-Za-z0-9-]+)?\s*(?:;\s*q\s*=\s*([0-9.]+))?/ or next;
+        push @tags, [ lc $tag, defined $q ? $q : 1 ];
+    }
+    @tags = sort { $b->[1] <=> $a->[1] } @tags;
+    return 'both' unless @tags;
+    return 'el' if $tags[0][0] eq 'el';
+    return 'en' if $tags[0][0] eq 'en' && !grep { $_->[0] eq 'el' } @tags;
+    return 'both';
+}
+
 # A text of the site's own templates in the page's language: greece_t('ελληνικά', 'English').
 sub greece_t {
     my ($self, $el, $en) = @_;

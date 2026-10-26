@@ -1,0 +1,23 @@
+[%# Subscribed to a report's updates. Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]You are following the report: [% problem.title %][% ELSIF L == 'el' %]Παρακολουθείς την αναφορά: [% problem.title %][% ELSE %]Παρακολουθείς την αναφορά: [% problem.title %] / You are following the report: [% problem.title %][% END %]
+
+[% IF L != 'en' ~%]
+Θα σου στέλνουμε email κάθε φορά που υπάρχει ενημέρωση στην αναφορά «[% problem.title %]»:
+
+[% problem_url %]
+
+Για να σταματήσεις τις ειδοποιήσεις: [% unsubscribe_url %]
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+We will email you whenever there is an update on the report "[% problem.title %]":
+
+[% problem_url %]
+
+To stop these emails: [% unsubscribe_url %]
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

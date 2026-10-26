@@ -1,0 +1,35 @@
+[%# The questionnaire some weeks after a report. Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Has the problem been fixed? "[% report.title %]"[% ELSIF L == 'el' %]Λύθηκε το πρόβλημα; «[% report.title %]»[% ELSE %]Λύθηκε το πρόβλημα; «[% report.title %]» / Has the problem been fixed? "[% report.title %]"[% END %]
+
+[% IF L != 'en' ~%]
+Γεια σου[% IF report.name AND NOT report.anonymous %] [% report.name %][% END %],
+
+πριν από [% created %] έκανες μια αναφορά στο [% site_name %]. Για να ξέρουμε αν λύθηκε, πάτησε τον σύνδεσμο και απάντησε σε δύο ερωτήσεις:
+
+[% url %]
+
+Η αναφορά σου:
+
+[% report.title %]
+
+[% report.detail %]
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+Hello[% IF report.name AND NOT report.anonymous %] [% report.name %][% END %],
+
+[% created %] ago you made a report on [% site_name %]. To let us know whether it was fixed, please follow the link and answer two questions:
+
+[% url %]
+
+Your report:
+
+[% report.title %]
+
+[% report.detail %]
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

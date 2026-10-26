@@ -1,0 +1,6 @@
+[%# Between the Greek and the English text of a bilingual email. ~%]
+[% IF L == 'both' %]
+
+———————————— English ————————————
+
+[% END ~%]

@@ -1,11 +1,23 @@
-[%# The second sign-in step's code (App::Controller::GreeceTwoFactor). ~%]
-Subject: Κωδικός σύνδεσης [% code %] για το [% site_name %]
+[%# The second sign-in step's code (App::Controller::GreeceTwoFactor). Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Sign-in code [% code %] for [% site_name %][% ELSIF L == 'el' %]Κωδικός σύνδεσης [% code %] για το [% site_name %][% ELSE %]Κωδικός σύνδεσης [% code %] για το [% site_name %] / Sign-in code [% code %] for [% site_name %][% END %]
 
+[% IF L != 'en' ~%]
 Ο κωδικός για να ολοκληρώσεις τη σύνδεση στο [% site_name %] είναι:
 
     [% code %]
 
-Ισχύει [% minutes %] λεπτά. Αν δεν προσπάθησες εσύ να συνδεθείς, κάποιος ξέρει τον κωδικό
-πρόσβασής σου: άλλαξέ τον από τη σελίδα «Ξέχασες τον κωδικό;» και ενημέρωσέ μας.
+Ισχύει [% minutes %] λεπτά. Αν δεν προσπάθησες εσύ να συνδεθείς, κάποιος ξέρει τον κωδικό πρόσβασής σου: άλλαξέ τον από τη σελίδα «Ξέχασες τον κωδικό;» και ενημέρωσέ μας.
 
-[% signature %]
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+The code to finish signing in to [% site_name %] is:
+
+    [% code %]
+
+It works for [% minutes %] minutes. If you did not try to sign in, someone knows your password: change it from the "Forgot your password?" page and let us know.
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

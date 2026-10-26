@@ -1,0 +1,4 @@
+[%# Sets L, the language of an email to a citizen: 'el', 'en' or 'both' (Greek, then English), from
+    Greece.pm greece_email_lang (the recipient's choice or browser, or what their account keeps). ~%]
+[%~ SET lang_cobrand = cobrand || c.cobrand;
+    SET L = lang_cobrand ? lang_cobrand.greece_email_lang(to || alert_user || (report ? report.user : '') || (problem ? problem.user : '')) : 'both' ~%]

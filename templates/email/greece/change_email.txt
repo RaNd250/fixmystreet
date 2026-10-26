@@ -1,0 +1,23 @@
+[%# Confirming a new email address on an account. Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Changing your email on [% site_name %][% ELSIF L == 'el' %]Αλλαγή του email σου στο [% site_name %][% ELSE %]Αλλαγή του email σου στο [% site_name %] / Changing your email on [% site_name %][% END %]
+
+[% IF L != 'en' ~%]
+Πάτησε τον παρακάτω σύνδεσμο για να επιβεβαιώσεις τη νέα διεύθυνση email του λογαριασμού σου:
+
+[% c.uri_for_action( 'auth/token', token ) %]
+
+Αν δεν το ζήτησες εσύ, αγνόησε αυτό το μήνυμα.
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+Please click the link below to confirm the new email address of your account:
+
+[% c.uri_for_action( 'auth/token', token ) %]
+
+If you did not ask for this, ignore this email.
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

@@ -1,0 +1,35 @@
+[%# A moderator changed or hid a report. Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Your report on [% site_name %] has been moderated[% ELSIF L == 'el' %]Η αναφορά σου στο [% site_name %] τροποποιήθηκε[% ELSE %]Η αναφορά σου στο [% site_name %] τροποποιήθηκε / Your report on [% site_name %] has been moderated[% END %]
+
+[% IF L != 'en' ~%]
+Γεια σου[% IF user.name %] [% user.name %][% END %],
+
+[% IF types == 'hide' %]η αναφορά σου αφαιρέθηκε από τον ιστότοπο κατά τον έλεγχο.[% ELSE %]κατά τον έλεγχο άλλαξαν στην αναφορά σου: [% types %].[% END %]
+
+Τίτλος: [% moderated_data.title %]
+
+[% moderated_data.detail %]
+[% UNLESS types == 'hide' %]
+Η αναφορά: [% report_uri %]
+[% END %]
+Αν διαφωνείς, γράψε μας: [% report_complain_uri %]
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+Hello[% IF user.name %] [% user.name %][% END %],
+
+[% IF types == 'hide' %]your report has been removed from the site by a moderator.[% ELSE %]a moderator changed in your report: [% types %].[% END %]
+
+Title: [% moderated_data.title %]
+
+[% moderated_data.detail %]
+[% UNLESS types == 'hide' %]
+The report: [% report_uri %]
+[% END %]
+If you disagree, write to us: [% report_complain_uri %]
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

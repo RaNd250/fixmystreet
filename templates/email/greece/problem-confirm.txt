@@ -1,0 +1,39 @@
+[%# Confirming a report made with an email (FixMyStreet's problem-confirm). Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Confirm your report on [% site_name %][% ELSIF L == 'el' %]Επιβεβαίωσε την αναφορά σου στο [% site_name %][% ELSE %]Επιβεβαίωσε την αναφορά σου στο [% site_name %] / Confirm your report on [% site_name %][% END %]
+
+[% IF L != 'en' ~%]
+Γεια σου[% IF report.name AND NOT report.anonymous %] [% report.name %][% END %],
+
+πάτησε τον παρακάτω σύνδεσμο για να επιβεβαιώσεις ότι θέλεις να σταλεί η αναφορά σου στην υπηρεσία: [% report.body %].
+
+[% token_url %]
+
+[% IF report.non_public %]Η αναφορά δεν θα δημοσιευτεί στον ιστότοπο· θα σταλεί μόνο στην υπηρεσία.[% ELSE %]Η αναφορά θα φαίνεται και στον ιστότοπο, χωρίς τα στοιχεία επικοινωνίας σου.[% END %]
+
+Τίτλος: [% report.title %]
+
+[% report.detail %]
+
+Αν δεν θέλεις πια να σταλεί, απλώς μην πατήσεις τον σύνδεσμο.
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+Hello[% IF report.name AND NOT report.anonymous %] [% report.name %][% END %],
+
+please click the link below to confirm you want your report sent to: [% report.body %].
+
+[% token_url %]
+
+[% IF report.non_public %]The report will not be published on the site; it goes only to the service.[% ELSE %]The report will also appear on the site, without your contact details.[% END %]
+
+Title: [% report.title %]
+
+[% report.detail %]
+
+If you no longer want to send it, just do not click the link.
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

@@ -1,0 +1,27 @@
+[%# An update made for someone by the site's staff. Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Your update has been logged[% ELSIF L == 'el' %]Η ενημέρωσή σου καταχωρήθηκε[% ELSE %]Η ενημέρωσή σου καταχωρήθηκε / Your update has been logged[% END %]
+
+[% IF L != 'en' ~%]
+Γεια σου[% IF update.name %] [% update.name %][% END %],
+
+η ενημέρωσή σου καταχωρήθηκε στο [% site_name %]:
+
+[% cobrand.base_url_for_report(problem) %][% update.url %]
+
+[% update.text %]
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+Hello[% IF update.name %] [% update.name %][% END %],
+
+your update has been logged on [% site_name %]:
+
+[% cobrand.base_url_for_report(problem) %][% update.url %]
+
+[% update.text %]
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

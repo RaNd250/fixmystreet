@@ -1,8 +1,11 @@
-Subject: Η αναφορά σου [% report.greece_ref %] καταχωρήθηκε
+[%# After a report made without signing in: a link to an account. Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Your report [% report.greece_ref %] has been logged[% ELSIF L == 'el' %]Η αναφορά σου [% report.greece_ref %] καταχωρήθηκε[% ELSE %]Η αναφορά σου [% report.greece_ref %] καταχωρήθηκε / Your report [% report.greece_ref %] has been logged[% END %]
 
+[% IF L != 'en' ~%]
 Γεια σου,
 
-η αναφορά σου «[% report.title %]» καταχωρήθηκε με αριθμό [% report.greece_ref %][% IF report.state == 'hidden' %]. Η περιγραφή είχε ακατάλληλες λέξεις, γι' αυτό θα ελεγχθεί πρώτα από τους διαχειριστές και μετά θα σταλεί[% ELSIF report.bodies_str %] και στέλνεται [% report.bodies_str.match(',') ? 'στις αρμόδιες υπηρεσίες' : 'στην αρμόδια υπηρεσία' %]: [% report.body %][% END %].
+η αναφορά σου «[% report.title %]» καταχωρήθηκε με αριθμό [% report.greece_ref %][% IF report.state == 'hidden' %]. Θα ελεγχθεί πρώτα από τους διαχειριστές και μετά θα σταλεί[% ELSIF report.bodies_str %] και θα σταλεί [% report.bodies_str.match(',') ? 'στις αρμόδιες υπηρεσίες' : 'στην αρμόδια υπηρεσία' %]: [% report.body %][% END %].
 [% IF report_url %]
 Μπορείς να τη δεις εδώ: [% report_url %]
 [% END %]
@@ -15,4 +18,24 @@ Subject: Η αναφορά σου [% report.greece_ref %] καταχωρήθηκ
 
 Ο σύνδεσμος είναι μόνο για σένα και ισχύει 24 ώρες. Αν δεν έκανες εσύ αυτή την αναφορά, αγνόησε αυτό το μήνυμα.
 
-[% signature %]
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+Hello,
+
+your report "[% report.title %]" has been logged as number [% report.greece_ref %][% IF report.state == 'hidden' %]. It will be checked by the moderators first and then sent[% ELSIF report.bodies_str %] and will be sent to: [% report.body %][% END %].
+[% IF report_url %]
+You can see it here: [% report_url %]
+[% END %]
+[% IF account_exists -%]
+To sign in to your account and follow your reports, click this link:
+[% ELSE -%]
+If you would like an account, to follow your reports and make the next ones faster, click this personal link and choose a password:
+[% END %]
+[% token_url %]
+
+The link is for you only and works for 24 hours. If you did not make this report, ignore this email.
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

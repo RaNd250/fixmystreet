@@ -1,0 +1,43 @@
+[%# Confirming an update made with an email (FixMyStreet's update-confirm). Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Confirm your update on [% site_name %][% ELSIF L == 'el' %]Επιβεβαίωσε την ενημέρωσή σου στο [% site_name %][% ELSE %]Επιβεβαίωσε την ενημέρωσή σου στο [% site_name %] / Confirm your update on [% site_name %][% END %]
+
+[% IF L != 'en' ~%]
+Γεια σου[% IF update.name AND NOT update.anonymous %] [% update.name %][% END %],
+
+πάτησε τον παρακάτω σύνδεσμο για να επιβεβαιώσεις την ενημέρωσή σου στην αναφορά [% problem.greece_ref || update.problem.greece_ref %]:
+
+[% token_url %]
+
+Αν ο σύνδεσμος δεν ανοίγει, αντίγραψέ τον στη γραμμή διευθύνσεων του browser.
+[% IF update.get_extra_metadata('greece_close_requested') %]
+Δήλωσες ότι το πρόβλημα διορθώθηκε: μόλις επιβεβαιώσεις, η αναφορά θα φαίνεται «Διορθώθηκε – αναμένει επιβεβαίωση» μέχρι να το ελέγξουμε.
+[% END %]
+Η ενημέρωσή σου:
+
+[% update.text %]
+
+Αν δεν την έκανες εσύ, αγνόησε αυτό το μήνυμα· δεν θα δημοσιευτεί.
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+Hello[% IF update.name AND NOT update.anonymous %] [% update.name %][% END %],
+
+please click the link below to confirm your update on report [% problem.greece_ref || update.problem.greece_ref %]:
+
+[% token_url %]
+
+If the link does not open, copy it into your browser's address bar.
+[% IF update.get_extra_metadata('greece_close_requested') %]
+You said the problem is fixed: once you confirm, the report will show "Fixed, awaiting confirmation" until we check it.
+[% END %]
+Your update:
+
+[% update.text %]
+
+If you did not write it, ignore this email; it will not be published.
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

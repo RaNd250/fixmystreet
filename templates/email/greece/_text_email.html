@@ -1,0 +1,26 @@
+[%# The HTML part of a citizen's email: its text version (text, rendered by the caller from its .txt, in
+    the same language or both), in the site's email layout, with paragraphs and links. One text to
+    maintain per email. (The template name cannot come from a variable here: Template::Provider fails.) ~%]
+[%
+PROCESS '_lang.txt';
+text = text.replace('^\s*Subject:[^\n]*\n', '');
+IF L == 'en';
+    email_footer = 'This email was sent automatically from an unmonitored account. Please do not reply to it.';
+ELSIF L == 'both';
+    email_footer = 'Αυτό το email στάλθηκε αυτόματα· μην απαντήσεις σε αυτό. / This email was sent automatically; please do not reply to it.';
+END;
+email_columns = 1;
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+%]
+<th style="[% td_style %][% only_column_style %]">
+[% FOR para IN text.split('\n[ \t]*\n') %]
+  [%~ NEXT UNLESS para.match('\S') %]
+  [%~ IF para.match('^—+ English —+$') %]
+  <hr style="border: 0; border-top: 1px solid #d9dee8; margin: 24px 0;">
+  [%~ ELSE %]
+  <p style="[% p_style %]">[% para.trim.replace('(https?://[^\s<]+)', '<a href="$1">$1</a>').replace('\n', '<br>') | safe %]</p>
+  [%~ END %]
+[% END %]
+</th>
+[% INCLUDE '_email_bottom.html' %]

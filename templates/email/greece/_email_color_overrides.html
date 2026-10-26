@@ -15,7 +15,9 @@ link_text_color = color_accent
 link_hover_text_color = color_accent_dark
 
 body_background_color = color_page
-body_font_family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+# No quotes: they were escaped inside the <style> block and in style attributes (&amp;#39;), which broke the
+# font list; names with spaces are valid CSS without them.
+body_font_family = "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"
 body_text_color = color_ink_2
 
 header_background_color = color_header

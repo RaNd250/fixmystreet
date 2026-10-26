@@ -1,22 +1,2 @@
-[%
-
-email_columns = 1;
-
-PROCESS '_email_settings.html';
-
-INCLUDE '_email_top.html';
-
-%]
-
-<th style="[% td_style %][% only_column_style %]">
-  <h1 style="[% h1_style %]">Σύνδεση στο [% site_name %]</h1>
-  <p style="[% p_style %]">Πάτα το κουμπί για να συνδεθείς. Αν δεν είχες λογαριασμό, δημιουργείται τώρα, και αν
-  έγραψες κωδικό, θα ισχύει από τη στιγμή που θα το πατήσεις.</p>
-  <p style="margin: 20px auto; text-align: center">
-    <a style="[% button_style %]" href="[% c.uri_for_action( 'auth/token', token ) %]">Σύνδεση</a>
-  </p>
-  <p style="[% p_style %]">Ο σύνδεσμος ισχύει 24 ώρες. Από τον λογαριασμό σου βλέπεις όλες τις αναφορές και τις
-  ενημερώσεις σου. Αν δεν ζήτησες εσύ να συνδεθείς, αγνόησε αυτό το μήνυμα.</p>
-</th>
-
-[% INCLUDE '_email_bottom.html' %]
+[%# HTML part: the text version in the site's layout (_text_email.html). ~%]
+[% text = INCLUDE 'login.txt' %][% PROCESS '_text_email.html' %]

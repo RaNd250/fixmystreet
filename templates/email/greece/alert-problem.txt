@@ -1,0 +1,21 @@
+[%# New reports for an area alert. Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]New reports on [% site_name %][% ELSIF L == 'el' %]Νέες αναφορές στο [% site_name %][% ELSE %]Νέες αναφορές στο [% site_name %] / New reports on [% site_name %][% END %]
+
+[% IF L != 'en' ~%]
+Νέες αναφορές στο [% site_name %]:
+
+[% INCLUDE '_email_report_list.txt' %]
+Για να σταματήσεις αυτές τις ειδοποιήσεις: [% unsubscribe_url %]
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+New reports on [% site_name %]:
+
+[% INCLUDE '_email_report_list.txt' %]
+To stop these emails: [% unsubscribe_url %]
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

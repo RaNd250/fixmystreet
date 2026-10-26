@@ -1,0 +1,31 @@
+[%# New updates on a report followed. Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]New updates on the report "[% report.title %]"[% ELSIF L == 'el' %]Νέες ενημερώσεις στην αναφορά «[% report.title %]»[% ELSE %]Νέες ενημερώσεις στην αναφορά «[% report.title %]» / New updates on the report "[% report.title %]"[% END %]
+
+[% IF L != 'en' ~%]
+Υπάρχουν νέες ενημερώσεις στην αναφορά «[% report.title %]» που παρακολουθείς:
+
+[% INCLUDE '_email_comment_list.txt' %]
+[% state_message %]
+
+Για να τις δεις ή να απαντήσεις: [% problem_url %]
+[% IF unsubscribe_url %]
+Για να σταματήσεις τις ειδοποιήσεις για αυτή την αναφορά: [% unsubscribe_url %]
+[% END %]
+
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+There are new updates on the report "[% report.title %]" that you follow:
+
+[% INCLUDE '_email_comment_list.txt' %]
+[% state_message %]
+
+To see them or reply: [% problem_url %]
+[% IF unsubscribe_url %]
+To stop the emails for this report: [% unsubscribe_url %]
+[% END %]
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]

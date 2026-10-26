@@ -1,14 +1,23 @@
-Subject: Σύνδεση στο [% site_name %]
+[%# Signing in by an emailed link. Greek, English or both (_lang.txt). ~%]
+[% PROCESS '_lang.txt' ~%]
+Subject: [% IF L == 'en' %]Sign in to [% site_name %][% ELSIF L == 'el' %]Σύνδεση στο [% site_name %][% ELSE %]Σύνδεση στο [% site_name %] / Sign in to [% site_name %][% END %]
 
-Πάτα τον παρακάτω σύνδεσμο για να συνδεθείς στο [% site_name %]. Αν δεν είχες λογαριασμό, δημιουργείται
-τώρα, και αν έγραψες κωδικό, θα ισχύει από τη στιγμή που θα πατήσεις τον σύνδεσμο.
+[% IF L != 'en' ~%]
+Πάτησε τον παρακάτω σύνδεσμο για να συνδεθείς στο [% site_name %]. Αν δεν είχες λογαριασμό, δημιουργείται τώρα, και αν έγραψες κωδικό, θα ισχύει από τη στιγμή που θα πατήσεις τον σύνδεσμο.
 
 [% c.uri_for_action( 'auth/token', token ) %]
 
-Ο σύνδεσμος ισχύει 24 ώρες. Από τον λογαριασμό σου βλέπεις όλες τις αναφορές και τις ενημερώσεις σου.
+Ο σύνδεσμος ισχύει 24 ώρες. Αν δεν ζήτησες εσύ να συνδεθείς, αγνόησε αυτό το μήνυμα.
 
-Αν δεν ζήτησες εσύ να συνδεθείς, αγνόησε αυτό το μήνυμα.
+[% INCLUDE '_footer_el.txt' %]
+[% END ~%]
+[% INCLUDE '_lang_split.txt' ~%]
+[% IF L != 'el' ~%]
+Click the link below to sign in to [% site_name %]. If you had no account, one is created now, and if you chose a password, it works from the moment you click the link.
 
-[% signature %]
+[% c.uri_for_action( 'auth/token', token ) %]
 
-Το μήνυμα στάλθηκε αυτόματα· μην απαντάς σε αυτό.
+The link works for 24 hours. If you did not ask to sign in, ignore this email.
+
+[% INCLUDE '_footer_en.txt' %]
+[% END ~%]
