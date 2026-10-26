@@ -1356,3 +1356,8 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 /* The ready-made description (detail-default.js), until the reporter writes their own. */
 #form_detail.gr-detail-default { color: var(--gr-ink-3); }
 #form_name.gr-name-default { color: var(--gr-ink-3); }
+
+/* The map's keyboard help («Μπορείς να μετακινηθείς με το πληκτρολόγιο», maps/_map_instructions.html)
+   is not shown (owner, 2026-10-26); kept for screen readers, which announce it. */
+.map-instructions { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important;
+    overflow: hidden !important; clip: rect(0 0 0 0) !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
