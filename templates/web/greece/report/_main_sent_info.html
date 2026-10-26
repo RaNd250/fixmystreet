@@ -31,6 +31,15 @@
   [% IF !problem.used_map %]<p class="gr-meta__note">[% c.cobrand.greece_t('Δεν φαίνεται καρφίτσα, γιατί η θέση δεν δόθηκε στον χάρτη.', 'No pin is shown, as the place was not given on the map.') %]</p>[% END %]
   [% IF problem.non_public AND c.user.has_permission_to('report_view_private', problem.bodies_str_ids) %]<p class="gr-meta__note"><strong>[% c.cobrand.greece_t('Η αναφορά είναι ιδιωτική.', 'This report is private.') %]</strong></p>[% END %]
 </div>
+[%# A video with the report (App::Controller::GreeceVideo): played here for those allowed (staff of
+    a body it was sent to, superusers); everyone else only learns that there is one. ~%]
+[% IF problem.get_extra_metadata('greece_video') %]
+  [% IF c.cobrand.greece_may_see_video(c.user, problem) %]
+<video class="gr-video" controls preload="metadata" playsinline src="/greece/video/view/[% problem.get_extra_metadata('greece_video') %].mp4"></video>
+  [% ELSE %]
+<p class="gr-video-note">🎬 [% c.cobrand.greece_t('Η αναφορά έχει βίντεο, που το βλέπει μόνο η υπηρεσία που τη λαμβάνει.', 'This report has a video, seen only by the service that receives it.') %]</p>
+  [% END %]
+[% END %]
 [%# Follow the report by email (owner, 2026-10-26), apart from giving an update: FixMyStreet's
     /alert/subscribe (type updates), which emails a confirmation link to the address given; signed
     in, one press. Not for a hidden report. ~%]

@@ -1361,3 +1361,17 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
    is not shown (owner, 2026-10-26); kept for screen readers, which announce it. */
 .map-instructions { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important;
     overflow: hidden !important; clip: rect(0 0 0 0) !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+
+/* Video with a report (video-upload.js; report/_main_sent_info.html) */
+.gr-video-box { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; padding: 8px 12px; border: 1px solid var(--gr-line); border-radius: var(--gr-radius-s); background: var(--gr-surface); font-size: 0.875rem; }
+.gr-video-box progress { flex: 1 1 120px; height: 8px; }
+.gr-video-box--ok { border-color: #86efac; background: #f0fdf4; }
+.gr-video-box--bad { border-color: #fca5a5; background: #fef2f2; color: var(--gr-danger); }
+.gr-video-x { margin-left: auto; border: 0; background: none; font-size: 1.1rem; cursor: pointer; color: var(--gr-ink-2); padding: 2px 6px; }
+.gr-video-wait { flex-basis: 100%; margin: 4px 0 0; color: var(--gr-danger); font-weight: 600; }
+.gr-video-spin { width: 14px; height: 14px; border: 2px solid var(--gr-line-2); border-top-color: var(--gr-accent); border-radius: 50%; animation: gr-spin 0.7s linear infinite; }
+.gr-video { display: block; width: 100%; max-height: 60vh; margin: 0 0 12px; border-radius: var(--gr-radius-s); background: #000; }
+.gr-video-note { margin: 0 0 12px; color: var(--gr-ink-2); font-size: 0.875rem; }
+.gr-video-box > span:first-child { flex: 1 1 0; min-width: 0; }
+.gr-video-box { flex-wrap: nowrap; }
+.gr-video-box--bad, .gr-video-box:has(.gr-video-wait) { flex-wrap: wrap; }

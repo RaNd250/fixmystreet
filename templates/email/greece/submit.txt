@@ -12,7 +12,9 @@ Subject: Αναφορά προβλήματος [% report.greece_ref %]: [% repor
 
     [% url %]
 
-[% has_photo %]----------
+[% has_photo %][% IF report.get_extra_metadata('greece_video') %]Η αναφορά έχει βίντεο[% IF report.get_extra_metadata('greece_video_seconds') %] ([% report.get_extra_metadata('greece_video_seconds') | format('%d') %]")[% END %]. Δεν επισυνάπτεται· το βλέπετε στη σελίδα της αναφοράς, συνδεδεμένοι με τον λογαριασμό του φορέα σας (για λογαριασμό: [% cobrand.contact_email %]).
+
+[% END %]----------
 
 Αριθμός αναφοράς: [% report.greece_ref %]
 

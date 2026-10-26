@@ -32,6 +32,9 @@ INCLUDE '_email_top.html';
     [%~ IF photos.size %]
     <li style="[% p_style %]"><strong>Φωτογραφίες:</strong> [% photos.size %], στο μήνυμα.</li>
     [%~ END %]
+    [%~ IF report.get_extra_metadata('greece_video') %]
+    <li style="[% p_style %]"><strong>Βίντεο:</strong> Η αναφορά έχει βίντεο[% IF report.get_extra_metadata('greece_video_seconds') %] ([% report.get_extra_metadata('greece_video_seconds') | format('%d') %]")[% END %]. Δεν επισυνάπτεται· το βλέπετε στη σελίδα της αναφοράς, συνδεδεμένοι με τον λογαριασμό του φορέα σας (για λογαριασμό: [% cobrand.contact_email %]).</li>
+    [%~ END %]
   </ul>
   <p style="[% p_style %]">Παρακαλώ για τον έλεγχο της παράβασης και την εφαρμογή των προβλεπόμενων μέτρων, καθώς και για την ενημέρωσή μου για τις ενέργειές σας.</p>
   <p style="[% p_style %]">Με εκτίμηση,<br>

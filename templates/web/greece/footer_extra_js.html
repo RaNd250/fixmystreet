@@ -6,7 +6,8 @@
     nearby-check.js: a notice when an open report is already within 100 m of the pin.
     photo-crop.js: a photo can be cropped before it is uploaded.
     category-emoji.js: an emoji before each category on the report form.
-    detail-default.js: a ready short description for the category, cleared by a tap. ~%]
+    detail-default.js: a ready short description for the category, cleared by a tap.
+    video-upload.js: one video of up to 45 seconds with a report, seen only by the service. ~%]
 [% IF bodyclass.match('mappage');
     scripts.push(version('/cobrands/fixmystreet/assets.js'));
     scripts.push(version('/cobrands/greece/camera.js'));
@@ -17,6 +18,7 @@
     scripts.push(version('/cobrands/greece/photo-crop.js'));
     scripts.push(version('/cobrands/greece/category-emoji.js'));
     scripts.push(version('/cobrands/greece/detail-default.js'));
+    scripts.push(version('/cobrands/greece/video-upload.js'));
 END ~%]
 [%# form-draft.js keeps the report form's text if the reporter leaves it by mistake, and forgets
     it on the confirmation page, so it is on every page. ~%]

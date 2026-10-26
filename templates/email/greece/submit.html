@@ -62,6 +62,7 @@ INCLUDE '_email_top.html';
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
     <p style="[% secondary_p_style %]">[% report.category | html %]</p>
     [% report.detail | html_para_email(secondary_p_style) %]
+    [% IF report.get_extra_metadata('greece_video') %]<p style="[% secondary_p_style %]">🎬 Η αναφορά έχει βίντεο[% IF report.get_extra_metadata('greece_video_seconds') %] ([% report.get_extra_metadata('greece_video_seconds') | format('%d') %]")[% END %]. Δεν επισυνάπτεται· το βλέπετε στη σελίδα της αναφοράς, συνδεδεμένοι με τον λογαριασμό του φορέα σας (για λογαριασμό: [% cobrand.contact_email %]).</p>[% END %]
   [% IF report.get_extra_fields %]
     <p style="[% secondary_p_style %]">
       [%~ FOR field IN report.get_extra_fields %][% IF field.value %]

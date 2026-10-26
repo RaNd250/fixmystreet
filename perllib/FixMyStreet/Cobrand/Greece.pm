@@ -4,6 +4,8 @@ use base 'FixMyStreet::Cobrand::Default';
 use strict;
 use warnings;
 use utf8;
+use Fcntl ();
+use JSON::MaybeXS ();
 
 # Reuse the Default cobrand's compiled CSS; this cobrand only adds templates and a little JS/CSS.
 sub asset_moniker { 'default' }
@@ -267,6 +269,7 @@ sub report_new_munge_before_insert {
     $self->greece_bad_words($report);
     $self->greece_route_to_dimos($report);
     $self->greece_public_complaint($report);
+    $self->greece_claim_video($report);
     return unless $c;
     my $before = $c->stash->{greece_account_before} or return;
     my $user = $report->user;
@@ -281,6 +284,37 @@ sub report_new_munge_before_insert {
 # no list offers (state inactive, data/greece/contacts/dimoi-katalipsi.sql) and which has the same
 # address as its «Άλλο»; it is published like the police complaint, without personal details
 # (greece_public_complaint).
+# A video added on the form (App::Controller::GreeceVideo): the report takes it if it is ready and
+# no other report has taken it (the claimed/<id> marker is created exclusively), and keeps its id and
+# length. It is never published; greece_may_see_video says who sees it.
+sub greece_claim_video {
+    my ($self, $report) = @_;
+    my $c = $self->{c} or return;
+    my $id = $c->get_param('greece_video') // '';
+    return unless $id =~ /^[0-9a-f]{32}$/;
+    my $root = '/var/lib/fms-videos';
+    return unless -e "$root/ready/$id.mp4";
+    my $duration;
+    if (open my $st, '<', "$root/incoming/$id/status.json") {
+        local $/; my $j = eval { JSON::MaybeXS::decode_json(<$st>) } || {};
+        $duration = $j->{duration};
+    }
+    mkdir "$root/claimed";
+    sysopen(my $fh, "$root/claimed/$id", Fcntl::O_CREAT() | Fcntl::O_EXCL() | Fcntl::O_WRONLY()) or return;
+    close $fh;
+    $report->set_extra_metadata(greece_video => $id);
+    $report->set_extra_metadata(greece_video_seconds => $duration) if defined $duration;
+}
+
+# Who sees a report's video: superusers, and staff of a body the report was sent to.
+sub greece_may_see_video {
+    my ($self, $user, $problem) = @_;
+    return 0 unless $user && $problem && $problem->get_extra_metadata('greece_video');
+    return 1 if $user->is_superuser;
+    my $body = $user->from_body or return 0;
+    return scalar grep { $_ == $body->id } split /,/, ($problem->bodies_str // '');
+}
+
 # Complaints about parking and obstacles (the police category, and the same complaint routed to a
 # municipality above) are published on the map without personal details (owner, 2026-10-26): never
 # under the reporter's name, and with number plates in the description replaced by ***. The letter

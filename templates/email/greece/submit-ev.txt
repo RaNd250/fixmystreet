@@ -19,6 +19,8 @@ Subject: [% subject %] (αρ. αναφοράς [% report.greece_ref %])
 • Ημερομηνία και ώρα της αναφοράς: [% report.greece_local_time %]
 [% IF photos.size %]
 • Φωτογραφίες: [% photos.size %], επισυνάπτονται στο μήνυμα.
+[% END %][% IF report.get_extra_metadata('greece_video') %]
+• Βίντεο: Η αναφορά έχει βίντεο[% IF report.get_extra_metadata('greece_video_seconds') %] ([% report.get_extra_metadata('greece_video_seconds') | format('%d') %]")[% END %]. Δεν επισυνάπτεται· το βλέπετε στη σελίδα της αναφοράς, συνδεδεμένοι με τον λογαριασμό του φορέα σας (για λογαριασμό: [% cobrand.contact_email %]).
 [% END %]
 
 Παρακαλώ για τον έλεγχο της παράβασης και την εφαρμογή των προβλεπόμενων
