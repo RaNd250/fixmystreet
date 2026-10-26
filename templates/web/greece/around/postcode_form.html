@@ -20,7 +20,9 @@
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="postcode-form-box js-geolocate">
             <label for="pc">[% question %]:</label>
             [% INCLUDE 'around/_postcode_form_examples.html' %]
-            [% IF location_error_pc_lookup %]
+            [% IF greece_ref_missing AND NOT matching_reports %]
+            <p id="pc-error" class="form-error">[% c.cobrand.greece_t('Δεν βρέθηκε δημόσια αναφορά με αριθμό ', 'No public report with number ') %][% greece_ref_missing | html %].</p>
+            [% ELSIF location_error_pc_lookup %]
             <p id="pc-error" class="form-error">
                 <span class="visuallyhidden">Error:</span>
                 [% loc('Please enter a valid postcode or area') %]

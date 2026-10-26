@@ -18,6 +18,8 @@ sub lookup_by_ref_regex {
 
 sub lookup_by_ref {
     my ($self, $ref) = @_;
+    # Shown by around/postcode_form.html if no report matches (a match redirects to it instead).
+    $self->{c}->stash->{greece_ref_missing} = $ref if $self->{c};
     return unless $ref =~ /^(\d\d)[.\/-]?(\d\d)[.\/-]?(\d{4})\s*[-\/ ]\s*(\d+)$/;
     my $id = FixMyStreet::DB::Result::Problem::greece_ref_to_id("$3-$2-$1", $4);
     return [ id => $id || 0 ];
