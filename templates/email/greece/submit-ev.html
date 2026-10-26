@@ -3,7 +3,7 @@
 
 email_summary = subject;
 email_footer = "Η καταγγελία υποβλήθηκε μέσω του " _ site_name _ ".";
-email_columns = 2;
+email_columns = 1;
 correction_subject = "MAIL ΥΠΗΡΕΣΙΑΣ " _ report.greece_ref _ " " _ bodies_name;
 
 PROCESS '_email_settings.html';
@@ -12,30 +12,37 @@ INCLUDE '_email_top.html';
 
 %]
 
-<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+<th style="[% td_style %][% only_column_style %]" id="primary_column">
   [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">[% subject | html %]</h1>
-  <p style="[% p_style %]"><strong>Αριθμός αναφοράς: [% report.greece_ref | html %]</strong></p>
   <p style="[% p_style %]">Προς: [% bodies_name | html %]</p>
   <p style="[% p_style %]">Αξιότιμοι κύριοι / κυρίες,</p>
   <p style="[% p_style %]">Με την παρούσα επιστολή επιθυμώ να καταγγείλω την παράνομη κατάληψη χώρου που προορίζεται για [% purpose | html %].</p>
-  <p style="[% p_style %]">Συγκεκριμένα:</p>
-  <ul style="margin: 0 0 0.8em 0; padding-left: 20px;">
-    <li style="[% p_style %]"><strong>Τοποθεσία:</strong> [% location | html %].
-      <a href="[% gmaps_url %]">Άνοιγμα στο Google Maps</a></li>
-    <li style="[% p_style %]"><strong>Περιγραφή της παράβασης:</strong> [% paravasi_text | html %].
-      [%~ SET full_detail = report.get_extra_metadata('greece_detail_full') || report.detail %][% IF full_detail %] Σχόλια: «[% full_detail | html %]»[% END %]</li>
+    [%# The details as a table that staff can read at a glance (owner, 2026-10-26). ~%]
+  [% tth = "padding: 10px 12px; width: 34%; vertical-align: top; text-align: left; font-size: 14px; line-height: 20px; font-weight: 600; color: #475569; background-color: #f6f8fc; border-bottom: 1px solid #e3e8f0;";
+     ttd = "padding: 10px 12px; vertical-align: top; text-align: left; font-size: 15px; line-height: 22px; font-weight: normal; color: #0f172a; border-bottom: 1px solid #e3e8f0;";
+     full_detail = report.get_extra_metadata('greece_detail_full') || report.detail %]
+  <table [% table_reset | safe %] style="margin: 8px 0 20px 0; border: 1px solid #e3e8f0; border-radius: 10px; border-collapse: separate; overflow: hidden;">
+    <tr><th style="[% tth %]">Αριθμός αναφοράς</th><td style="[% ttd %]"><strong>[% report.greece_ref | html %]</strong></td></tr>
+    <tr><th style="[% tth %]">Παράβαση</th><td style="[% ttd %]">[% paravasi_text | html %]</td></tr>
     [%~ IF pinakida %]
-    <li style="[% p_style %]"><strong>Αριθμός κυκλοφορίας:</strong> [% pinakida | html %]</li>
+    <tr><th style="[% tth %]">Αριθμός κυκλοφορίας</th><td style="[% ttd %]"><strong style="font-family: monospace; font-size: 16px;">[% pinakida | html %]</strong></td></tr>
     [%~ END %]
-    <li style="[% p_style %]"><strong>Ημερομηνία και ώρα της αναφοράς:</strong> [% report.greece_local_time | html %]</li>
+    <tr><th style="[% tth %]">Τοποθεσία</th><td style="[% ttd %]">[% location | html %]<br><a href="[% gmaps_url %]">Άνοιγμα στον χάρτη</a></td></tr>
+    <tr><th style="[% tth %]">Ημερομηνία και ώρα</th><td style="[% ttd %]">[% report.greece_local_time | html %]</td></tr>
+    [%~ IF full_detail %]
+    <tr><th style="[% tth %]">Σχόλια του πολίτη</th><td style="[% ttd %]">[% full_detail | html | replace('\n', '<br>') %]</td></tr>
+    [%~ END %]
     [%~ IF photos.size %]
-    <li style="[% p_style %]"><strong>Φωτογραφίες:</strong> [% photos.size %], στο μήνυμα.</li>
+    <tr><th style="[% tth %]">Φωτογραφίες</th><td style="[% ttd %]">[% photos.size %], συνημμένες στο μήνυμα</td></tr>
     [%~ END %]
     [%~ IF report.get_extra_metadata('greece_video') %]
-    <li style="[% p_style %]"><strong>Βίντεο:</strong> Η αναφορά έχει βίντεο[% IF report.get_extra_metadata('greece_video_seconds') %] ([% report.get_extra_metadata('greece_video_seconds') | format('%d') %]")[% END %]. Δεν επισυνάπτεται· το βλέπετε στη σελίδα της αναφοράς, συνδεδεμένοι με τον λογαριασμό του φορέα σας (για λογαριασμό: [% cobrand.contact_email %]).</li>
+    <tr><th style="[% tth %]">Βίντεο</th><td style="[% ttd %]">🎬 [% IF report.get_extra_metadata('greece_video_seconds') %][% report.get_extra_metadata('greece_video_seconds') | format('%d') %]" · [% END %]στη σελίδα της αναφοράς, με τον λογαριασμό του φορέα σας (για λογαριασμό: [% cobrand.contact_email | html %])</td></tr>
     [%~ END %]
-  </ul>
+    <tr><th style="[% tth %]">Όνομα</th><td style="[% ttd %]">[% report.name | html %]</td></tr>
+    <tr><th style="[% tth %]">Email</th><td style="[% ttd %]">[% IF reporter_email %]<a href="mailto:[% reporter_email | html %]">[% reporter_email | html %]</a>[% ELSE %]Δεν δόθηκε[% END %]</td></tr>
+    <tr><th style="[% tth %] border-bottom: 0;">Τηλέφωνο</th><td style="[% ttd %] border-bottom: 0;">[% IF reporter_phone %]<a href="tel:[% reporter_phone | html %]">[% reporter_phone | html %]</a>[% ELSE %]Δεν δόθηκε[% END %]</td></tr>
+  </table>
   <p style="[% p_style %]">Παρακαλώ για τον έλεγχο της παράβασης και την εφαρμογή των προβλεπόμενων μέτρων, καθώς και για την ενημέρωσή μου για τις ενέργειές σας.</p>
   <p style="[% p_style %]">Με εκτίμηση,<br>
     [% report.name | html %]<br>
@@ -56,14 +63,13 @@ INCLUDE '_email_top.html';
     <p style="[% p_style %] font-family: monospace; font-size: 16px; margin-bottom: 0;"><strong>MAIL ΥΠΗΡΕΣΙΑΣ:ΧΧΧ@ΥΥΥ.ΖΖΖ</strong></p>
   </div>
   [% end_padded_box | safe %]
-</th>
-<th style="[% td_style %][% secondary_column_style %]" id="secondary_column">
-  <a href="[% gmaps_url %]"><img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="310" height="200" alt="Χάρτης της τοποθεσίας"></a>
+  [%# The map across the email, under the text; then the photos (owner, 2026-10-26). ~%]
+  <a href="[% gmaps_url %]"><img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="600" height="387" alt="Χάρτης της τοποθεσίας"></a>
+  
   [% start_padded_box | safe %]
     [%~ FOR photo IN photos %]
-    <p style="[% secondary_p_style %]"><img src="[% inline_image(photo, 'photo' _ loop.count _ '.jpeg') %]" width="278" style="max-width: 100%; height: auto;" alt="Φωτογραφία [% loop.count %]"></p>
+    <p style="[% secondary_p_style %]"><img src="[% inline_image(photo, 'photo' _ loop.count _ '.jpeg') %]" width="560" style="max-width: 100%; height: auto;" alt="Φωτογραφία [% loop.count %]"></p>
     [%~ END %]
-    <p style="[% secondary_p_style %]"><strong>Κατηγορία:</strong> [% report.category | html %]</p>
   [% end_padded_box | safe %]
 </th>
 

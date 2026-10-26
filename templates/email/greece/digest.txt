@@ -1,5 +1,5 @@
 [%# Plain-text twin of digest.html (see there). ~%]
-Subject: [% items.size %] [% items.size == 1 ? 'νέα αναφορά' : 'νέες αναφορές' %] για [% body_name %] ([% period %])
+Subject: [% items.size %] [% items.size == 1 ? 'νέα αναφορά' : 'νέες αναφορές' %] προς: [% body_name %] ([% period %])
 
 Προς: [% body_name %]
 

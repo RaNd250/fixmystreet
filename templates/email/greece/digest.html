@@ -11,37 +11,40 @@ card = "margin: 0 0 18px 0; padding: 14px 16px; border: 1px solid #d9dee8; borde
 small = "margin: 0 0 6px 0; font-size: 14px; line-height: 19px; color: #475569;";
 %]
 <th style="[% td_style %][% only_column_style %]">
+  [% tth = "padding: 8px 12px; width: 30%; vertical-align: top; text-align: left; font-size: 13px; line-height: 19px; font-weight: 600; color: #475569; background-color: #f6f8fc; border-bottom: 1px solid #e3e8f0;";
+     ttd = "padding: 8px 12px; vertical-align: top; text-align: left; font-size: 15px; line-height: 21px; font-weight: normal; color: #0f172a; border-bottom: 1px solid #e3e8f0;" %]
   [% start_padded_box | safe %]
-  <h1 style="[% h1_style %]">[% items.size %] [% items.size == 1 ? 'νέα αναφορά' : 'νέες αναφορές' %]</h1>
-  <p style="[% p_style %]">Προς: <strong>[% body_name | html %]</strong><br>
-  Αναφορές πολιτών που καταχωρήθηκαν στο [% site_name %] από [% period | html %]. Κάθε αναφορά έχει τον
-  δικό της σύνδεσμο με χάρτη, φωτογραφίες και όλες τις ενημερώσεις.</p>
+  <p style="margin: 0 0 6px 0; font-size: 13px; line-height: 18px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #1f5fd6;">Αναφορές πολιτών · [% period | html %]</p>
+  <h1 style="[% h1_style %]">[% items.size %] [% items.size == 1 ? 'νέα αναφορά' : 'νέες αναφορές' %] προς: [% body_name | html %]</h1>
+  <p style="[% p_style %]">Όσες καταχωρήθηκαν στο [% site_name %] στο παραπάνω διάστημα, σε ένα μήνυμα. Κάθε αναφορά έχει
+  τον δικό της σύνδεσμο με χάρτη, φωτογραφίες και ενημερώσεις.</p>
 
   [% FOR it IN items; r = it.report %]
-  <div style="[% card %]">
-    <p style="[% small %]"><strong style="color: #0f172a;">[% loop.count %]. [% r.category | html %]</strong>
-      &nbsp;·&nbsp; αρ. [% r.greece_ref | html %] &nbsp;·&nbsp; [% r.greece_local_time | html %]</p>
-    [% IF it.address %]<p style="[% small %]">📍 [% it.address | html %] &nbsp;<a href="[% it.gmaps_url %]">χάρτης</a></p>
-    [% ELSE %]<p style="[% small %]">📍 <a href="[% it.gmaps_url %]">Θέση στον χάρτη</a></p>[% END %]
-    [% r.detail | html_para_email(p_style) %]
-    <p style="[% small %]">
-      [%~ IF it.photos %]📷 [% it.photos %] [% it.photos == 1 ? 'φωτογραφία' : 'φωτογραφίες' %] &nbsp;[% END ~%]
-      [%~ IF it.video_seconds %]🎬 βίντεο [% it.video_seconds | format('%d') %]" (στην πλατφόρμα) &nbsp;[% END ~%]
-      👤 [% r.anonymous ? 'Ανώνυμα' : r.name | html %]
-      [%~ IF it.email %] · <a href="mailto:[% it.email | html %]?subject=[% ('Η αναφορά σας ' _ r.greece_ref) | uri %]">[% it.email | html %]</a>[% END ~%]
-      [%~ IF it.phone %] · <a href="tel:[% it.phone | html %]">[% it.phone | html %]</a>[% END %]</p>
-    <p style="margin: 10px 0 0 0;"><a style="[% button_style %] font-size: 15px; border-width: 6px 12px;" href="[% it.url %]">Άνοιγμα αναφοράς</a></p>
-  </div>
+  <table [% table_reset | safe %] style="margin: 0 0 18px 0; border: 1px solid #e3e8f0; border-radius: 10px; border-collapse: separate; overflow: hidden;">
+    <tr><td colspan="2" style="padding: 10px 12px; background-color: #0c1b33; color: #ffffff; font-size: 15px; line-height: 21px; font-weight: 700;">
+      [% loop.count %]. [% r.category | html %]
+      <span style="float: right; font-weight: 400; color: #cbd5e1;">αρ. [% r.greece_ref | html %]</span></td></tr>
+    <tr><th style="[% tth %]">Ημερομηνία</th><td style="[% ttd %]">[% r.greece_local_time | html %]</td></tr>
+    <tr><th style="[% tth %]">Τοποθεσία</th><td style="[% ttd %]">[% IF it.address %][% it.address | html %]<br>[% END %]<a href="[% it.gmaps_url %]">Άνοιγμα στον χάρτη</a></td></tr>
+    <tr><th style="[% tth %]">Περιγραφή</th><td style="[% ttd %]">[% r.detail | html | replace('\n', '<br>') %]</td></tr>
+    [%~ IF it.photos OR it.video_seconds %]
+    <tr><th style="[% tth %]">Υλικό</th><td style="[% ttd %]">[% IF it.photos %]📷 [% it.photos %] [% it.photos == 1 ? 'φωτογραφία' : 'φωτογραφίες' %][% END %][% IF it.photos AND it.video_seconds %] · [% END %][% IF it.video_seconds %]🎬 βίντεο [% it.video_seconds | format('%d') %]" (στην πλατφόρμα)[% END %]</td></tr>
+    [%~ END %]
+    <tr><th style="[% tth %]">Πολίτης</th><td style="[% ttd %]">[% r.anonymous ? 'Ανώνυμα' : r.name | html %]
+      [%~ IF it.email %]<br><a href="mailto:[% it.email | html %]?subject=[% ('Η αναφορά σας ' _ r.greece_ref) | uri %]">[% it.email | html %]</a>[% END ~%]
+      [%~ IF it.phone %]<br><a href="tel:[% it.phone | html %]">[% it.phone | html %]</a>[% END %]</td></tr>
+    <tr><td colspan="2" style="padding: 10px 12px; text-align: right;"><a style="[% button_style %] font-size: 14px; border-width: 8px 16px;" href="[% it.url %]">Άνοιγμα αναφοράς</a></td></tr>
+  </table>
   [% END %]
 
-  <p style="[% p_style %]">Για να απαντήσετε στον πολίτη, γράψτε στο email του (όπου το έδωσε) ή αφήστε μια ενημέρωση στη
-  σελίδα της αναφοράς. Οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν στην ομάδα του [% site_name %].</p>
-  <div style="margin: 20px 0 0 0; padding: 12px 16px; border: 1px solid #d8cfe9; border-radius: 4px; background-color: #f6f3fb;">
-    <p style="[% p_style %] margin-bottom: 0;">
+  <p style="[% secondary_p_style %]">Για να απαντήσετε στον πολίτη, γράψτε στο email του (όπου το έδωσε) ή αφήστε μια ενημέρωση
+  στη σελίδα της αναφοράς. Οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν στην ομάδα του [% site_name %].</p>
+  <div style="margin: 16px 0 0 0; padding: 12px 16px; border: 1px solid #dbe4f5; border-radius: 10px; background-color: #f2f6fd;">
+    <p style="[% secondary_p_style %] margin-bottom: 0;">
       [%~ IF sent_to %]Στάλθηκε στη διεύθυνση <strong>[% sent_to | html %]</strong>. [% END ~%]
       Αν δεν είναι η σωστή διεύθυνση του Δήμου για αναφορές πολιτών, στείλτε μας τη σωστή στο
       <a href="mailto:[% cobrand.contact_email | html %]?subject=[% ('MAIL ΔΗΜΟΥ ' _ body_name) | uri %]">[% cobrand.contact_email | html %]</a>
-      γράφοντας <strong>MAIL ΔΗΜΟΥ:ΧΧΧ@ΥΥΥ.ΖΖΖ</strong>.</p>
+      γράφοντας <strong style="font-family: monospace;">MAIL ΔΗΜΟΥ:ΧΧΧ@ΥΥΥ.ΖΖΖ</strong>.</p>
   </div>
   [% end_padded_box | safe %]
 </th>
