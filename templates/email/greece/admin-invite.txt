@@ -1,0 +1,21 @@
+[%# An administrator account made for someone by the site's team: the admin address and a one-off
+    link to choose a password (no password is ever sent by email). ~%]
+Subject: Λογαριασμός διαχειριστή στο [% site_name %]
+
+Καλησπέρα,
+
+σας δημιουργήσαμε λογαριασμό διαχειριστή στο [% site_name %].
+
+Όνομα χρήστη: [% user.email %]
+
+Για να ορίσετε τον κωδικό σας, πατήστε αυτόν τον προσωπικό σύνδεσμο (ισχύει 24 ώρες):
+
+[% token_url %]
+
+Μετά συνδέεστε από εδώ, με το email σας και τον κωδικό που ορίσατε:
+
+[% admin_url %]
+
+Αν ο σύνδεσμος λήξει, ζητήστε νέο από τη σελίδα σύνδεσης («Ξέχασες τον κωδικό;»).
+
+[% signature %]
