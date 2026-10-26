@@ -25,6 +25,12 @@
         p72: ['Αυθαίρετη διαγράμμιση και πινακίδα P-72 χωρίς άδεια.', 'Unauthorised road markings and a P-72 sign.']
     };
 
+    // Every ready text, for form-draft.js: none of them is a draft, whichever category it was for.
+    window.grDetailDefaults = [];
+    [TEXT, ANSWER].forEach(function(map) {
+        Object.keys(map).forEach(function(k) { window.grDetailDefaults.push(map[k][0], map[k][1]); });
+    });
+
     function current() {
         var answer = document.querySelector('input[type="radio"][name$="paravasi"]:checked');
         var cat = document.querySelector('input[name="category"]:checked');

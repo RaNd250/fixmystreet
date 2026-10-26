@@ -30,7 +30,7 @@
         if (!form || form.id !== 'mapForm' || form.dataset.grNameRule) { return; }
         form.dataset.grNameRule = '1';
         var hint = form.querySelector('label[for="form_name"] span');
-        if (hint) { hint.textContent = EN ? ' (optional with a photo)' : ' (προαιρετικό αν βάλεις φωτογραφία)'; }
+        if (hint) { hint.textContent = EN ? ' (optional with a photo)' : ' (προαιρετικό με φωτογραφία)'; }
         form.addEventListener('submit', function(e) {
             var v = box.value.trim();
             if (hasPhoto(form) || (v !== '' && v !== box.dataset.grDefault)) { return; }

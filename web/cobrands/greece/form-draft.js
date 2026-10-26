@@ -47,6 +47,13 @@
         });
     }
 
+    // A ready text (detail-default.js) is not the reporter's: not saved, and not brought back from an
+    // older draft either, whatever category it was written for.
+    function isReadyText(el) {
+        if (el.dataset && el.dataset.grDefault === el.value) { return true; }
+        return el.id === 'form_detail' && (window.grDetailDefaults || []).indexOf(el.value.trim()) !== -1;
+    }
+
     function save() {
         var form = reportForm(), s = storage();
         if (!form || !s || restoring) { return; }
@@ -54,7 +61,7 @@
         fields(form).forEach(function(el) {
             if (el.type === 'checkbox' || el.type === 'radio') {
                 if (el.checked) { values[el.name] = el.value; } else if (el.type === 'checkbox' && !(el.name in values)) { values[el.name] = null; }
-            } else if (el.value !== '' && !(el.dataset && el.dataset.grDefault === el.value)) {   // not detail-default.js's ready text
+            } else if (el.value !== '' && !isReadyText(el)) {   // not detail-default.js's ready text
                 values[el.name] = el.value;
                 any = any || /^(detail|pinakida)$/.test(el.name);
             }
@@ -159,6 +166,7 @@
             fields(form).forEach(function(el) {
                 if (!(el.name in pending.values)) { return; }
                 var value = pending.values[el.name];
+                if (el.id === 'form_detail' && value && (window.grDetailDefaults || []).indexOf(String(value).trim()) !== -1) { value = null; }
                 if (value !== null && setValue(el, value) && el.type !== 'checkbox') { restored = true; }
                 if (el.type !== 'radio') { delete pending.values[el.name]; }
                 else if (el.value === value) { delete pending.values[el.name]; }

@@ -10,8 +10,7 @@
 <p>
 [% IF NOT non_public_categories.$category %]
     [% c.cobrand.greece_t('Παραλήπτης:', 'Sent to:') %] <strong>[% names %]</strong>.
-    [% c.cobrand.greece_t('Η περιγραφή και οι φωτογραφίες, με πινακίδες και πρόσωπα θολωμένα, θα φαίνονται και στον δημόσιο χάρτη',
-        'The description and photos, with plates and faces blurred, will also be shown on the public map') %]
+    [% c.cobrand.greece_t('Δημοσιεύεται στον χάρτη, με θολωμένες πινακίδες και πρόσωπα', 'Published on the map, with plates and faces blurred') %]
     (<a href="[% c.cobrand.privacy_policy_url %]">[% c.cobrand.greece_t('πολιτική απορρήτου', 'privacy policy') %]</a>).
 [% ELSE %]
     [% c.cobrand.greece_t('Παραλήπτης:', 'Sent to:') %] <strong>[% names %]</strong>.
