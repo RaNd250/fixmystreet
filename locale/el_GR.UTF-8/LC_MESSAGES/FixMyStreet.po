@@ -2555,9 +2555,8 @@ msgid "Import users"
 msgstr "Εισαγωγή χρηστών"
 
 #: templates/web/fixmystreet.com/report/new/unresponsive_body.html:5
-#, fuzzy
 msgid "Important message"
-msgstr "Αναφορά προβλήματος"
+msgstr "Σημαντικό μήνυμα"
 
 #: templates/web/base/admin/flagged.html:39
 msgid "In abuse table?"
@@ -2940,9 +2939,8 @@ msgid "Must not contain spaces."
 msgstr "Δεν πρέπει να περιέχει κενά."
 
 #: templates/web/fixmystreet.com/contact/who.html:52
-#, fuzzy
 msgid "My street problem hasn’t been fixed"
-msgstr "Αυτό το πρόβλημα δεν έχει διορθωθεί"
+msgstr "Το πρόβλημα στον δρόμο μου δεν έχει διορθωθεί"
 
 #: templates/web/base/admin/bodies/form.html:24
 #: templates/web/base/admin/bodies/index.html:21
@@ -4104,9 +4102,8 @@ msgid "Problems recently reported fixed on FixMyStreet"
 msgstr "Προσφάτως αναφερθέντα προβλήματα διορθωμένα στο FixMyStreet"
 
 #: templates/web/fixmystreet.com/reports/summary.html:48
-#, fuzzy
 msgid "Problems reported in area:"
-msgstr "Προσφάτως αναφερθέντα προβλήματα διορθωμένα στο FixMyStreet"
+msgstr "Προβλήματα που αναφέρθηκαν στην περιοχή:"
 
 #: templates/web/base/alert/_list.html:38
 msgid "Problems within %.1fkm of %s"
@@ -4311,9 +4308,8 @@ msgid "Redact"
 msgstr "Κάλυψη"
 
 #: templates/web/fixmystreet.com/admin/stats/refused.html:1
-#, fuzzy
 msgid "Refused bodies"
-msgstr "%s φορείς"
+msgstr "Φορείς που αρνήθηκαν"
 
 #: templates/web/base/report/inspect/information.html:72
 msgid "Reject report"
@@ -5245,9 +5241,8 @@ msgid "States"
 msgstr "Καταστάσεις"
 
 #: templates/web/fixmystreet.com/reports/cobrand_stats.html:3
-#, fuzzy
 msgid "Statistics for council staff"
-msgstr "Δεν επιλέχθηκε κάποια υπηρεσία"
+msgstr "Στατιστικά για το προσωπικό των υπηρεσιών"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:700
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:401
@@ -5807,7 +5802,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/Queue/Item/Report.pm:131
 msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
-msgstr "Ο χρήστης δεν μπορέσε να εντοπίσει το πρόβλημα στον χάρτη, αλλά για να δει την περιοχή κοντά στην τοποθεσία έγραψε"
+msgstr "Ο πολίτης δεν σημείωσε το πρόβλημα στον χάρτη· για να δείτε την περιοχή γύρω από την τοποθεσία που έγραψε"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Users.pm:670
 msgid "The user has been sent a login email"
@@ -6101,9 +6096,8 @@ msgid "This report breaks the <a href=\"/about/house-rules\">Conditions of Use</
 msgstr ""
 
 #: templates/web/fixmystreet.com/contact/who.html:22
-#, fuzzy
 msgid "This report has not been fixed"
-msgstr "Αυτό το πρόβλημα δεν έχει διορθωθεί"
+msgstr "Η αναφορά δεν έχει διορθωθεί"
 
 #: templates/web/base/report/duplicate-no-updates.html:5
 msgid ""
@@ -6480,9 +6474,8 @@ msgid "Use Open311 update-sending extension"
 msgstr "Χρήση της επέκτασης αποστολής ενημερώσεων Open311"
 
 #: templates/web/fixmystreet.com/report/new/inline-tips.html:5
-#, fuzzy
 msgid "Use exact locations"
-msgstr "Προβάλλεται μία τοποθεσία"
+msgstr "Ακριβείς τοποθεσίες"
 
 #: templates/web/base/around/_postcode_form_geolocation.html:2
 msgid "Use my current location"
@@ -6782,7 +6775,6 @@ msgid "We’ll get back to you as soon as we can."
 msgstr "Θα σου απαντήσουμε όσο το δυνατόν συντομότερα."
 
 #: templates/web/fixmystreet.com/questionnaire/completed-open.html:2
-#, fuzzy
 msgid "We’re sorry to hear that your problem hasn’t been fixed."
 msgstr "Λυπούμαστε που το πρόβλημα δεν έχει διορθωθεί."
 
@@ -6812,9 +6804,8 @@ msgid "When sent:"
 msgstr "Πότε στάλθηκε:"
 
 #: templates/web/fixmystreet.com/reports/summary.html:140
-#, fuzzy
 msgid "Where we send %s reports"
-msgstr "Επαναποστολή αναφοράς"
+msgstr "Πού στέλνουμε τις αναφορές για %s"
 
 #: templates/web/base/alert/_list.html:12
 msgid "Which problems do you want alerts about?"

@@ -9,12 +9,12 @@
         %]
 
         <div class="hidden js-continue-draft draft-info-box">
-            <p>You have a draft report made while offline:<br>
-            <a href="#" class="btn continue-draft-btn">Continue draft report</a>
+            <p>[% c.cobrand.greece_t('Έχεις μια πρόχειρη αναφορά που έγινε χωρίς σύνδεση:', 'You have a draft report made while offline:') %]<br>
+            <a href="#" class="btn continue-draft-btn">[% c.cobrand.greece_t('Συνέχεια της πρόχειρης αναφοράς', 'Continue draft report') %]</a>
         </div>
         <div class="hidden js-setting-location-for-draft draft-info-box">
-            <p>To continue draft<span class="js-draft-name"></span> enter its location.<br>
-            <a href="/" class="btn">Cancel</a>
+            <p>[% c.cobrand.greece_t('Για να συνεχίσεις την πρόχειρη αναφορά', 'To continue draft') %]<span class="js-draft-name"></span>[% c.cobrand.greece_t(', δώσε την τοποθεσία της.', ' enter its location.') %]<br>
+            <a href="/" class="btn">[% c.cobrand.greece_t('Άκυρο', 'Cancel') %]</a>
         </div>
         [% PROCESS 'around/_location_minimap.html' %]
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="postcode-form-box js-geolocate">

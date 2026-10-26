@@ -188,6 +188,7 @@ sub generate_dashboard {
     %problems_reported_by_period = stuff_by_day_or_year('day',
         $rs,
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        'me.non_public' => 0,   # as on the map: private (police) reports are not counted
         'me.confirmed' => { '>=', $eight_ago },
     );
     %problems_fixed_by_period = stuff_by_day_or_year('day',
@@ -203,8 +204,10 @@ sub generate_dashboard {
         'me.confirmed' => { '>=', $eight_ago },
     );
 
-    my $date = DateTime->today->subtract(days => 7);
-    while ($date < DateTime->today) {
+    # The last 7 days up to and including today, as the category counts below (which go back 7
+    # days from now); upstream stopped at yesterday, so a report made today showed as 0.
+    my $date = DateTime->today->subtract(days => 6);
+    while ($date <= DateTime->today) {
         push @{$last_seven_days{problems}}, $problems_reported_by_period{$date->day} || 0;
         push @{$last_seven_days{fixed}}, $problems_fixed_by_period{$date->day} || 0;
         push @{$last_seven_days{updated}}, $problems_updated_by_period{$date->day} || 0;
