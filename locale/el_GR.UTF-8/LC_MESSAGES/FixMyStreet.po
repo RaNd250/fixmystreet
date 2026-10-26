@@ -3633,7 +3633,7 @@ msgstr "Έλεγξε ότι ο αριθμός τηλεφώνου σου είνα
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:1275
 #: templates/web/base/js/translation_strings.html:19
 msgid "Please choose a category"
-msgstr "Παρακαλούμε επίλεξε μια κατηγορία"
+msgstr "Διάλεξε κατηγορία."
 
 #: perllib/FixMyStreet/App/Controller/Auth.pm:519
 msgid "Please choose a less commonly-used password"
@@ -3646,7 +3646,7 @@ msgstr "Διάλεξε έναν λιγότερο συνηθισμένο κωδι
 #: templates/web/base/admin/waste/bulky_items.html:53
 #: templates/web/base/admin/waste/edit.html:15
 msgid "Please correct the errors below"
-msgstr "Παρακαλούμε διόρθωσε τα παρακάτω λάθη"
+msgstr "Διόρθωσε τα παρακάτω."
 
 #: templates/web/base/contact/blurb.html:6
 #: templates/web/fixmystreet.com/contact/blurb.html:8
@@ -3665,7 +3665,7 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Comment.pm:199
 #: templates/web/base/js/translation_strings.html:3
 msgid "Please enter a message"
-msgstr "Παρακαλούμε γράψε ένα μήνυμα"
+msgstr "Γράψε το μήνυμά σου."
 
 #: perllib/FixMyStreet/App/Controller/Admin/Users.pm:553
 #: perllib/FixMyStreet/DB/Result/User.pm:317
@@ -3711,12 +3711,12 @@ msgstr "Γράψε έναν έγκυρο αριθμό τηλεφώνου"
 #: templates/web/base/js/translation_strings.html:22
 #: templates/web/base/js/translation_strings.html:26
 msgid "Please enter a valid email"
-msgstr "Παρακαλούμε γράψε ένα έγκυρο email"
+msgstr "Δεν μοιάζει με διεύθυνση email."
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:402
 #: perllib/FixMyStreet/App/Controller/Contact.pm:157
 msgid "Please enter a valid email address"
-msgstr "Παρακαλούμε γράψε μία έγκυρη διεύθυνση email"
+msgstr "Δεν μοιάζει με διεύθυνση email."
 
 #: perllib/FixMyStreet/App/Controller/Admin/Users.pm:141
 #: perllib/FixMyStreet/App/Controller/Admin/Users.pm:289
@@ -3731,7 +3731,7 @@ msgstr "Γράψε έναν έγκυρο ταχυδρομικό κώδικα ή 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:499
 #: templates/web/base/js/translation_strings.html:11
 msgid "Please enter some details"
-msgstr "Παρακαλούμε γράψε μερικές λεπτομέρειες"
+msgstr "Γράψε τι δεν πάει καλά."
 
 #. ("JS")
 #: perllib/FixMyStreet/App/Controller/Contact.pm:146
@@ -3743,7 +3743,7 @@ msgstr "Παρακαλούμε γράψε μερικές λεπτομέρειε�
 #: templates/web/base/js/translation_strings.html:21
 #: templates/web/base/js/translation_strings.html:25
 msgid "Please enter your email"
-msgstr "Παρακαλούμε γράψε το email σου"
+msgstr "Γράψε το email σου."
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:39
@@ -3767,7 +3767,7 @@ msgstr "Γράψε το ονοματεπώνυμό σου."
 #: perllib/FixMyStreet/DB/Result/User.pm:300
 #: templates/web/base/js/translation_strings.html:16
 msgid "Please enter your name"
-msgstr "Παρακαλούμε γράψε το όνομά σου"
+msgstr "Γράψε το όνομά σου."
 
 #. ("JS")
 #: templates/web/base/auth/_username_error.html:1
@@ -3828,7 +3828,7 @@ msgstr "Ο κωδικός σου πρέπει να έχει τουλάχιστο
 #: templates/web/base/report/updates-sidebar-notes.html:2
 #: templates/web/fixmystreet.com/report/updates-sidebar-notes.html:3
 msgid "Please note that updates are not sent to the council."
-msgstr "Παρακαλούμε σημείωσε ότι οι ενημερώσεις δεν στέλνονται στην υπηρεσία."
+msgstr "Οι ενημερώσεις δημοσιεύονται εδώ και δεν στέλνονται στην υπηρεσία."
 
 #: templates/web/base/report/new/oauth_email_form.html:4
 msgid "Please note your report has <strong>not yet been sent</strong>."
@@ -3919,7 +3919,7 @@ msgstr "Επαλήθευσε τουλάχιστον ένα από email/τηλέ
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:148
 msgid "Please write a message"
-msgstr "Παρακαλούμε γράψε ένα μήνυμα"
+msgstr "Γράψε το μήνυμά σου."
 
 #: templates/web/base/waste/index.html:12
 msgid "Postcode"
@@ -4452,7 +4452,7 @@ msgstr "Ανάφερε, δες ή συζήτησε τα τοπικά προβλ�
 #: perllib/FixMyStreet/DB/Result/Problem.pm:791
 #: templates/web/base/contact/form.html:43
 msgid "Reported anonymously at %s"
-msgstr "Αναφέρθηκε ανώνυμα στις %s"
+msgstr "Ανώνυμα · %s"
 
 #: templates/web/base/admin/stats/questionnaire.html:5
 #: templates/web/base/questionnaire/creator_fixed.html:15
@@ -4463,7 +4463,7 @@ msgstr "Αναφέρθηκε προηγουμένως"
 #: perllib/FixMyStreet/DB/Result/Problem.pm:815
 #: templates/web/base/contact/form.html:45
 msgid "Reported by %s at %s"
-msgstr "Αναφέρθηκε από %s στις %s"
+msgstr "Από %s · %s"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:48
 #: templates/web/zurich/admin/reports/edit.html:76
@@ -4476,27 +4476,27 @@ msgstr "Αναφέρθηκε στην κατηγορία %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:788
 msgid "Reported in the %s category anonymously at %s"
-msgstr "Αναφέρθηκε στην κατηγορία %s, ανώνυμα στις %s"
+msgstr "Κατηγορία %s · ανώνυμα · %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:812
 msgid "Reported in the %s category by %s at %s"
-msgstr "Αναφέρθηκε στην κατηγορία %s από τον %s στις %s"
+msgstr "Κατηγορία %s · από %s · %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:785
 msgid "Reported via %s anonymously at %s"
-msgstr "Αναφέρθηκε μέσω %s ανώνυμα στις %s"
+msgstr "Ανώνυμα · %2$s · από %1$s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:809
 msgid "Reported via %s by %s at %s"
-msgstr "Αναφέρθηκε μέσω %s από τον %s στις %s"
+msgstr "Από %2$s · %3$s · από %1$s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:782
 msgid "Reported via %s in the %s category anonymously at %s"
-msgstr "Αναφέρθηκε μέσω %s στην κατηγορία %s ανώνυμα στις %s"
+msgstr "Κατηγορία %2$s · ανώνυμα · %3$s · από %1$s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:804
 msgid "Reported via %s in the %s category by %s at %s"
-msgstr "Αναφέρθηκε μέσω %s στην κατηγορία %s από τον %s στις %s"
+msgstr "Κατηγορία %2$s · από %3$s · %4$s · από %1$s"
 
 #: templates/web/fixmystreet.com/reports/summary.html:69
 #: templates/web/zurich/admin/report_edit-sdm.html:38
@@ -4901,7 +4901,7 @@ msgstr "Επιστροφή αναφοράς"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:1006
 msgid "Sent to %s %s later"
-msgstr "Στάλθηκε στο %s %s αργότερα"
+msgstr "Παραλήπτης: %s, %s μετά την υποβολή"
 
 #: templates/web/base/admin/reports/_edit_main.html:57
 #: templates/web/base/admin/reports/_edit_waste.html:19
@@ -5117,7 +5117,7 @@ msgstr "Συγνώμη, δεν μπορέσαμε να βρούμε αυτήν �
 #: templates/web/base/report/display.html:29
 #: templates/web/base/report/new/fill_in_details_form.html:30
 msgid "Sorry, we could not log you in. Please fill in the form below."
-msgstr "Λυπούμαστε, δεν μπορούμε να σας συνδέσουμε. Παρακαλούμε συμπληρώστε την παρακάτω φόρμα."
+msgstr "Λυπούμαστε, δεν μπορέσαμε να σε συνδέσουμε. Συμπλήρωσε την παρακάτω φόρμα."
 
 #: perllib/FixMyStreet/Geocode/Bing.pm:47
 #: perllib/FixMyStreet/Geocode/Google.pm:56
@@ -5535,7 +5535,7 @@ msgstr "Η εικόνα δεν φαίνεται να έχει μεταφορτω
 
 #: perllib/FixMyStreet/App/Controller/Council.pm:102
 msgid "That location does not appear to be covered by a council; perhaps it is offshore or outside the country. Please try again."
-msgstr "Η τοποθεσία δεν φαίνεται να βρίσκεται στην αρμοδιότητα κάποιου συμβουλίου. Ίσως είναι εκτός ακτής ή εκτός της χώρας. Παρακαλούμε προσπάθησε ξανά."
+msgstr "Η τοποθεσία δεν φαίνεται να ανήκει σε κάποιον δήμο· ίσως είναι στη θάλασσα ή εκτός Ελλάδας. Δοκίμασε ξανά."
 
 #: perllib/FixMyStreet/App/Controller/Location.pm:192
 msgid "That location does not appear to be in the UK; please try again."
@@ -5923,7 +5923,7 @@ msgstr ""
 
 #: templates/web/base/report/new/councils_text_private.html:4
 msgid "These details will never be shown online without your permission."
-msgstr "Αυτά τα στοιχεία δεν θα εμφανιστούν ποτέ online χωρίς την άδειά σου."
+msgstr "Αυτά τα στοιχεία δεν θα εμφανιστούν δημόσια χωρίς την άδειά σου."
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:3
 #: templates/web/base/admin/bodies/open311-form-fields.html:4
@@ -6784,7 +6784,7 @@ msgstr "Θα σου απαντήσουμε όσο το δυνατόν συντο
 #: templates/web/fixmystreet.com/questionnaire/completed-open.html:2
 #, fuzzy
 msgid "We’re sorry to hear that your problem hasn’t been fixed."
-msgstr "Παρακαλούμε δήλωσε αν το πρόβλημα έχει διορθωθεί ή όχι"
+msgstr "Λυπούμαστε που το πρόβλημα δεν έχει διορθωθεί."
 
 #: templates/web/base/report/new/duplicate_suggestions.html:14
 msgid ""

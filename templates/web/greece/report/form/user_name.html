@@ -7,8 +7,8 @@
     [% CATCH file %]
 [% END %]
 </label>
-[% IF field_errors.name %]
-    <p class='form-error'>[% field_errors.name %]</p>
+[% IF field_errors.name OR field_errors.greece_name %]
+    <p class='form-error'>[% field_errors.name OR field_errors.greece_name %]</p>
 [% END %]
 <input type="text" class="form-control [% valid_class OR 'validName' %] js-form-name [% extra_class %]"
     value="[% object.name || c.user.name | html %]" name="name" id="form_name" autocomplete="name" aria-required="true"

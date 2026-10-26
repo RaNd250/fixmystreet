@@ -13,7 +13,7 @@
     <div><dt>[% c.cobrand.greece_t('Κατηγορία', 'Category') %]</dt><dd>[% problem.category_display | html %]</dd></div>
     [% END %]
     <div><dt>[% c.cobrand.greece_t('Υποβλήθηκε', 'Reported') %]</dt><dd>[% problem.greece_when(en) | html %]
-      [%~ IF via.match('(?i)mobile|android|ios|app') %] · [% c.cobrand.greece_t('από κινητό', 'from a phone') %][% END %]</dd></div>
+      [%~ IF via.match('(?i)mobile|android|ios|app|κινητό') %] · [% c.cobrand.greece_t('από κινητό', 'from a phone') %][% END %]</dd></div>
     <div><dt>[% c.cobrand.greece_t('Από', 'By') %]</dt><dd>
       [%~ IF problem.anonymous %][% c.cobrand.greece_t('Ανώνυμα', 'Anonymous') %][% ELSE %][% problem.name | html %][% END %]
       [%~ IF c.user_exists AND c.user.id == problem.user_id AND !problem.anonymous %]

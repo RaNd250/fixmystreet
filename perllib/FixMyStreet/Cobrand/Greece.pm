@@ -151,8 +151,9 @@ sub report_check_for_errors {
         $more{username_register} = $self->greece_t('Για να φαίνεται δημόσια το όνομά σου, γράψε και το email σου.', 'To show your name publicly, enter your email too.');
     }
     $more{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
+    # Its own key: FixMyStreet drops errors under «name» for anonymous reports (Report/New.pm).
     my $name_error = $self->greece_name_error($c->get_param('name'));
-    $more{name} = $name_error if $name_error;
+    $more{greece_name} = $name_error if $name_error;
     if ($report && ($report->title // '') !~ /\S/) {
         my $category = $report->category // '';
         my $title = $category eq 'Άλλο' || $category eq '' ? greece_excerpt($report->detail, 60) : $category;
@@ -356,7 +357,7 @@ sub process_open311_extras {
     my $update = $c->stash->{update} or return;
     $c->stash->{field_errors}{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
     my $name_error = $self->greece_name_error($c->get_param('name'));
-    $c->stash->{field_errors}{name} = $name_error if $name_error;
+    $c->stash->{field_errors}{greece_name} = $name_error if $name_error;
     my $staff = $c->user_exists && ($c->user->is_superuser || $c->user->from_body);
     my $problem = $c->stash->{problem};
     if (!$staff && $problem) {
@@ -607,6 +608,23 @@ package FixMyStreet::DB::Result::Problem;
 use strict;
 use warnings;
 use utf8;
+
+# How a report was made, in Greek where it reads «… · από κινητό» in the report's meta line
+# (FixMyStreet's service_display gives "mobile"; the .po puts it after «από»). Wrapped, not copied,
+# so FixMyStreet's own handling of Open311 and PWA services stays.
+{
+    require FixMyStreet::DB::Result::Problem;
+    my $orig = FixMyStreet::DB::Result::Problem->can('service_display');
+    my %el = (mobile => 'κινητό', desktop => 'υπολογιστή', web => 'υπολογιστή');
+    no warnings 'redefine';
+    *service_display = sub {
+        my $s = $orig->(@_);
+        return $s if $s eq '';
+        my $c = eval { $_[0]->result_source->schema->cobrand };
+        return $s unless $c && $c->moniker eq 'greece' && !$c->greece_t(0, 1);
+        return $el{lc $s} // $s;
+    } if $orig;
+}
 
 # The municipality body covering the report's location.
 sub greece_dimos {

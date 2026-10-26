@@ -1,6 +1,7 @@
-[%# FixMyStreet's contact/form.html as cards, with quick topics, checks while typing, a character count
-    and a sending state (contact-ui.js, theme.css .gr-cform); same fields and names, so the server side is
-    FixMyStreet's. ~%]
+[%# FixMyStreet's contact/form.html as cards, with a growing message box, a character count and a
+    sending state (contact-ui.js, theme.css .gr-cform). No subject field (owner, 2026-10-26): FixMyStreet
+    still needs one, so it goes as a hidden field, named after what the message is about. Field errors
+    are FixMyStreet's own (one per field, styled for every form in theme.css). ~%]
 <form method="post" action="/contact/submit" class="validate gr-cform" novalidate>
   <input type="hidden" name="token" value="[% csrf_token %]">
   <input type="hidden" name="s" value="[% s %]">
@@ -64,32 +65,16 @@
 
   [% INCLUDE 'contact/who.html' %]
 
-  [%# Quick topics: a tap fills the subject (contact-ui.js); the subject stays editable. ~%]
-  [% IF NOT problem AND NOT update %]
-  <div class="gr-cform__topics" role="group" aria-label="[% c.cobrand.greece_t('Θέμα με ένα πάτημα', 'Pick a topic') %]">
-    [% FOR topic IN [
-        c.cobrand.greece_t('Διόρθωση στοιχείων δήμου', 'Correct a municipality’s details'),
-        c.cobrand.greece_t('Πρόβλημα με τον ιστότοπο', 'Problem with the site'),
-        c.cobrand.greece_t('Για δήμους και φορείς', 'For municipalities and bodies'),
-        c.cobrand.greece_t('Πρόταση ή ιδέα', 'Suggestion or idea'),
-        c.cobrand.greece_t('Κάτι άλλο', 'Something else') ] %]
-      <button type="button" class="gr-cform__chip" data-topic="[% topic | html %]">[% topic | html %]</button>
-    [% END %]
-  </div>
-  [% END %]
-
   <div class="gr-cform__grid">
     <div class="gr-cform__field">
       <label class="govuk-label" for="form_name">[% loc('Your name') %]</label>
       [% IF field_errors.name %]<div class="form-error">[% field_errors.name %]</div>[% END %]
-      <input type="text" class="govuk-input required" name="name" autocomplete="name" id="form_name" value="[% form_name | html %]" size="30" data-gr-required="1">
-      <span class="gr-cform__hint" aria-live="polite"></span>
+      <input type="text" class="govuk-input required" name="name" autocomplete="name" id="form_name" value="[% form_name | html %]" size="30" data-msg-required="[% c.cobrand.greece_t('Γράψε το όνομά σου.', 'Enter your name.') %]">
     </div>
     <div class="gr-cform__field">
       <label class="govuk-label" for="form_email">[% loc('Your email') %]</label>
       [% IF field_errors.em %]<div class="form-error">[% field_errors.em %]</div>[% END %]
-      <input type="email" class="govuk-input required email" name="em" id="form_email" value="[% em | html %]" size="30" autocomplete="email" inputmode="email" data-gr-required="1" data-gr-email="1">
-      <span class="gr-cform__hint" aria-live="polite"></span>
+      <input type="email" class="govuk-input required email" name="em" id="form_email" value="[% em | html %]" size="30" autocomplete="email" inputmode="email" data-msg-required="[% c.cobrand.greece_t('Γράψε το email σου.', 'Enter your email.') %]" data-msg-email="[% c.cobrand.greece_t('Δεν μοιάζει με διεύθυνση email.', 'That does not look like an email address.') %]">
     </div>
   </div>
 
@@ -98,19 +83,22 @@
     <input type="tel" class="govuk-input extra.phone" name="extra.phone" id="form_phone" value="" size="30" autocomplete="tel">
   </div>
 
-  <div class="gr-cform__field">
-    <label class="govuk-label" for="form_subject">[% loc('Subject') %]</label>
-    [% IF field_errors.subject %]<div class="form-error">[% field_errors.subject %]</div>[% END %]
-    <input type="text" class="govuk-input required" name="subject" id="form_subject" value="[% subject | html %]" size="30" data-gr-required="1">
-    <span class="gr-cform__hint" aria-live="polite"></span>
-  </div>
+  [% IF update;
+       SET gr_subject = c.cobrand.greece_t('Αναφορά κατάχρησης για ενημέρωση στην αναφορά ', 'Abuse report about an update on report ') _ update.problem_id;
+     ELSIF problem AND moderation_complaint;
+       SET gr_subject = c.cobrand.greece_t('Παράπονο για επεξεργασία της αναφοράς ', 'Complaint about moderation of report ') _ problem.id;
+     ELSIF problem;
+       SET gr_subject = c.cobrand.greece_t('Αναφορά κατάχρησης για την αναφορά ', 'Abuse report about report ') _ problem.id;
+     ELSE;
+       SET gr_subject = subject OR c.cobrand.greece_t('Μήνυμα από τη φόρμα επικοινωνίας', 'Message from the contact form');
+     END %]
+  <input type="hidden" name="subject" value="[% gr_subject | html %]">
 
   <div class="gr-cform__field">
     <label class="govuk-label" for="form_message">[% loc('Message') %]</label>
     [% IF field_errors.message %]<div class="form-error">[% field_errors.message %]</div>[% END %]
-    <textarea class="govuk-textarea required" name="message" id="form_message" rows="5" cols="50" maxlength="5000" data-gr-required="1">[% message | html %]</textarea>
+    <textarea class="govuk-textarea required" name="message" id="form_message" rows="5" cols="50" maxlength="5000" data-msg-required="[% c.cobrand.greece_t('Γράψε το μήνυμά σου.', 'Write your message.') %]">[% message | html %]</textarea>
     <div class="gr-cform__meta">
-      <span class="gr-cform__hint" aria-live="polite"></span>
       <span class="gr-cform__count" aria-hidden="true">0 / 5000</span>
     </div>
   </div>
