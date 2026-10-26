@@ -1274,3 +1274,12 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
 .gr-nearby__priv { margin: 6px 0 0 !important; }
 .gr-nearby__priv:first-of-type { margin-top: 0 !important; }
 .gr-nearby__priv strong { display: inline; }
+
+/* «Αναφορά δημοσίευσης» (report a post): a yellow warning triangle in place of the grey sprite. */
+#key-tools a.abuse::after, #key-tools a.abuse:hover::after, #key-tools a.abuse:focus::after {
+    width: 18px; height: 18px; background-position: 0 0; background-size: 18px 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 1.6 20.5h20.8z' fill='%23FFB21E' stroke='%23B45309' stroke-width='1.4' stroke-linejoin='round'/%3E%3Crect x='11' y='8.5' width='2' height='6.5' rx='1' fill='%230F172A'/%3E%3Ccircle cx='12' cy='17.6' r='1.2' fill='%230F172A'/%3E%3C/svg%3E");
+}
+
+/* Report form: an emoji before each category (category-emoji.js) */
+.gr-cat-emoji { display: inline-block; margin-right: 0.4em; font-size: 1.15em; line-height: 1; vertical-align: -0.08em; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }

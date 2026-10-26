@@ -4399,7 +4399,7 @@ msgstr "Ανάφερε ένα πρόβλημα εδώ"
 
 #: templates/web/base/report/display_tools.html:11
 msgid "Report abuse"
-msgstr "Αναφορά κατάχρησης"
+msgstr "Αναφορά δημοσίευσης"
 
 #: templates/web/base/report/form/user.html:43
 #: templates/web/base/report/form/user.html:52

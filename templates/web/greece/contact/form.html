@@ -84,11 +84,11 @@
   </div>
 
   [% IF update;
-       SET gr_subject = c.cobrand.greece_t('Αναφορά κατάχρησης για ενημέρωση στην αναφορά ', 'Abuse report about an update on report ') _ update.problem_id;
+       SET gr_subject = c.cobrand.greece_t('Αναφορά δημοσίευσης: ενημέρωση στην αναφορά ', 'Reported post: an update on report ') _ update.problem_id;
      ELSIF problem AND moderation_complaint;
        SET gr_subject = c.cobrand.greece_t('Παράπονο για επεξεργασία της αναφοράς ', 'Complaint about moderation of report ') _ problem.id;
      ELSIF problem;
-       SET gr_subject = c.cobrand.greece_t('Αναφορά κατάχρησης για την αναφορά ', 'Abuse report about report ') _ problem.id;
+       SET gr_subject = c.cobrand.greece_t('Αναφορά δημοσίευσης: η αναφορά ', 'Reported post: report ') _ problem.id;
      ELSE;
        SET gr_subject = subject OR c.cobrand.greece_t('Μήνυμα από τη φόρμα επικοινωνίας', 'Message from the contact form');
      END %]
