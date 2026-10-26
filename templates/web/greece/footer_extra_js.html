@@ -7,7 +7,8 @@
     photo-crop.js: a photo can be cropped before it is uploaded.
     category-emoji.js: an emoji before each category on the report form.
     detail-default.js: a ready short description for the category, cleared by a tap.
-    video-upload.js: one video of up to 45 seconds with a report, seen only by the service. ~%]
+    video-upload.js: one video of up to 45 seconds with a report, seen only by the service.
+    email-otp.js: an optional emailed code that confirms the reporter's email (Cc on the letter). ~%]
 [% IF bodyclass.match('mappage');
     scripts.push(version('/cobrands/fixmystreet/assets.js'));
     scripts.push(version('/cobrands/greece/camera.js'));
@@ -19,6 +20,7 @@
     scripts.push(version('/cobrands/greece/category-emoji.js'));
     scripts.push(version('/cobrands/greece/detail-default.js'));
     scripts.push(version('/cobrands/greece/video-upload.js'));
+    scripts.push(version('/cobrands/greece/email-otp.js'));
 END ~%]
 [%# form-draft.js keeps the report form's text if the reporter leaves it by mistake, and forgets
     it on the confirmation page, so it is on every page. ~%]

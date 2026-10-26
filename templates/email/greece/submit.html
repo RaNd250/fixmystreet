@@ -43,12 +43,12 @@ INCLUDE '_email_top.html';
     <tr><th style="[% tth %]">Βίντεο</th><td style="[% ttd %]">🎬 [% IF report.get_extra_metadata('greece_video_seconds') %][% report.get_extra_metadata('greece_video_seconds') | format('%d') %]" · [% END %]στη σελίδα της αναφοράς, με τον λογαριασμό του φορέα σας (για λογαριασμό: [% cobrand.contact_email | html %])</td></tr>
     [%~ END %]
     <tr><th style="[% tth %]">Όνομα</th><td style="[% ttd %]">[% report.name | html %]</td></tr>
-    <tr><th style="[% tth %]">Email</th><td style="[% ttd %]">[% IF reporter_email %]<a href="mailto:[% reporter_email | html %]">[% reporter_email | html %]</a>[% ELSE %]Δεν δόθηκε[% END %]</td></tr>
+    <tr><th style="[% tth %]">Email</th><td style="[% ttd %]">[% IF reporter_email %]<a href="mailto:[% reporter_email | html %]">[% reporter_email | html %]</a> <span style="color: #15803d;">(επιβεβαιωμένο, σε κοινοποίηση)</span>[% ELSIF reporter_email_unconfirmed %]Δόθηκε, χωρίς επιβεβαίωση[% ELSE %]Δεν δόθηκε[% END %]</td></tr>
     <tr><th style="[% tth %] border-bottom: 0;">Τηλέφωνο</th><td style="[% ttd %] border-bottom: 0;">[% IF reporter_phone %]<a href="tel:[% reporter_phone | html %]">[% reporter_phone | html %]</a>[% ELSE %]Δεν δόθηκε[% END %]</td></tr>
   </table>
 
   <p style="margin: 0 0 22px 0; text-align: center;"><a style="[% button_style %]" href="[% url %]">Άνοιγμα της αναφοράς</a></p>
-  <p style="[% secondary_p_style %]">[% IF reporter_email %]Οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν απευθείας στον πολίτη που υπέβαλε την αναφορά.[% ELSE %]Ο/Η πολίτης δεν έδωσε email· οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν στην ομάδα του [% site_name %].[% END %]</p>
+  <p style="[% secondary_p_style %]">[% IF reporter_email %]Οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν και στον πολίτη που υπέβαλε την αναφορά.[% ELSE %]Οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν στην ομάδα του [% site_name %].[% END %]</p>
   <div style="margin: 16px 0 0 0; padding: 12px 16px; border: 1px solid #dbe4f5; border-radius: 10px; background-color: #f2f6fd;">
     <p style="[% secondary_p_style %]">
       [%~ IF sent_to %]Στάλθηκε [% sent_to.match(',') ? 'στις διευθύνσεις' : 'στη διεύθυνση' %] <strong>[% sent_to | html %]</strong>. [% END ~%]

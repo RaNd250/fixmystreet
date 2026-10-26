@@ -1390,3 +1390,15 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 .gr-rec__dot { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 50%; background: #fff; }
 .gr-rec__go--on { background: var(--gr-danger) !important; border-color: var(--gr-danger) !important; }
 .gr-rec__go--on .gr-rec__dot { border-radius: 2px; }
+
+/* Confirming the reporter's email with a code (email-otp.js) */
+.gr-otp { margin: 4px 0 8px; font-size: 0.8125rem; }
+.gr-otp__ask, .gr-otp__again { padding: 4px 0; border: 0; background: none; color: var(--gr-accent); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.gr-otp__why { display: block; color: var(--gr-ink-3); }
+.gr-otp__label { display: block; margin: 4px 0 2px; font-weight: 600; }
+.gr-otp__row { display: flex; gap: 6px; }
+.gr-otp__code { flex: 1 1 auto; min-width: 0; margin: 0 !important; letter-spacing: 0.3em; font-variant-numeric: tabular-nums; }
+.gr-otp__row .btn { margin: 0; white-space: nowrap; }
+.gr-otp__msg { margin: 4px 0 0; }
+.gr-otp__msg--ok { color: #15803d; font-weight: 600; }
+.gr-otp__msg--bad { color: var(--gr-danger); }

@@ -45,16 +45,28 @@ sub munge_sendreport_params {
     my $template = ($contact && $contact->get_extra_metadata('email_template')) || '';
     $h->{email_template} = $template if $template =~ /^[a-z]+$/;
 
-    # The reporter's contact details for the letters; a report made without an email has none, and
-    # replies to it go to the site's contact address rather than the shared anonymous account.
-    if ($self->greece_anonymous_report($row)) {
-        $h->{reporter_email} = '';
-        $h->{reporter_phone} = $row->get_extra_metadata('greece_phone') // '';
-        $params->{'Reply-To'} = [ [ $self->contact_email, 'FixMyStreets' ] ] if $params->{'Reply-To'};
-    } else {
+    # Sender and replies (owner, 2026-10-26). From is always the site's address, named «<name> - μέσω
+    # FixMyStreets» («Ανώνυμος - …» without a name). The reporter's email goes on the letter, in Cc and
+    # as Reply-To only if it was confirmed when the report was made (signed in, or the emailed code:
+    # greece_email_confirmed); FixMyStreet marks every typed email as verified, which proves nothing.
+    # Otherwise replies go to the site's contact address and the letter says an email was given.
+    my $name = $row->name // '';
+    $name = '' if $name eq ($self->anonymous_account->{name} // '') || $name =~ /^\s*$/;
+    my $sender = $self->do_not_reply_email;
+    $params->{From} = [ $sender, ($name ne '' ? $name : 'Ανώνυμος') . ' - μέσω FixMyStreets' ];
+    my $confirmed = !$self->greece_anonymous_report($row) && $row->get_extra_metadata('greece_email_confirmed');
+    if ($confirmed) {
         $h->{reporter_email} = $row->user->email // '';
-        $h->{reporter_phone} = $row->user->phone // '';
+        $params->{'Reply-To'} = [ [ $row->user->email, $name || 'Πολίτης' ] ];
+        $params->{Cc} = [ [ $row->user->email, $name || 'Πολίτης' ] ];
+    } else {
+        $h->{reporter_email} = '';
+        $h->{reporter_email_unconfirmed} = !$self->greece_anonymous_report($row) && ($row->user->email // '') ne '';
+        $params->{'Reply-To'} = [ [ $self->contact_email, 'FixMyStreets' ] ];
+        delete $params->{Cc};
     }
+    $h->{reporter_phone} = $self->greece_anonymous_report($row)
+        ? ($row->get_extra_metadata('greece_phone') // '') : ($row->user->phone // '');
 
     # The location as a Google Maps link, which the police letters give instead of coordinates.
     $h->{gmaps_url} = sprintf 'https://www.google.com/maps/search/?api=1&query=%.6f,%.6f', $row->latitude, $row->longitude;
@@ -270,6 +282,7 @@ sub report_new_munge_before_insert {
     $self->greece_route_to_dimos($report);
     $self->greece_public_complaint($report);
     $self->greece_claim_video($report);
+    $self->greece_mark_email_confirmed($report);
     return unless $c;
     my $before = $c->stash->{greece_account_before} or return;
     my $user = $report->user;
@@ -304,6 +317,19 @@ sub greece_claim_video {
     close $fh;
     $report->set_extra_metadata(greece_video => $id);
     $report->set_extra_metadata(greece_video_seconds => $duration) if defined $duration;
+}
+
+# The reporter's email counts as confirmed (for Cc on the letter, munge_sendreport_params) when the
+# report is made signed in with that email, or after the emailed code for it was entered in this
+# session (App::Controller::GreeceOTP).
+sub greece_mark_email_confirmed {
+    my ($self, $report) = @_;
+    my $c = $self->{c} or return;
+    my $email = lc($report->user && $report->user->email // '');
+    return if $email eq '' || $self->greece_anonymous_report($report);
+    my $ok = ($c->user_exists && lc($c->user->email // '') eq $email)
+        || lc($c->session->{greece_otp_email} // '') eq $email;
+    $report->set_extra_metadata(greece_email_confirmed => 1) if $ok;
 }
 
 # Who sees a report's video: superusers, and staff of a body the report was sent to.
