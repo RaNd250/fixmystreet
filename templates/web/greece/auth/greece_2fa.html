@@ -1,0 +1,29 @@
+[%# The second sign-in step: the code emailed to the account (App::Controller::GreeceTwoFactor). ~%]
+[% INCLUDE 'header.html', bodyclass='authpage', title = c.cobrand.greece_t('Κωδικός επαλήθευσης', 'Verification code') %]
+
+<h1>[% c.cobrand.greece_t('Κωδικός επαλήθευσης', 'Verification code') %]</h1>
+
+<p>[% c.cobrand.greece_t('Για την ασφάλεια του λογαριασμού, σου στείλαμε έναν 6ψήφιο κωδικό στο', 'For your account’s safety we have emailed a 6-digit code to') %]
+<strong>[% email | html %]</strong>. [% c.cobrand.greece_t('Ισχύει 10 λεπτά.', 'It works for 10 minutes.') %]</p>
+
+[% IF error %]<p class="form-error">[% error %]</p>[% END %]
+
+<form action="/greece/2fa" method="post">
+    <input type="hidden" name="r" value="[% r | html %]">
+    <label for="code">[% c.cobrand.greece_t('Κωδικός από το email', 'Code from the email') %]</label>
+    <div class="form-txt-submit-box">
+        <input autofocus class="form-control" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
+            autocomplete="one-time-code" id="code" name="code" value="" required>
+        <input type="submit" value="[% c.cobrand.greece_t('Συνέχεια', 'Continue') %]" class="btn btn--primary">
+    </div>
+</form>
+
+<form action="/greece/2fa" method="post" class="gr-2fa-resend">
+    <input type="hidden" name="r" value="[% r | html %]">
+    <input type="hidden" name="resend" value="1">
+    <p>[% c.cobrand.greece_t('Δεν ήρθε; Δες και στα ανεπιθύμητα, ή', 'Not there? Look in spam too, or') %]
+    <button type="submit" class="btn--link">[% c.cobrand.greece_t('στείλε νέο κωδικό', 'send a new code') %]</button>
+    · <a href="/auth/sign_out">[% c.cobrand.greece_t('Αποσύνδεση', 'Sign out') %]</a></p>
+</form>
+
+[% INCLUDE 'footer.html' %]

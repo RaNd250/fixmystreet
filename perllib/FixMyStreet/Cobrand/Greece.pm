@@ -181,6 +181,7 @@ sub greece_has_photo {
 sub check_login_disallowed {
     my $self = shift;
     my $c = $self->{c} or return 0;
+    $self->greece_2fa_gate($c);
     $self->greece_default_name($c);
     return 0 unless $c->req->method eq 'POST' && $c->req->path =~ m{^alert/subscribe/?$};
     return 0 if $c->user_exists || $c->get_param('rss') || ($c->get_param('rznvy') // '') eq '';
@@ -691,13 +692,27 @@ sub reports_hook_restrict_bodies_list {
     return [ grep { (ref $_ eq 'HASH' ? $_->{name} : $_->name) =~ /^Δήμος / } @$bodies ];
 }
 
-# Staff of a body (a municipality, the police) sign in with a second step: after the password or the
-# emailed link, a code from an authenticator app, which FixMyStreet asks them to set up at their first
-# sign-in (templates/web/greece/about/foreis.html). They cannot use Google, Apple or Microsoft at all
-# (GreeceSocial.pm). Superusers are not included here: that is the owner's decision.
-sub must_have_2fa {
-    my ($self, $user) = @_;
-    return $user && $user->from_body ? 1 : 0;
+# The second sign-in step is an emailed code (App::Controller::GreeceTwoFactor; owner, 2026-10-26:
+# «OTP μέσω mail μόνο»), for superusers and the staff of a body; FixMyStreet's own, with an
+# authenticator app, is off for everyone. Staff cannot use Google, Apple or Microsoft at all
+# (GreeceSocial.pm).
+sub must_have_2fa { 'skip' }
+
+# Until the emailed code is entered, a signed-in superuser or staff member sees only that page (and
+# can sign out). Runs early on every request (check_login_disallowed).
+sub greece_2fa_gate {
+    my ($self, $c) = @_;
+    return unless $c->user_exists;
+    my $user = $c->user->obj;
+    require FixMyStreet::App::Controller::GreeceTwoFactor;
+    return unless FixMyStreet::App::Controller::GreeceTwoFactor->needs($user);
+    return if ($c->session->{greece_2fa} // 0) == $user->id;
+    return if $c->req->path =~ m{^(greece/2fa|auth/sign_out)/?$};
+    my $r = '/' . $c->req->path;
+    my $q = $c->req->uri->query;
+    $r .= "?$q" if defined $q && $q ne '' && $c->req->method eq 'GET';
+    $c->res->redirect($c->uri_for('/greece/2fa', { r => $r }));
+    $c->detach;
 }
 
 # Public reports per municipality, for the map on the reports page (templates/web/greece/reports/index.html,
