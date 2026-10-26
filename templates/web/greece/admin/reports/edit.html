@@ -1,0 +1,28 @@
+[%# FixMyStreet's page, with the report's number (greece_ref) in the title. ~%]
+[%
+    PROCESS "report/photo-js.html" IF problem.photo;
+    PROCESS "maps/${map.type}.html" admin = 1;
+    SET bodyclass = 'mappage with-notes';
+    INCLUDE 'admin/header.html'
+        title = c.cobrand.greece_t('Επεξεργασία αναφοράς ', 'Editing report ') _ problem.greece_ref;
+    PROCESS 'admin/report_blocks.html'
+-%]
+
+[% map_html | safe %]
+</div>
+
+<div id="map_sidebar">
+
+      &larr; <a href="[% c.uri_for_action( 'admin/reports/index' ) %]">[% loc('All reports') %]</a>
+
+<h1>[% c.cobrand.greece_t('Επεξεργασία αναφοράς ', 'Editing report ') _ problem.greece_ref %]</h1>
+
+[% IF problem.cobrand_data == 'waste' %]
+    [% PROCESS 'admin/reports/_edit_waste.html' %]
+[% ELSE %]
+    [% PROCESS 'admin/reports/_edit_main.html' %]
+[% END %]
+
+</div>
+
+[% INCLUDE 'admin/footer.html' %]

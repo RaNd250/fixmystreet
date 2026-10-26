@@ -41,7 +41,7 @@ sub index : Path('/greece/2fa') : Args(0) {
     return $c->res->redirect('/auth') unless $c->user_exists;
     my $user = $c->user->obj;
     my $r = $c->get_param('r') // '';
-    $r = '' unless $r =~ m{^/(?!/)};
+    $r = '' unless $r =~ m{^/(?!/)} && $r !~ m{^/(auth|M|greece/2fa)(/|\?|$)};
     $c->stash->{r} = $r;
     return $c->res->redirect($r || '/my') if !$self->needs($user) || ($c->session->{greece_2fa} // 0) == $user->id;
 
