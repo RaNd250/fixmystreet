@@ -12,7 +12,7 @@ Subject: [% subject %] (αρ. αναφοράς [% report.greece_ref %])
 
 • Τοποθεσία: [% location %]. Στον χάρτη: [% gmaps_url %]
 
-• Περιγραφή της παράβασης: [% paravasi_text %].[% IF report.detail %] Σχόλια: «[% report.detail %]»[% END %]
+• Περιγραφή της παράβασης: [% paravasi_text %].[% SET full_detail = report.get_extra_metadata('greece_detail_full') || report.detail %][% IF full_detail %] Σχόλια: «[% full_detail %]»[% END %]
 [% IF pinakida %]
 • Αριθμός κυκλοφορίας: [% pinakida %]
 [% END %]

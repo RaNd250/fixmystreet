@@ -24,7 +24,7 @@ INCLUDE '_email_top.html';
     <li style="[% p_style %]"><strong>Τοποθεσία:</strong> [% location | html %].
       <a href="[% gmaps_url %]">Άνοιγμα στο Google Maps</a></li>
     <li style="[% p_style %]"><strong>Περιγραφή της παράβασης:</strong> [% paravasi_text | html %].
-      [%~ IF report.detail %] Σχόλια: «[% report.detail | html %]»[% END %]</li>
+      [%~ SET full_detail = report.get_extra_metadata('greece_detail_full') || report.detail %][% IF full_detail %] Σχόλια: «[% full_detail | html %]»[% END %]</li>
     [%~ IF pinakida %]
     <li style="[% p_style %]"><strong>Αριθμός κυκλοφορίας:</strong> [% pinakida | html %]</li>
     [%~ END %]

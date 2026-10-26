@@ -3,6 +3,8 @@
  * ονόματός μου», hidden in private categories such as police complaints, where it never applies):
  * then it is marked required for jQuery Validate (class "required") and loses «(προαιρετικό)».
  * Greece.pm checks the same on the server. The form can be loaded later (the side panel on /around).
+ * Complaints about parking and obstacles are published but never with a name (Greece.pm
+ * greece_public_complaint), so the box is hidden and unticked for that category.
  */
 (function() {
     'use strict';
@@ -11,6 +13,11 @@
         var email = document.getElementById('form_username_register');
         if (!email || email.form && email.form.id !== 'mapForm') { return; }
         var show = document.getElementById('form_may_show_name');
+        var cat = document.querySelector('input[name="category"]:checked');
+        var complaint = !!(cat && cat.value === 'Στάθμευση σε φορτιστή EV ή εμπόδιο στη διέλευση');
+        var box = show && (show.closest('.checkbox-group') || show.parentNode);
+        if (box) { box.hidden = complaint; }
+        if (complaint && show) { show.checked = false; }
         var required = !!(show && show.checked && show.offsetParent !== null);
         email.classList.toggle('required', required);
         email.setAttribute('aria-required', required ? 'true' : 'false');

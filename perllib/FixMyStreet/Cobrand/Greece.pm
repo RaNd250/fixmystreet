@@ -148,7 +148,7 @@ sub report_check_for_errors {
     my ($self, $c) = @_;
     my $report = $c->stash->{report};
     my %more;
-    if (!$c->user_exists && $report && !$report->non_public && $c->get_param('may_show_name')
+    if (!$c->user_exists && $report && !$report->non_public && !$self->greece_is_complaint($report) && $c->get_param('may_show_name')
         && ($c->get_param('username_register') // '') !~ /\S/) {
         $more{username_register} = $self->greece_t('Για να φαίνεται δημόσια το όνομά σου, γράψε και το email σου.', 'To show your name publicly, enter your email too.');
     }
@@ -163,6 +163,11 @@ sub report_check_for_errors {
     }
     return ($self->SUPER::report_check_for_errors($c), %more);
 }
+
+# The description's label on the report form (owner, 2026-10-26): «Σύντομη περιγραφή», without
+# FixMyStreet's example sentence under it.
+sub new_report_detail_field_label { $_[0]->greece_t('Σύντομη περιγραφή', 'Short description') }
+sub new_report_detail_field_hint { '' }
 
 # A name given on a report or update needs at least 4 characters (not counting spaces at either end),
 # so «Γ.» or «aa» do not reach a municipality or the police as the reporter's name. Empty is fine: the
@@ -229,6 +234,7 @@ sub report_new_munge_before_insert {
     }
     $self->greece_bad_words($report);
     $self->greece_route_to_dimos($report);
+    $self->greece_public_complaint($report);
     return unless $c;
     my $before = $c->stash->{greece_account_before} or return;
     my $user = $report->user;
@@ -241,7 +247,34 @@ sub report_new_munge_before_insert {
 # road markings with a P-72 sign, take public space: that is the municipality's (its municipal police),
 # as on gov.gr's MyStreet. Such a report goes to the municipality instead, in its own category, which
 # no list offers (state inactive, data/greece/contacts/dimoi-katalipsi.sql) and which has the same
-# address as its «Άλλο»; it stays private, as the police category said it would.
+# address as its «Άλλο»; it is published like the police complaint, without personal details
+# (greece_public_complaint).
+# Complaints about parking and obstacles (the police category, and the same complaint routed to a
+# municipality above) are published on the map without personal details (owner, 2026-10-26): never
+# under the reporter's name, and with number plates in the description replaced by ***. The letter
+# to the police or the municipality gets the description as written (greece_detail_full, read by
+# templates/email/greece/submit-ev.*); the plate question's answer is never shown publicly anyway.
+# Complaints made before this stay private, as they were promised.
+use constant GREECE_COMPLAINT => 'Στάθμευση σε φορτιστή EV ή εμπόδιο στη διέλευση';
+my $GREECE_PLATE = qr/(?<![\p{L}\d])[A-ZΑ-Ω]{2,3}[\s.\-]?\d{3,4}(?![\p{L}\d])/;   # upper case: «και 200 μέτρα» is no plate
+sub greece_is_complaint {
+    my ($self, $report) = @_;
+    my $chosen = $report->get_extra_metadata('greece_category_chosen') // $report->category // '';
+    return $chosen eq GREECE_COMPLAINT;
+}
+
+sub greece_public_complaint {
+    my ($self, $report) = @_;
+    return unless $self->greece_is_complaint($report);
+    $report->anonymous(1);
+    my $detail = $report->detail // '';
+    (my $masked = $detail) =~ s/$GREECE_PLATE/***/g;
+    if ($masked ne $detail) {
+        $report->set_extra_metadata(greece_detail_full => $detail);
+        $report->detail($masked);
+    }
+}
+
 use constant GREECE_KATALIPSI => 'Κατάληψη κοινόχρηστου χώρου';
 sub greece_route_to_dimos {
     my ($self, $report) = @_;
@@ -253,7 +286,7 @@ sub greece_route_to_dimos {
     $report->set_extra_metadata(greece_category_chosen => $report->category);
     $report->category(GREECE_KATALIPSI);
     $report->bodies_str($dimos->id);
-    $report->non_public(1);
+    $report->non_public(0);
 }
 
 # After a report made without signing in, email the address given a link that signs in once and
@@ -515,7 +548,7 @@ sub language_override {
 # answers sent are the same keys either way.
 my %FIELD_EN = (
     xorisempodia => { description => '<p>Parking on a disabled ramp or bay, on the pavement or on a crossing is recorded by <strong>Χωρίς Εμπόδια</strong> (xorisempodia.gr): no account and no photo needed, and it gets a text message to 100 ready for you, which you send yourself from your phone.</p><p><a class="btn btn--primary" href="https://xorisempodia.gr/reports/new" target="_blank" rel="noopener">Record it on xorisempodia.gr</a></p>' },
-    idiotiki => { description => 'Reports in this category are not published on the site. They are sent, with your name and contact details, only to the responsible Hellenic Police service.' },
+    idiotiki => { description => 'The complaint is shown on the map without your name, contact details or the number plate. Those go only to the responsible Hellenic Police service.' },
     paravasi => { description => 'What is happening?', values => {
         fortistis => 'Parked in an electric vehicle charging bay without charging',
         eisodos => 'Parked in front of a vehicle entrance or exit (garage)',
