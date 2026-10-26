@@ -21,3 +21,9 @@
 ]}
 </script>
 [% END %]
+[%# Visit counts: Plausible, the same self-hosted instance as xorisempodia.gr; no cookies, no IP stored,
+    so no consent banner (about/privacy.html §6–7). Not on the admin pages. The site must be added in
+    that Plausible's dashboard as fixmystreets.gr for the counts to show. ~%]
+[% UNLESS c.req.uri.path.match('^/admin') %]
+<script defer data-domain="fixmystreets.gr" src="https://plausible.taneda.dev/js/script.js"></script>
+[% END %]
