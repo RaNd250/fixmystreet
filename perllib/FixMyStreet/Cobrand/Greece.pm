@@ -8,9 +8,9 @@ use utf8;
 # Reuse the Default cobrand's compiled CSS; this cobrand only adds templates and a little JS/CSS.
 sub asset_moniker { 'default' }
 
-# Search box, by report: its number (the id) as «#53», «ID 53», «ref: 53», «αρ. 53» or a bare number
-# that is not five digits (a Greek postcode); also the older «DDMMYYYY-N» numbers (with / . or - in
-# the date, or a space before N).
+# Search box, by report: its number «YYYYMMDD-NN» (also with a space, / or - before NN), the older
+# «DDMMYYYY-N», or the database id as «#53», «ID 53», «ref: 53», «αρ. 53» or a bare number that is
+# not five digits (a Greek postcode).
 my $GREECE_REF_PREFIX = qr/(?:ref|id|\#|αρ\.?|αριθμός(?:\s+αναφοράς)?)\s*[:.]?\s*/i;
 sub lookup_by_ref_regex {
     qr/^\s*(?|$GREECE_REF_PREFIX?(\d\d[.\/-]?\d\d[.\/-]?\d{4}\s*[-\/ ]\s*\d+)|$GREECE_REF_PREFIX(\d{1,9})|(\d{1,4}|\d{6,9}))\s*$/i
@@ -20,8 +20,8 @@ sub lookup_by_ref {
     my ($self, $ref) = @_;
     # Shown by around/postcode_form.html if no report matches (a match redirects to it instead).
     $self->{c}->stash->{greece_ref_missing} = $ref if $self->{c};
-    return unless $ref =~ /^(\d\d)[.\/-]?(\d\d)[.\/-]?(\d{4})\s*[-\/ ]\s*(\d+)$/;
-    my $id = FixMyStreet::DB::Result::Problem::greece_ref_to_id("$3-$2-$1", $4);
+    return unless $ref =~ /\d{8}|\d\d[.\/-]\d\d[.\/-]\d{4}/;
+    my $id = FixMyStreet::DB::Result::Problem::greece_id_for_ref($ref);
     return [ id => $id || 0 ];
 }
 
@@ -127,6 +127,23 @@ sub greece_turnstile_ok {
 sub greece_turnstile_error {
     $_[0]->greece_t('Ο έλεγχος ασφαλείας δεν ολοκληρώθηκε. Περίμενε λίγο να ολοκληρωθεί και στείλε ξανά.',
         'The security check did not finish. Wait a moment for it to finish and send again.');
+}
+
+# Alert sign-ups (follow a report, local alerts) email a confirmation link to the address typed, so
+# they pass the Turnstile check too (owner, 2026-10-26: «παντού»). FixMyStreet has no hook in
+# /alert/subscribe; this one runs early on every request (Root auto), and only acts on that POST.
+# Without the check passed, back to where the form was, with a note.
+sub check_login_disallowed {
+    my $self = shift;
+    my $c = $self->{c} or return 0;
+    return 0 unless $c->req->method eq 'POST' && $c->req->path =~ m{^alert/subscribe/?$};
+    return 0 if $c->user_exists || $c->get_param('rss') || ($c->get_param('rznvy') // '') eq '';
+    return 0 if $self->greece_turnstile_ok($c);
+    my $id = $c->get_param('id') // '';
+    $c->res->redirect($id =~ /^\d+$/
+        ? $c->uri_for('/report', $id, { gr_follow => 'check' })
+        : $c->uri_for('/alert', { gr_follow => 'check' }));
+    $c->detach;
 }
 
 sub extra_contact_validation {
@@ -777,10 +794,53 @@ sub greece_sms {
     return { number => FixMyStreet::Cobrand::Greece->greece_sms_number, body => "$what\n$sent." };
 }
 
-# The report's number, as people see it (owner, 2026-10-26): its id, the same as in its address
-# (/report/48). Until then it was DDMMYYYY-N (date and position that day); those numbers still find
-# their report in the search box (lookup_by_ref, greece_ref_to_id).
-sub greece_ref { $_[0]->id }
+# The report's number, as people see it and in its address (owner, 2026-10-26): YYYYMMDD-NN, the
+# local (TIME_ZONE) date it was made and its place among all reports made that day, two digits or
+# more (20261026-03; /report/20261026-03). `created` holds wall-clock time in the server's zone,
+# because FixMyStreet sets the DB session time zone to it. The database id still opens a report
+# (/report/48) but is shown nowhere; the earlier DDMMYYYY-N numbers still find theirs (lookup_by_ref).
+sub greece_ref {
+    my $self = shift;
+    return $self->{__greece_ref} //= do {
+        my ($server_tz, $site_tz) = _greece_zones();
+        my $dbh = $self->result_source->schema->storage->dbh;
+        # Placeholders bind in text order: CTE (site, server, id), then each day bound (server, site).
+        my ($day, $n) = $dbh->selectrow_array(<<'SQL', undef, $site_tz, $server_tz, $self->id, $server_tz, $site_tz, $server_tz, $site_tz);
+WITH p AS (
+    SELECT id, timezone(?, timezone(?, created)) AS local_created FROM problem WHERE id = ?
+)
+SELECT to_char(p.local_created, 'YYYYMMDD'),
+       (SELECT count(*) FROM problem q
+         WHERE q.id <= p.id
+           AND q.created >= timezone(?, timezone(?, date_trunc('day', p.local_created)))
+           AND q.created <  timezone(?, timezone(?, date_trunc('day', p.local_created) + interval '1 day')))
+FROM p
+SQL
+        defined $day ? sprintf('%s-%02d', $day, $n) : $self->id;
+    };
+}
+
+# A report's address uses its number (/report/20261026-03); nginx hands such addresses to
+# App::Controller::GreeceReportRef, which shows the report as /report/<id> would.
+{
+    require FixMyStreet::DB::Result::Problem;   # loaded first, so its own url does not win
+    no warnings 'redefine';
+    *url = sub { '/report/' . $_[0]->greece_ref };
+}
+
+# The id of the report with number YYYYMMDD-NN or the older DDMMYYYY-N, or undef.
+sub greece_id_for_ref {
+    my ($ref) = @_;
+    my ($date, $n);
+    if ($ref =~ /^(20\d\d)(0[1-9]|1[0-2])(\d\d)\s*[-\/ ]\s*(\d+)$/) {
+        ($date, $n) = ("$1-$2-$3", $4);
+    } elsif ($ref =~ /^(\d\d)[.\/-]?(\d\d)[.\/-]?(\d{4})\s*[-\/ ]\s*(\d+)$/) {
+        ($date, $n) = ("$3-$2-$1", $4);
+    } else {
+        return;
+    }
+    return greece_ref_to_id($date, $n + 0);
+}
 
 # The server's and the site's time zones, for greece_ref_to_id and the old DDMMYYYY-N numbers.
 sub _greece_zones {

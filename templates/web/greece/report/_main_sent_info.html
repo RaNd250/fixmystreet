@@ -41,6 +41,7 @@
     <input type="hidden" name="type" value="updates">
     <label class="gr-follow__title" for="gr_follow_email">🔔 [% c.cobrand.greece_t('Παρακολούθησε την αναφορά', 'Follow this report') %]</label>
     <p class="gr-follow__hint">[% c.cobrand.greece_t('Σου στέλνουμε email όταν αλλάζει κάτι.', 'We email you when something changes.') %]</p>
+    [% IF c.req.params.gr_follow == 'check' %]<p class="form-error">[% c.cobrand.greece_turnstile_error %]</p>[% END %]
     <div class="gr-follow__row">
     [% IF c.user_exists %]
         <button class="btn btn--primary" type="submit" name="alert" value="1">[% c.cobrand.greece_t('Παρακολούθηση', 'Follow') %]</button>
@@ -50,5 +51,6 @@
         <button class="btn btn--primary" type="submit" name="alert" value="1">[% c.cobrand.greece_t('Παρακολούθηση', 'Follow') %]</button>
     [% END %]
     </div>
+    [% UNLESS c.user_exists %][% INCLUDE '_turnstile.html' %][% END %]
 </form>
 [% END %]

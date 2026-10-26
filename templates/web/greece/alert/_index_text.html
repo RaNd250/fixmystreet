@@ -4,3 +4,4 @@
     'Μάθαινε με email ή RSS για τις νέες αναφορές: σε ακτίνα γύρω από ένα σημείο, σε έναν δήμο ή σε όλη την Ελλάδα.',
     'Hear by email or RSS about new reports: within a distance of a place, in a municipality, or across Greece.') %]</p>
 <p>[% c.cobrand.greece_t('Γράψε μια διεύθυνση, περιοχή ή ταχυδρομικό κώδικα:', 'Enter an address, area or postcode:') %]</p>
+[% IF c.req.params.gr_follow == 'check' %]<p class="form-error">[% c.cobrand.greece_turnstile_error %]</p>[% END %]

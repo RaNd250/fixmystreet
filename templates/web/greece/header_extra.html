@@ -2,7 +2,8 @@
     (_page_description.html) and, on the home page, who runs the site. The English version is the
     same address with ?lang=en (the menu's switch), so a page shown in English names that address as
     its own, and both versions point to each other. ~%]
-[%- gr_url = c.cobrand.base_url _ c.req.uri.path;
+[%- gr_path = c.req.uri.path.match('^/(greece/report-ref/|report/[0-9]+/?$)') && problem ? problem.url : c.req.uri.path;
+    gr_url = c.cobrand.base_url _ gr_path;
     gr_url_en = gr_url _ '?lang=en';
     gr_description = INCLUDE '_page_description.html' -%]
 <link rel="canonical" href="[% c.cobrand.greece_t(gr_url, gr_url_en) | html %]">
