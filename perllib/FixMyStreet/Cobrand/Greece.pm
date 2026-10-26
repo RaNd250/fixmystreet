@@ -156,7 +156,21 @@ sub greece_default_name {
     return if $c->user_exists;   # an account's own name is never replaced
     my $name = $c->req->params->{name} // '';
     $name =~ s/^\s+|\s+$//g;
-    $c->req->params->{name} = 'Ανώνυμος πολίτης' if $GREECE_NO_NAME{lc $name};
+    return unless $GREECE_NO_NAME{lc $name};
+    # A report without a photo needs a name (owner, 2026-10-26): report_check_for_errors says so.
+    if ($c->req->path =~ m{^report/new/?$} && !greece_has_photo($c)) {
+        $c->stash->{greece_name_needed} = 1;
+        $c->req->params->{name} = '';
+        return;
+    }
+    $c->req->params->{name} = 'Ανώνυμος πολίτης';
+}
+
+# Whether the report form came with a photo: uploaded already (upload_fileid) or as a file.
+sub greece_has_photo {
+    my ($c) = @_;
+    return 1 if ($c->req->params->{upload_fileid} // '') =~ /\S/;
+    return scalar grep { /^photo/ } keys %{ $c->req->uploads || {} };
 }
 
 # Alert sign-ups (follow a report, local alerts) email a confirmation link to the address typed, so
@@ -215,6 +229,9 @@ sub report_check_for_errors {
     $more{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
     # Its own key: FixMyStreet drops errors under «name» for anonymous reports (Report/New.pm).
     my $name_error = $self->greece_name_error($c->get_param('name'));
+    $name_error = $self->greece_t('Χωρίς φωτογραφία, γράψε το όνομά σου (τουλάχιστον 4 χαρακτήρες). Ανώνυμα γίνεται μόνο με φωτογραφία.',
+        'Without a photo, enter your name (at least 4 characters). Anonymous reports need a photo.')
+        if $c->stash->{greece_name_needed} && !$c->user_exists && ($c->get_param('name') // '') !~ /\S/;
     $more{greece_name} = $name_error if $name_error;
     if ($report && ($report->title // '') !~ /\S/) {
         my $category = $report->category // '';

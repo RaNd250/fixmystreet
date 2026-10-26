@@ -8,8 +8,10 @@
     category-emoji.js: an emoji before each category on the report form.
     detail-default.js: a ready short description for the category, cleared by a tap.
     video-upload.js: one video of up to 45 seconds with a report, seen only by the service.
-    email-otp.js: an optional emailed code that confirms the reporter's email (Cc on the letter). ~%]
+    email-otp.js: an optional emailed code that confirms the reporter's email (Cc on the letter).
+    history-guard.js: a Back sent by a phone's photo or video picker does not take the form back a step. ~%]
 [% IF bodyclass.match('mappage');
+    scripts.push(version('/cobrands/greece/history-guard.js'));
     scripts.push(version('/cobrands/fixmystreet/assets.js'));
     scripts.push(version('/cobrands/greece/camera.js'));
     scripts.push(version('/cobrands/greece/step-fade.js'));
