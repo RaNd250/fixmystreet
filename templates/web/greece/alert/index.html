@@ -1,0 +1,42 @@
+[%# FixMyStreet's, titled without RSS (no RSS on this site, see header_rss.html). ~%]
+[% SET bodyclass = 'alertpage' %]
+[% INCLUDE 'header.html', title = c.cobrand.greece_t('Ειδοποιήσεις email', 'Email alerts') %]
+
+<h1>[% c.cobrand.greece_t('Ειδοποιήσεις email', 'Email alerts') %]</h1>
+
+[% PROCESS 'alert/_index_text.html' %]
+
+<form method="post" action="/alert/list" class="postcode-form-box js-geolocate">
+  <fieldset>
+    <legend class="visuallyhidden">[% c.cobrand.greece_t('Αναζήτηση τοποθεσίας για ειδοποίηση email', 'Search for a place for email alerts') %]</legend>
+    <label for="pc">[% loc('Postcode or street name and area') %]</label>
+    <p class="form-hint" id="pc-hint">[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]</p>
+    [% IF location_error %]
+      <p id="email-error" class="form-error">[% location_error | safe %]</p>
+    [% ELSE %]
+      [% INCLUDE 'errors.html' %]
+    [% END %]
+    <div>
+      <input type="text" id="pc" name="pc" value="[% pc | html %]" aria-describedby="pc-hint [% IF location_error %]email-error[% END %]" required aria-label="Add a postcode or address. Alternatively, there is a geolocate button at the end of this form">
+      [% INCLUDE 'around/_postcode_submit_button.html' %]
+    </div>
+  </fieldset>
+  [% INCLUDE 'around/_postcode_form_geolocation.html' %]
+</form>
+
+[% IF photos.size %]
+<script type="module" src="[% version('/js/overflow-focus-scroll.js') %]"></script>
+<h2>[% loc('Some photos of recent reports') %]</h2>
+<overflow-focus-scroll>
+<div class="alerts__nearby-activity__photos">
+  [% FOREACH p IN photos %]
+    <a href="/report/[% p.id %]">
+        <img border="0" height="100" src="[% p.photos.first.url_tn %]"
+        alt="[% p.title | html %]" title="[% p.title | html %]">
+    </a>
+  [% END %]
+</div>
+</overflow-focus-scroll>
+[% END %]
+
+[% INCLUDE 'footer.html' %]

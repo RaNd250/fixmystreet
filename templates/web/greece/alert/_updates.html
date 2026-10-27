@@ -1,0 +1,36 @@
+[%# FixMyStreet's, without the RSS feed link (no RSS on this site, see header_rss.html). ~%]
+<form action="[% c.uri_for( '/alert/subscribe' ) %]" method="post">
+    <p>
+    [% IF NOT c.user_exists OR c.user.alert_updates_by(c.cobrand) != 'phone' %]
+      <span id="report-updates-data-title">[% loc('Receive email when updates are left on this problem.') %]</span>
+    [% ELSE %]
+      <span id="report-updates-data-title">[% loc('Receive a text when updates are left on this problem.') %]</span>
+    [% END %]
+    </p>
+
+    <button type="button" class="close-drawer screen-reader-only">&#10005; Close</button>
+    [% PROCESS 'auth/form_extra.html' %]
+
+  [% IF c.user_exists %]
+    [% IF permissions.contribute_as_another_user %]
+      <label for="alert_rznvy">[% loc('Email') %]</label>
+      <div class="form-txt-submit-box">
+          <input type="email" class="form-control" name="rznvy" id="alert_rznvy" value="[% email %]" size="30" autocomplete="email">
+          <input class="btn btn--primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
+      </div>
+    [% ELSE %]
+      <input class="btn btn--primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
+    [% END %]
+  [% ELSE %]
+    <label for="alert_rznvy">[% loc('Your email') %]</label>
+
+    <div class="form-txt-submit-box">
+        <input type="email" class="form-control" name="rznvy" id="alert_rznvy" value="[% email %]" size="30">
+        <input class="btn btn--primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
+    </div>
+  [% END %]
+
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="hidden" name="id" value="[% problem.id %]">
+    <input type="hidden" name="type" value="updates">
+</form>

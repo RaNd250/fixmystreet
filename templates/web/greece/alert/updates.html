@@ -1,0 +1,9 @@
+[%# FixMyStreet's, titled without RSS (no RSS on this site, see header_rss.html). ~%]
+[% SET bodyclass = 'alertpage' %]
+[% INCLUDE 'header.html' title = c.cobrand.greece_t('Ειδοποιήσεις email', 'Email alerts') %]
+[% INCLUDE 'errors.html' %]
+[% permissions = {
+    contribute_as_another_user = c.user.has_permission_to("contribute_as_another_user", problem.bodies_str_ids)
+} %]
+[% INCLUDE 'alert/_updates.html' %]
+[% INCLUDE 'footer.html' %]

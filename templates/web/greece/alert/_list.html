@@ -1,0 +1,113 @@
+[%# FixMyStreet's, without the RSS feed links and «Or subscribe by RSS» (no RSS on this site, see
+    header_rss.html); the email sign-up stays. Municipality names come in &quot; (FixMyStreet's Greek); «» here. ~%]
+  [% USE Number.Format %]
+  [% SET name_of_location = pretty_pc || loc('this location') %]
+
+  <input type="hidden" name="token" value="[% csrf_token %]">
+  <input type="hidden" name="type" value="local">
+  <input type="hidden" name="pc" value="[% pc | html %]">
+  <input type="hidden" name="latitude" value="[% latitude | html %]">
+  <input type="hidden" name="longitude" value="[% longitude | html %]">
+
+  <div class="govuk-form-group">
+    <fieldset>
+    <legend>
+      <h2 class="govuk-fieldset__legend govuk-fieldset__legend--m">[% loc('Which problems do you want alerts about?') %]</h2>
+    </legend>
+
+      [% INCLUDE 'errors.html' %]
+
+    <div class="govuk-radios" data-module="govuk-radios">
+
+      [% IF reported_to_options %]
+        <p>
+            [% tprintf(loc('Reports near %s are sent to different councils, depending on the type of problem.'), name_of_location) %]
+        </p>
+        <p>
+            [% loc('You can choose to subscribe to all problems reported in an area, or reports based on their destination.') %]
+        </p>
+
+        <h3>[% loc('Problems in an area') %]</h3>
+      [% END %]
+
+      
+      <div class="alert-option-wrapper">
+        <div class="govuk-radios__item" id="rss_local">
+          <input class="govuk-radios__input" type="radio" name="feed" id="[% rss_feed_id %]" value="[% rss_feed_id %]"[% IF rss_feed_id == selected_feed || selected_feed == '' %] checked[% END %]>
+          <label class="govuk-label govuk-radios__label" for="[% rss_feed_id %]">
+          [% IF c.cobrand.moniker == 'cheshireeast' %]
+            [% tprintf( 'Reported problems within %.1fkm of %s', population_radius, name_of_location ) %]
+          [% ELSE %]
+            [% tprintf( loc('Problems within %.1fkm of %s'), population_radius, name_of_location ) %]
+          [% END %]
+          [% IF population_count;
+            pop_count = population_count | format_number;
+            tprintf('covers roughly %s people', pop_count ) %]
+          [% ELSE %]
+            [% loc('(covers roughly 200,000 people)') %]
+          [% END %]
+          </label>
+        </div>
+      </div>
+
+        <div class="alert-option-wrapper govuk-!-margin-bottom-4">
+          <div id="rss_local_alt" class="govuk-form-group">
+            <label class="govuk-label govuk-!-margin-bottom-2" for="distance">[% loc('Or specify a different radius distance:') %]</label>
+            <div class="govuk-input__wrapper">
+              <input class="govuk-input" name="distance" id="distance" type="text" inputmode="decimal" pattern="[0-9]*([,.][0-9]+)?" aria-label="[% loc('Specify a radius in kilometres') %]">
+              <div class="govuk-input__suffix" aria-hidden="true">Km</div>
+            </div>
+          </div>
+
+        </div>
+
+      [% FOREACH option IN options %]
+
+        [% IF option.title AND reported_to_options %]
+            <h3>[% option.title %]</h3>
+        [% END %]
+
+        <div class="alert-option-wrapper govuk-!-margin-bottom-4">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
+            <label class="govuk-label govuk-radios__label" for="[% option.id %]">
+              [% option.text.replace('&(?:amp;)?quot;(.*?)&(?:amp;)?quot;', '«$1»') %]
+            </label>
+          </div>
+        </div>
+
+        [% option = reported_to_options.${loop.index} %]
+        [% IF option AND option.text %]
+          <div class="alert-option-wrapper govuk-!-margin-bottom-4">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
+              <label class="govuk-label govuk-radios__label" for="[% option.id %]">
+                [% option.text.replace('&(?:amp;)?quot;(.*?)&(?:amp;)?quot;', '«$1»') %]
+              </label>
+            </div>
+          </div>
+        [% END %]
+
+      [% END %]
+      </div>
+    </fieldset>
+  </div>
+
+  [% PROCESS 'auth/form_extra.html' %]
+
+  <div class="alerts__cta-box">
+    <h3>[% loc('Subscribe by email') %]</h3>
+    [% UNLESS c.user_exists AND c.user.email_verified %]
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="rznvy">[% loc('Email address') %]</label>
+        <div class="cta-box__input-wrapper">
+          <input class="govuk-input" type="email" id="rznvy" name="rznvy" value="[% rznvy %]" spellcheck="false" autocomplete="email">
+          <input id="alert_email_button" class="btn btn--primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
+        </div>
+      </div>
+      <p>[% tprintf(loc('We won’t use your email for anything beyond sending you alerts within this area. You can find more information in our <a href="%s">privacy policy</a>.'), c.cobrand.privacy_policy_url) %]</p>
+    [% ELSE %]
+      <input id="alert_email_button" class="btn btn--primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
+    [% END %]
+  </div>
+

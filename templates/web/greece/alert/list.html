@@ -1,0 +1,45 @@
+[%# FixMyStreet's, titled without RSS (no RSS on this site, see header_rss.html). ~%]
+[% SET bodyclass = 'alertpage' %]
+[%
+    IF pretty_pc;
+        title = c.cobrand.greece_t('Ειδοποιήσεις email για «' _ pretty_pc _ '»', 'Email alerts for ‘' _ pretty_pc _ '’');
+    ELSE;
+        title = c.cobrand.greece_t('Ειδοποιήσεις email', 'Email alerts');
+    END;
+%]
+
+[% INCLUDE 'header.html' %]
+
+[% IF pretty_pc %]
+    [%
+        pretty_pc = pretty_pc | replace(' ', ' '); # Non-breaking space
+        title = c.cobrand.greece_t('Ειδοποιήσεις email για «' _ pretty_pc _ '»', 'Email alerts for ‘' _ pretty_pc _ '’');
+    %]
+[% END %]
+
+
+<h1>[% title %]</h1>
+
+[% IF photos.size %]
+<script type="module" src="[% version('/js/overflow-focus-scroll.js') %]"></script>
+<div class="alerts__nearby-activity">
+    <h2>[% loc('Photos of recent nearby reports') %]</h2>
+    <overflow-focus-scroll>
+    <div class="alerts__nearby-activity__photos">
+      [% FOREACH p IN photos %]
+        <a href="/report/[% p.id %]">
+            <img border="0" height="100" src="[% p.photos.first.url_tn %]"
+            alt="[% p.title | html %]" title="[% p.title | html %]">
+        </a>
+      [% END %]
+    </div>
+    </overflow-focus-scroll>
+</div>
+[% END %]
+
+<form class="validate js-alert-list" method="post" action="/alert/subscribe">
+  [% INCLUDE 'alert/_list.html' %]
+
+</form>
+
+[% INCLUDE 'footer.html' %]
