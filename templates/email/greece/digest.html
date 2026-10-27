@@ -43,7 +43,7 @@ small = "margin: 0 0 6px 0; font-size: 14px; line-height: 19px; color: #475569;"
   <div style="margin: 16px 0 0 0; padding: 12px 16px; border: 1px solid #dbe4f5; border-radius: 10px; background-color: #f2f6fd;">
     <p style="[% secondary_p_style %] margin-bottom: 0;">
       [%~ IF would_go_to %]Δοκιμαστική λειτουργία: κανονικά θα πήγαινε στη διεύθυνση <strong>[% would_go_to | html %]</strong>. [% END ~%]
-      [%~ IF sent_to %]Στάλθηκε στη διεύθυνση <strong>[% sent_to | html %]</strong>. [% END ~%]
+      [%~ IF sent_to %]Στάλθηκε στη διεύθυνση <strong>[% sent_to | html %]</strong>[% IF sent_cc %], με κοινοποίηση στο <strong>[% sent_cc | html %]</strong>[% END %]. [% END ~%]
       Αν δεν είναι η σωστή διεύθυνση του Δήμου για αναφορές πολιτών, στείλτε μας τη σωστή στο
       <a href="mailto:[% cobrand.contact_email | html %]?subject=[% ('MAIL ΔΗΜΟΥ ' _ body_name) | uri %]">[% cobrand.contact_email | html %]</a>
       γράφοντας <strong style="font-family: monospace;">MAIL ΔΗΜΟΥ:ΧΧΧ@ΥΥΥ.ΖΖΖ</strong>.</p>

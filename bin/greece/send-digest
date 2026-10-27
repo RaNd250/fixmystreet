@@ -31,6 +31,7 @@ use utf8;
 use FixMyStreet;
 use FixMyStreet::DB;
 use FixMyStreet::Cobrand;
+use FixMyStreet::Cobrand::Greece;
 use FixMyStreet::Email;
 use DateTime;
 use Fcntl qw(:flock);
@@ -85,21 +86,24 @@ sub main {
                 print "report ", $r->id, ": no address for «", $r->category, "» at ", $body->name, "\n";
                 next;
             }
+            my @cc = FixMyStreet::Cobrand::Greece::greece_contact_cc($contact, [ split /\s*,\s*/, $contact->email ]);
             for my $email (split /\s*,\s*/, lc $contact->email) {
                 $email =~ s/^\s+|\s+$//g;
                 next unless $email =~ /\@/;
-                push @to, [ $email, $body->name ];
+                push @to, [ $email, $body->name, \@cc ];
             }
         }
         next unless @to;
         $pending{$r->id} = { report => $r, all => { map { $_->[0] => 1 } @to } };
         my $item;
         for (@to) {
-            my ($email, $name) = @$_;
+            my ($email, $name, $cc) = @$_;
             next if $done{$email};
             $item ||= digest_item($cobrand, $r);
-            my $g = $group{$email} ||= { bodies => {}, items => [], seen => {} };
+            my $g = $group{$email} ||= { bodies => {}, items => [], seen => {}, cc => {} };
             $g->{bodies}{$name} = 1;
+            # The municipality's central address, in Cc when the email goes to one of its services.
+            $g->{cc}{lc $_} = 1 for @$cc;
             push @{ $g->{items} }, $item unless $g->{seen}{ $r->id }++;
         }
     }
@@ -114,8 +118,9 @@ sub main {
         my $period = DateTime->from_epoch(epoch => $from, time_zone => $tz)->strftime('%d/%m/%Y %H:%M')
             . '–' . $now->strftime($now->ymd eq DateTime->from_epoch(epoch => $from, time_zone => $tz)->ymd ? '%H:%M' : '%d/%m/%Y %H:%M');
         my $to = $opt{to} || ($staging ? $cobrand->contact_email : $email);
+        my @cc = grep { $_ ne $email } sort keys %{ $g->{cc} };
         printf "%s: %d report(s) (%s) for %s%s\n", $email, scalar @items, join(',', map { $_->{report}->id } @items),
-            $body_name, $to ne $email ? " -> sent to $to" : '';
+            $body_name, ($to ne $email ? " -> sent to $to" : '') . (@cc ? " (cc @cc)" : '');
         next if $opt{'dry-run'};
         # The envelope sender names this email, so bin/greece/mail-delivery can tell from our relay's
         # log whether the municipality's server took it (each report keeps the token).
@@ -123,8 +128,9 @@ sub main {
         my $env = "fms-digest-$tok\@" . (FixMyStreet->config('EMAIL_DOMAIN') || 'fixmystreets.gr');
         my $failed = FixMyStreet::Email::send_cron($schema, 'digest.txt', {
             body_name => $body_name, cobrand => $cobrand, period => $period, items => \@items,
-            sent_to => $email, would_go_to => $to ne $email && !$opt{to} ? $email : '',
-        }, { To => [ [ $to, $body_name ] ] }, $env, 0, $cobrand, 'el');
+            sent_to => $email, sent_cc => join(', ', @cc), would_go_to => $to ne $email && !$opt{to} ? $email : '',
+        }, { To => [ [ $to, $body_name ] ], ($to eq $email && @cc ? (Cc => [ map { [ $_, $body_name ] } @cc ]) : ()) },
+            $env, 0, $cobrand, 'el');
         if ($failed) { print "  sending failed\n"; next; }
         $sent++;
         next if $opt{to};

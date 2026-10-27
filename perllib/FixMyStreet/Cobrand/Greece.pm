@@ -58,16 +58,23 @@ sub munge_sendreport_params {
     my $sender = $self->do_not_reply_email;
     $params->{From} = [ $sender, ($name ne '' ? $name : 'Ανώνυμος') . ' - μέσω FixMyStreets' ];
     my $confirmed = !$self->greece_anonymous_report($row) && $row->get_extra_metadata('greece_email_confirmed');
+    my @cc;
     if ($confirmed) {
         $h->{reporter_email} = $row->user->email // '';
         $params->{'Reply-To'} = [ [ $row->user->email, $name || 'Πολίτης' ] ];
-        $params->{Cc} = [ [ $row->user->email, $name || 'Πολίτης' ] ];
+        push @cc, [ $row->user->email, $name || 'Πολίτης' ];
     } else {
         $h->{reporter_email} = '';
         $h->{reporter_email_unconfirmed} = !$self->greece_anonymous_report($row) && ($row->user->email // '') ne '';
         $params->{'Reply-To'} = [ [ $self->contact_email, 'FixMyStreets' ] ];
-        delete $params->{Cc};
     }
+    # A category that goes to the municipal service handling it has the municipality's central address
+    # in Cc (owner, 2026-10-27; contact extra greece_cc, from data/greece/contacts/departments.csv).
+    # Not on a staging site that sends the reports to the reporter instead.
+    push @cc, map { [ $_, ($row->greece_dimos ? $row->greece_dimos->name : '') ] } greece_contact_cc($contact, $params->{To})
+        unless FixMyStreet->staging_flag('send_reports', 0);
+    $h->{sent_cc} = join ', ', map { $_->[0] } @cc[($confirmed ? 1 : 0) .. $#cc];
+    if (@cc) { $params->{Cc} = \@cc } else { delete $params->{Cc} }
     $h->{reporter_phone} = $self->greece_anonymous_report($row)
         ? ($row->get_extra_metadata('greece_phone') // '') : ($row->user->phone // '');
 
@@ -77,6 +84,15 @@ sub munge_sendreport_params {
     # The municipality of the location, for emails to a body that is not the municipality.
     my $dimos = $row->greece_dimos;
     $h->{dimos_name} = $dimos->name if $dimos;
+}
+
+# A contact's Cc addresses (extra greece_cc, comma-separated), less any already in To.
+sub greece_contact_cc {
+    my ($contact, $to) = @_;
+    return () unless $contact;
+    my %to = map { lc(ref $_ ? $_->[0] : $_) => 1 } @{ $to || [] };
+    my %seen;
+    return grep { /\@/ && !$to{lc $_} && !$seen{lc $_}++ } split /\s*,\s*/, ($contact->get_extra_metadata('greece_cc') // '');
 }
 
 # Police complaints (EV-charging bays, blocked passage) can also be sent by the reporter as an SMS
