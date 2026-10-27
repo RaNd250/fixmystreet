@@ -1,5 +1,5 @@
 [%# FixMyStreet's main_nav_items.html with «Τοπικές ειδοποιήσεις» as a submenu of «Όλες οι αναφορές»,
-    «Επικοινωνία» after «Βοήθεια», and a language switch. ~%]
+    «Επικοινωνία», «Συχνές ερωτήσεις» and «Απόρρητο» side by side, and a language switch. ~%]
 [% INCLUDE 'navigation/_report.html' %]
 
 [%~ IF c.user_exists ~%]
@@ -42,9 +42,15 @@
         </ul>
     </li>
 
-[%~ INCLUDE navitem uri='/faq' label=loc('Help') ~%]
-
+[%# «Επικοινωνία», then the questions and the privacy page beside it (owner, 2026-10-27); FixMyStreet
+    shows «Απόρρητο» only in the phone menu, theme.css shows it on computers too. ~%]
 [%~ INCLUDE navitem uri='/contact' label=c.cobrand.greece_t('Επικοινωνία', 'Contact') ~%]
+
+[%~ INCLUDE navitem uri='/faq' label=c.cobrand.greece_t('Συχνές ερωτήσεις', 'FAQ') ~%]
+
+[%~ UNLESS hide_privacy_link ~%]
+  [%~ INCLUDE navitem uri=c.cobrand.privacy_policy_url label=c.cobrand.greece_t('Απόρρητο', 'Privacy') liattrs='class="nav-menu__item--privacy"' ~%]
+[%~ END ~%]
 
 [%~# Language switch (Greece.pm language_override keeps the choice in a cookie). ~%]
 [%~ IF lang_code == 'en-gb';
@@ -52,10 +58,6 @@
     ELSE;
       INCLUDE navitem always_url=1 uri=c.req.uri_with({ lang => 'en' }) label='English' attrs='lang="en" hreflang="en"' liattrs='class="nav-menu__item--lang"';
     END ~%]
-
-[%~ UNLESS hide_privacy_link ~%]
-  [%~ INCLUDE navitem uri=c.cobrand.privacy_policy_url label=loc('Privacy') liattrs='class="nav-menu__item--privacy"' ~%]
-[%~ END ~%]
 
 [%~ IF c.user_exists AND c.cobrand.admin_allow_user(c.user) ~%]
   [%~ INCLUDE navitem uri='/admin' label=loc('Admin') ~%]

@@ -1444,3 +1444,14 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 }
 #front-main .gr-front-cols__recent #front-recently h2 { display: block; text-align: left; }
 #front-main .gr-front-cols__recent .item-list a, #front-main .gr-front-cols__recent .item-list a * { text-decoration: none; }
+
+/* «Απόρρητο» in the top menu on computers too (main_nav_items.html; FixMyStreet hides it there). */
+.nav-menu--main .nav-menu__item--privacy { display: list-item; }
+@media (min-width: 48em) { #main-nav .nav-menu--main .nav-menu__item--privacy { display: inline-block; } }
+
+/* Pages a little wider, following the screen (owner, 2026-10-27): FixMyStreet's 960px column grows with
+   the window, 82% of it, up to 1440px; the map pages keep their own layout. */
+@media (min-width: 64em) {
+    body:not(.mappage) .container, body:not(.mappage) #front-main #front-main-container { max-width: clamp(960px, 82vw, 1440px); }
+}
+.gr-front-cols__recent .gr-recent-none { color: var(--gr-ink-2); }

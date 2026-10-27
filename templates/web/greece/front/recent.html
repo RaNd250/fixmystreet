@@ -1,0 +1,32 @@
+[%# FixMyStreet's, with a line when there are no reports yet, beside the home page map (gr_front_recent,
+    around/postcode_form.html). ~%]
+[%
+    recent_photos = c.cobrand.recent_photos('front', 5);
+%]
+
+[% IF recent_photos.size %]
+<div id="front-recently">
+    <h2>
+        [%- IF c.cobrand.moniker == 'hart' %]
+            Recently reported
+        [% ELSE %]
+            [% loc('Recently reported problems') %]
+        [% END -%]
+    </h2>
+
+    [% TRY %][% INCLUDE "front/pre-recent.html" %][% CATCH file %][% END %]
+
+    <section class="full-width">
+        <ul id="js-reports-list" class="item-list item-list--reports item-list--front-page">
+          [% FOREACH problem IN recent_photos %]
+            [% INCLUDE 'front/_list-entry.html' %]
+          [% END %]
+        </ul>
+    </section>
+</div>
+[% ELSIF gr_front_recent %]
+<div id="front-recently">
+    <h2>[% loc('Recently reported problems') %]</h2>
+    <p class="gr-recent-none">[% c.cobrand.greece_t('Δεν υπάρχουν ακόμα αναφορές. Γίνε ο πρώτος: δείξε το πρόβλημα στον χάρτη.', 'No reports yet. Be the first: show the problem on the map.') %]</p>
+</div>
+[% END %]
