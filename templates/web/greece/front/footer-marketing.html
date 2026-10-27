@@ -13,4 +13,10 @@
                             <a class="platform-logo" href="https://fixmystreet.org/">Πλατφόρμα FixMyStreet</a>. Η πλατφόρμα λειτουργεί με την εθελοντική συνεισφορά πολιτών, χωρίς χρηματοδότηση από κάποιο ίδρυμα.
                             [%~ END %]
                             </p>
+                            [%# Last line of every page (owner, 2026-10-27): who hosts the site, named in the
+                                deployment's general.yml (GREECE_HOST_NAME, GREECE_HOST_URL); none, no line. ~%]
+                            [% IF c.config.GREECE_HOST_NAME %]
+                            <p class="gr-footer-host">[% c.cobrand.greece_t('Hosting, hardware &amp; services παρέχονται από την', 'Hosting, hardware &amp; services provided by') | safe %]
+                            [% IF c.config.GREECE_HOST_URL %]<a href="[% c.config.GREECE_HOST_URL | html %]">[% c.config.GREECE_HOST_NAME | html %]</a>[% ELSE %][% c.config.GREECE_HOST_NAME | html %][% END %]</p>
+                            [% END %]
                         </div>

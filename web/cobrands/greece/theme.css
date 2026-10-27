@@ -1424,3 +1424,6 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 .gr-about-home p, .gr-about-home li { font-size: 0.95rem; line-height: 1.5; }
 .gr-about-home__list { margin: 0.5em 0 0.8em; padding-left: 1.1em; }
 .gr-about-home__list li { margin-bottom: 0.4em; }
+
+/* Hosting credit, the footer's last line (front/footer-marketing.html). */
+.gr-footer-host { margin-top: 4px; font-size: .85em; color: var(--gr-ink-2); }
