@@ -1427,3 +1427,20 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 
 /* Hosting credit, the footer's last line (front/footer-marketing.html). */
 .gr-footer-host { margin-top: 4px; font-size: .85em; color: var(--gr-ink-2); }
+
+/* Home page: map and search on the left, recent reports on the right, each half the width (owner,
+   2026-10-27); the steps and «Τι κάνουμε» below, in one centred column. Phones: one under the other. */
+.gr-front-cols__recent #front-recently { float: none; width: auto; margin: 0; padding: 0; }
+.gr-front-cols__recent #front-recently h2 { margin-top: 0; font-size: 1.25rem; color: var(--gr-ink); font-weight: 650; }
+.frontpage #front-howto { float: none; width: auto; max-width: 46rem; margin-left: auto; margin-right: auto; }
+.frontpage #front-main h1, .frontpage #front-main h2 { text-align: center; }
+@media (min-width: 900px) {
+    .gr-front-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+    .gr-front-cols__recent { padding-top: 4px; }
+    .gr-front-cols .postcode-form-box .gr-xsearch { width: 100%; }
+}
+@media (max-width: 899px) {
+    .gr-front-cols__recent { margin-top: 16px; }
+}
+#front-main .gr-front-cols__recent #front-recently h2 { display: block; text-align: left; }
+#front-main .gr-front-cols__recent .item-list a, #front-main .gr-front-cols__recent .item-list a * { text-decoration: none; }

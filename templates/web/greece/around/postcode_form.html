@@ -16,6 +16,9 @@
             <p>[% c.cobrand.greece_t('Για να συνεχίσεις την πρόχειρη αναφορά', 'To continue draft') %]<span class="js-draft-name"></span>[% c.cobrand.greece_t(', δώσε την τοποθεσία της.', ' enter its location.') %]<br>
             <a href="/" class="btn">[% c.cobrand.greece_t('Άκυρο', 'Cancel') %]</a>
         </div>
+        [%# On the home page, the map and search on the left and the recent reports beside them on a
+            computer (owner, 2026-10-27); one under the other on a phone (theme.css .gr-front-cols). ~%]
+        [% IF gr_front_recent %]<div class="gr-front-cols"><div class="gr-front-cols__map">[% END %]
         [% PROCESS 'around/_location_minimap.html' %]
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="postcode-form-box js-geolocate">
             <label for="pc">[% question %]:</label>
@@ -56,5 +59,6 @@
                 [% INCLUDE 'around/_postcode_form_post.html' %]
             [% END %]
         </form>
+        [% IF gr_front_recent %]</div><div class="gr-front-cols__recent">[% INCLUDE 'front/recent.html' %]</div></div>[% END %]
     </div>
 </main>
