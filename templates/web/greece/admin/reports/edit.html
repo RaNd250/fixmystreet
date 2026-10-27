@@ -16,6 +16,16 @@
       &larr; <a href="[% c.uri_for_action( 'admin/reports/index' ) %]">[% loc('All reports') %]</a>
 
 <h1>[% c.cobrand.greece_t('Επεξεργασία αναφοράς ', 'Editing report ') _ problem.greece_ref %]</h1>
+[%# What the service's mail server answered, from our relay's log (bin/greece/mail-delivery). ~%]
+[% SET dl = problem.get_extra_metadata('greece_delivery') %]
+[% IF dl %]
+<div class="gr-delivery gr-delivery--[% dl.state %]">
+  <p><strong>[% IF dl.state == 'delivered' %]✓ Παραδόθηκε[% ELSIF dl.state == 'deferred' %]⚠ Σε αναμονή παράδοσης[% ELSE %]⚠ Δεν παραδόθηκε[% END %]</strong>
+  <small>(έλεγχος [% dl.checked | html %])</small></p>
+  <ul>[% FOR r IN dl.rcpts %]<li>[% r.to | html %]: [% r.status | html %] [% r.dsn | html %] — [% r.host | html %] — <code>[% r.said | html %]</code> ([% r.at | html %])</li>[% END %]</ul>
+  [% IF dl.state != 'delivered' %]<p>Διόρθωσε τη διεύθυνση στις κατηγορίες του φορέα και πάτα «Επαναποστολή» παρακάτω.</p>[% END %]
+</div>
+[% END %]
 
 [% IF problem.cobrand_data == 'waste' %]
     [% PROCESS 'admin/reports/_edit_waste.html' %]

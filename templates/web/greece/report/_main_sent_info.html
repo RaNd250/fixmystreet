@@ -22,6 +22,11 @@
     <div><dt>[% c.cobrand.greece_t('Αριθμός αναφοράς', 'Report number') %]</dt><dd><strong>[% problem.greece_ref | html %]</strong></dd></div>
     <div><dt>[% c.cobrand.greece_t('Παραλήπτης', 'Sent to') %]</dt><dd>
       [%~ IF sent AND problem.whensent %][% problem.body %][% IF after %] · [% c.cobrand.greece_t(after _ ' μετά την υποβολή', after _ ' after it was made') %][% END %]
+      [%# ✓ once the service's mail server took the email (bin/greece/mail-delivery reads our relay's log);
+          a failure only to staff, who can fix the address and send it again. ~%]
+      [%~ SET dl = problem.get_extra_metadata('greece_delivery') %]
+      [%~ IF dl AND dl.state == 'delivered' %] <span class="gr-delivered" title="[% c.cobrand.greece_t('Ο διακομιστής email της υπηρεσίας το δέχτηκε', 'The service’s mail server accepted it') %]">✓ [% c.cobrand.greece_t('Παραδόθηκε', 'Delivered') %]</span>
+      [%~ ELSIF dl AND c.user_exists AND (c.user.is_superuser OR c.user.from_body) %] <span class="gr-undelivered">⚠ [% dl.state == 'deferred' ? c.cobrand.greece_t('Σε αναμονή παράδοσης', 'Delivery delayed') : c.cobrand.greece_t('Δεν παραδόθηκε', 'Not delivered') %]</span>[% END %]
       [%~ ELSIF sent %][% problem.body %] · [% c.cobrand.greece_t('στέλνεται σε λίγο', 'being sent') %]
       [%~ ELSE %][% loc('Not reported to council') %][% END %]</dd></div>
     [% IF problem.can_display_external_id %]

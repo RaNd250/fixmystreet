@@ -5,6 +5,8 @@
         <td class="record-id">[%- IF problem.is_visible -%]
         [%- uri = c.cobrand.base_url_for_report(problem) _ problem.url %]
         <a href="[% uri %]" class="admin-offsite-link" title="id [% problem.id %]">[% problem.greece_ref %]</a>
+        [%~ SET dl = problem.get_extra_metadata('greece_delivery') %]
+        [%~ IF dl %] <span title="[% dl.state %]: [% FOR r IN dl.rcpts %][% r.to %] [% r.status %] [% r.dsn %]; [% END %]">[% dl.state == 'delivered' ? '✓' : '⚠' %]</span>[% END %]
         [%- ELSE %]
         <span title="id [% problem.id %]">[% problem.greece_ref %]</span>
         [%- END -%]</td>

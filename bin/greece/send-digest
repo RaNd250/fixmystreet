@@ -36,6 +36,7 @@ use DateTime;
 use Fcntl qw(:flock);
 use Getopt::Long qw(GetOptionsFromArray);
 use List::Util qw(min);
+use Digest::SHA ();
 
 binmode STDOUT, ':utf8';
 
@@ -116,10 +117,14 @@ sub main {
         printf "%s: %d report(s) (%s) for %s%s\n", $email, scalar @items, join(',', map { $_->{report}->id } @items),
             $body_name, $to ne $email ? " -> sent to $to" : '';
         next if $opt{'dry-run'};
+        # The envelope sender names this email, so bin/greece/mail-delivery can tell from our relay's
+        # log whether the municipality's server took it (each report keeps the token).
+        my $tok = sprintf '%x%s', time, substr(Digest::SHA::sha1_hex($email . rand), 0, 8);
+        my $env = "fms-digest-$tok\@" . (FixMyStreet->config('EMAIL_DOMAIN') || 'fixmystreets.gr');
         my $failed = FixMyStreet::Email::send_cron($schema, 'digest.txt', {
             body_name => $body_name, cobrand => $cobrand, period => $period, items => \@items,
             sent_to => $email, would_go_to => $to ne $email && !$opt{to} ? $email : '',
-        }, { To => [ [ $to, $body_name ] ] }, undef, 0, $cobrand, 'el');
+        }, { To => [ [ $to, $body_name ] ] }, $env, 0, $cobrand, 'el');
         if ($failed) { print "  sending failed\n"; next; }
         $sent++;
         next if $opt{to};
@@ -128,6 +133,7 @@ sub main {
             $r->discard_changes;
             my $done = $r->get_extra_metadata('greece_digest_sent') || [];
             $r->set_extra_metadata(greece_digest_sent => [ @$done, $email ]);
+            $r->set_extra_metadata(greece_digest_env => [ @{ $r->get_extra_metadata('greece_digest_env') || [] }, $tok ]);
             $r->update;
         }
     }
