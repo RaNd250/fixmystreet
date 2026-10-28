@@ -16,6 +16,10 @@
                             <a class="platform-logo" href="https://fixmystreet.org/">Πλατφόρμα FixMyStreet</a>. Η πλατφόρμα λειτουργεί με την εθελοντική συνεισφορά πολιτών.
                             [%~ END %]
                             </p>
+                            [%# The map credit the OpenStreetMap and OpenMapTiles licences ask for, here and behind the (i) of each map. ~%]
+                            <p class="gr-footer-line">[% c.cobrand.greece_t('Χάρτες', 'Maps') %]:
+                            &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a>
+                            &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a></p>
                             [%# Last line of every page (owner, 2026-10-27): who hosts the site, named in the
                                 deployment's general.yml (GREECE_HOST_NAME, GREECE_HOST_URL); none, no line. ~%]
                             [% IF c.config.GREECE_HOST_NAME %]

@@ -57,6 +57,11 @@
             }
         });
         map.touchZoomRotate.disableRotation();
+        // The credit (OpenMapTiles, OpenStreetMap) is behind the (i) button, not spread over the map.
+        map.once('load', function () {
+            var a = map.getContainer().querySelector('.maplibregl-ctrl-attrib');
+            if (a) { a.classList.remove('maplibregl-compact-show'); a.removeAttribute('open'); }
+        });
         map.keyboard.disableRotation();
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
