@@ -3,6 +3,30 @@
 [%
     recent_photos = c.cobrand.recent_photos('front', 5);
 %]
+[%# The latest visible reports, with or without a photo (recent_photos alone leaves the block empty while
+    no report has one), and how many wait to be sent: the next batch, and for a superuser how many of them
+    still need approval (/admin/greece/approve). ~%]
+[%
+    gr_recent = c.cobrand.problems.search(
+        { non_public => 0, state => { '-not_in' => [ 'unconfirmed', 'hidden', 'partial', 'draft' ] } },
+        { order_by => { '-desc' => 'confirmed' }, rows => 5 });
+    gr_waiting = 0; gr_unapproved = 0; gr_next = '';
+    FOREACH wp IN c.cobrand.problems.search({ non_public => 0, send_state => 'unprocessed', state => 'confirmed' });
+        NEXT IF wp.whensent;
+        dn = c.cobrand.greece_digest_next(wp);
+        NEXT UNLESS dn;
+        gr_waiting = gr_waiting + 1;
+        gr_next = dn;
+        IF c.cobrand.greece_needs_approval(wp); gr_unapproved = gr_unapproved + 1; END;
+    END;
+%]
+[% BLOCK gr_waiting_line %]
+[% IF gr_waiting %]<p class="gr-recent-waiting">
+    [%~ IF gr_waiting == 1 %][% c.cobrand.greece_t('1 αναφορά περιμένει να σταλεί στον δήμο', '1 report is waiting to be sent to the municipality') %]
+    [%~ ELSE %][% gr_waiting %] [% c.cobrand.greece_t('αναφορές περιμένουν να σταλούν στους δήμους', 'reports are waiting to be sent to the municipalities') %][% END %]
+    ([% c.cobrand.greece_t('επόμενη αποστολή: ', 'next batch: ') %][% gr_next %])
+    [%~ IF gr_unapproved AND c.user_exists AND c.user.is_superuser %] · <a href="/admin/greece/approve">[% gr_unapproved %] [% c.cobrand.greece_t('περιμένουν έγκριση', 'need approval') %]</a>[% END %]</p>[% END %]
+[% END %]
 
 [% IF recent_photos.size %]
 <div id="front-recently">
@@ -14,6 +38,7 @@
         [% END -%]
     </h2>
 
+    [% PROCESS gr_waiting_line %]
     [% TRY %][% INCLUDE "front/pre-recent.html" %][% CATCH file %][% END %]
 
     <section class="full-width">
@@ -27,6 +52,16 @@
 [% ELSIF gr_front_recent %]
 <div id="front-recently">
     <h2>[% loc('Recently reported problems') %]</h2>
+    [% PROCESS gr_waiting_line %]
+[% IF gr_recent.size %]
+    <section class="full-width">
+        <ul id="js-reports-list" class="item-list item-list--reports item-list--front-page">
+          [% FOREACH problem IN gr_recent %]
+            [% INCLUDE 'front/_list-entry.html' %]
+          [% END %]
+        </ul>
+    </section>
+[% ELSE %]
     <div class="gr-howto">
         <h3>[% c.cobrand.greece_t('Πώς λειτουργεί', 'How it works') %]</h3>
         <ol class="gr-howto__steps">
@@ -50,5 +85,6 @@
         </div>
         <p class="gr-recent-none">[% c.cobrand.greece_t('Δεν υπάρχουν ακόμα αναφορές. Γίνε ο πρώτος: δείξε το πρόβλημα στον χάρτη.', 'No reports yet. Be the first: show the problem on the map.') %]</p>
     </div>
+[% END %]
 </div>
 [% END %]
