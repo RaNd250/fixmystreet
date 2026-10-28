@@ -3941,7 +3941,7 @@ msgstr "Δημοσιεύθηκε από %s στις %s"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:323
 msgid "Posted by <strong>%s</strong> (%s) at %s"
-msgstr "Δημοσιεύθηκε από <strong>%s</strong> (%s) στις %s"
+msgstr "Δημοσιεύθηκε από <strong>%1$s</strong> στις %3$s"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:325
 msgid "Posted by <strong>%s</strong> at %s"
@@ -6419,7 +6419,7 @@ msgstr "Ενημερώθηκε"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:329
 msgid "Updated by <strong>%s</strong> (%s) at %s"
-msgstr "Ενημερώθηκε από <strong>%s</strong> (%s) στις %s"
+msgstr "Ενημερώθηκε από <strong>%1$s</strong> στις %3$s"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:331
 msgid "Updated by <strong>%s</strong> at %s"
@@ -7233,7 +7233,7 @@ msgstr "όλα"
 #: templates/web/base/admin/update_edit.html:127
 #: templates/web/base/report/update/moderation_meta.html:2
 msgid "an administrator"
-msgstr "ένας διαχειριστής"
+msgstr "FixMyStreets staff"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:339
 msgid "and a defect raised"

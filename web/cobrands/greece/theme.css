@@ -1540,3 +1540,26 @@ a.platform-logo { background: none; text-indent: 0; width: auto; height: auto; p
     }
     body.mappage.with-notes #map_box { left: 85vw; }
 }
+
+/* Help next to the staff fields (field-help.js): a small yellow «?» and its note. */
+.gr-help { position: relative; display: inline-block; margin-left: .4em; vertical-align: middle; font-weight: 400; }
+.gr-help__btn { width: 1.45em; height: 1.45em; padding: 0; border: 0; border-radius: 50%; background: var(--gr-warm); color: #3a2600; font: 700 .8rem/1 var(--gr-font); cursor: pointer; box-shadow: 0 1px 3px rgba(15, 23, 42, .3); }
+.gr-help__btn:hover, .gr-help__btn[aria-expanded="true"] { background: #ffc94d; }
+.gr-help__btn:focus-visible { outline: 3px solid var(--gr-accent); outline-offset: 2px; }
+.gr-help__bubble { position: absolute; z-index: 60; left: 0; top: calc(100% + 8px); width: min(21em, 80vw); padding: 10px 12px; background: #fffdf5; color: var(--gr-ink); border: 1px solid #f0c040; border-radius: 10px;
+    box-shadow: var(--gr-shadow-2); font-size: .875rem; line-height: 1.45; text-align: left; white-space: normal; }
+.gr-abuse-ref { margin: 0 0 .5em; }
+
+/* The movable dividers of the map pages (panel-resize.js). */
+.gr-resizer { position: fixed; top: 44px; bottom: 0; width: 16px; margin-left: -8px; z-index: 50; cursor: col-resize; touch-action: none; }
+.gr-resizer::after { content: ""; position: absolute; top: 0; bottom: 0; left: 7px; width: 2px; background: transparent; transition: background .15s; }
+.gr-resizer:hover::after, .gr-resizer:focus-visible::after, body.gr-dragging .gr-resizer::after { background: var(--gr-accent); }
+.gr-resizer:focus-visible { outline: none; }
+.gr-resizer--inner { cursor: col-resize; }
+body.gr-dragging { user-select: none; -webkit-user-select: none; cursor: col-resize; }
+@media (max-width: 59.99em) { .gr-resizer { display: none; } }
+@media (min-width: 60em) {
+    body.mappage.gr-resized #map_sidebar { width: calc(var(--gr-side-total) - 2em) !important; }
+    body.mappage.gr-resized #map_box { left: var(--gr-side-total) !important; }
+    body.mappage.with-notes.gr-resized #map_sidebar { background-image: linear-gradient(90deg, transparent var(--gr-side-form), #E9F2FF var(--gr-side-form)) !important; }
+}

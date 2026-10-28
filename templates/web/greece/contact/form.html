@@ -14,6 +14,7 @@
       [% loc('You are reporting the following update for being abusive, containing personal information, or similar:') %]
       </p>
 
+      <p class="gr-abuse-ref"><strong>[% c.cobrand.greece_t('Αρ. αναφοράς', 'Report number') %]:</strong> [% update.problem.greece_ref | html %]</p>
       <blockquote>
           <cite>
               [% IF update.anonymous %]
@@ -41,6 +42,7 @@
 
       <blockquote>
           <h2>[% problem.title_safe | html %]</h2>
+          <p class="gr-abuse-ref"><strong>[% c.cobrand.greece_t('Αρ. αναφοράς', 'Report number') %]:</strong> [% problem.greece_ref | html %]</p>
 
           <cite>
               [% IF problem.anonymous %]

@@ -257,6 +257,21 @@ sub greece_host {
     return { name => FixMyStreet->config('GREECE_HOST_NAME') || '', url => FixMyStreet->config('GREECE_HOST_URL') || '' };
 }
 
+# A report in the high priority («Υψηλή - κίνδυνος ατυχήματος», response_priorities, data/greece/priorities.sql) gets the red
+# ring on the maps, for the staff who see priorities (owner, 2026-10-29); the public sees the usual pin.
+sub pin_colour {
+    my ($self, $p, $context, $c) = @_;
+    my $colour = $self->SUPER::pin_colour($p, $context, $c);
+    my $cc = $self->{c};
+    return $colour unless $cc && $cc->user_exists && ($cc->user->is_superuser || $cc->user->from_body);
+    return $colour if $p->is_fixed || $p->is_closed;
+    my $high = $self->{greece_high_priority} //= { map { $_->id => 1 }
+        FixMyStreet::DB->resultset('ResponsePriority')->search({ name => 'Υψηλή - κίνδυνος ατυχήματος' })->all };
+    my $id = eval { $p->get_column('response_priority_id') };
+    return 'red' if $id && $high->{$id};
+    return $colour;
+}
+
 sub greece_anonymous_report {
     my ($self, $report) = @_;
     my $anon = $self->anonymous_account or return 0;
