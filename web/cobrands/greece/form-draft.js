@@ -18,7 +18,8 @@
     var KEY = 'gr-report-draft';
     var MAX_AGE = 24 * 3600 * 1000;
     // Hidden and technical fields that are never kept; upload_fileid (the photos) is kept apart.
-    var SKIP = /^(token|submit_|latitude|longitude|lat|lon|zoom|pc|single_body_only|do_not_send|service|partial|photo_id|upload_fileid|password|oauth_|form_photo|photo\d|category)/;
+    // The two consents (the terms, showing the name) are never kept or brought back: each report asks for them anew.
+    var SKIP = /^(token|submit_|latitude|longitude|lat|lon|zoom|pc|single_body_only|do_not_send|service|partial|photo_id|upload_fileid|password|oauth_|form_photo|photo\d|category|greece_terms|may_show_name)/;
 
     function storage() {
         try { return window.sessionStorage; } catch (e) { return null; }
