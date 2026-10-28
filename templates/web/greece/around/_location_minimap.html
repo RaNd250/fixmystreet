@@ -17,12 +17,12 @@
         <button type="button" class="btn btn--primary" id="gr-minimap-locate">[% c.cobrand.greece_t('Χρήση της τοποθεσίας μου', 'Use my location') %]</button>
         <a class="btn btn--primary" id="gr-minimap-report" href="[% c.uri_for('/report/new') %]" hidden>[% c.cobrand.greece_t('Αναφορά εδώ', 'Report here') %]</a>
     </div>
-    <div class="gr-dimos" id="gr-dimos" aria-live="polite" hidden>
-        <strong class="gr-dimos__name" id="gr-dimos-name"></strong>
+    <details class="gr-dimos" id="gr-dimos" aria-live="polite" hidden>
+        <summary><strong class="gr-dimos__name" id="gr-dimos-name"></strong><span class="gr-dimos__arrow" aria-hidden="true">&rarr;</span></summary>
         <ul class="gr-dimos__contacts" id="gr-dimos-contacts"></ul>
         [%# To /contact with the municipality in the subject (minimap.js sets it). ~%]
         <p class="gr-dimos__fix"><a id="gr-dimos-fix" href="/contact">[% c.cobrand.greece_t('Είναι κάτι λάθος ή λείπει; Ενημέρωσέ μας', 'Something wrong or missing? Let us know') %]</a></p>
-    </div>
+    </details>
 </div>
 <p class="gr-minimap-or" id="gr-minimap-or" hidden>[% c.cobrand.greece_t('ή αναζήτησε διεύθυνση', 'or search for an address') %]</p>
 <p class="gr-minimap-search" id="gr-minimap-search" hidden><button type="button" class="gr-minimap-search__btn" aria-controls="postcodeForm">[% c.cobrand.greece_t('Αναζήτηση διεύθυνσης', 'Search for an address') %]</button></p>

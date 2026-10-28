@@ -256,6 +256,7 @@
             if (fixLink) {
                 fixLink.href = '/contact?subject=' + encodeURIComponent(t('Διόρθωση στοιχείων: ', 'Correction: ') + hit.d.n);
             }
+            if (card.dataset.dimos !== hit.d.n) { card.open = false; card.dataset.dimos = hit.d.n; }
             card.hidden = false;
         }
 

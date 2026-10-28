@@ -1490,3 +1490,11 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 .gr-account-form__field input { width: 100%; box-sizing: border-box; }
 .gr-account-form__field input[readonly] { background: var(--gr-surface-2, #f1f5f9); color: var(--gr-ink-2); }
 .gr-account-form__hint { font-size: .85rem; color: var(--gr-ink-3); }
+
+/* The municipality's contact card (home page): the name and an arrow; the contacts open on a tap. */
+.gr-dimos > summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.gr-dimos > summary::-webkit-details-marker { display: none; }
+.gr-dimos__arrow { flex: none; font-weight: 700; color: var(--gr-primary, #1d6fe0); transition: transform .15s; }
+.gr-dimos[open] .gr-dimos__arrow { transform: rotate(90deg); }
+.gr-dimos > summary:focus-visible { outline: 2px solid var(--gr-primary, #1d6fe0); outline-offset: 3px; border-radius: 4px; }
+.gr-dimos[open] > summary { margin-bottom: 8px; }
