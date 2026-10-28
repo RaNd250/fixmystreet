@@ -1,0 +1,11 @@
+[%# Sent by bin/greece/requests-reminder, daily, while a rights request is due in 7 days or less or is late. ~%]
+Subject: Αιτήματα πολιτών: [% items.size %] με προθεσμία έως 7 ημέρες[% IF late %] ([% late %] σε καθυστέρηση)[% END %]
+
+Αυτά τα αιτήματα πολιτών περιμένουν απάντηση:
+[% FOR r IN items %]
+- #[% r.id %] [% r.label %] · προθεσμία [% r.due %][% IF r.days_left < 0 %] · ΣΕ ΚΑΘΥΣΤΕΡΗΣΗ [% 0 - r.days_left %] ημ.[% ELSIF r.days_left == 0 %] · λήγει σήμερα[% ELSE %] · σε [% r.days_left %] ημ.[% END %]
+[% END %]
+
+Αιτήματα: [% url %]
+Η προθεσμία είναι 1 μήνας από την ημέρα που το πήρες. Τι κάνω σε κάθε περίπτωση: [% cobrand.base_url %]/admin/greece/handbook
+[% signature %]

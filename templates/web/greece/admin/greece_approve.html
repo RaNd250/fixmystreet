@@ -1,7 +1,7 @@
 [%# The municipalities' reports waiting for an admin's approval (App::Controller::GreeceApprove). ~%]
 [% INCLUDE 'admin/header.html' title = 'Αναφορές προς έγκριση' %]
 <h1>Αναφορές προς έγκριση</h1>
-<p class="sm"><a href="[% c.uri_for('/admin/greece/handbook') %]">Τι κάνω και πότε (εγχειρίδιο διαχειριστή)</a></p>
+<p class="sm"><a href="[% c.uri_for('/admin/greece/handbook') %]">Τι κάνω και πότε (εγχειρίδιο διαχειριστή)</a> · <a href="[% c.uri_for('/admin/greece/requests') %]">Αιτήματα πολιτών</a></p>
 <p>Οι αναφορές προς τους δήμους φεύγουν μαζί στις 01:00, 07:00, 13:00 και 19:00 (ώρα Αθήνας), αφού εγκριθούν εδώ.
 Οι καταγγελίες προς την αστυνομία δεν περνούν από εδώ: φεύγουν αμέσως.</p>
 [% IF done.defined && done != '' %]<p class="gr-approve-done"><strong>Εγκρίθηκαν [% done | html %] αναφορές.</strong></p>[% END %]
