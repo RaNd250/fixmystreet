@@ -55,7 +55,7 @@
 [%# Follow the report by email (owner, 2026-10-26), apart from giving an update: FixMyStreet's
     /alert/subscribe (type updates), which emails a confirmation link to the address given; signed
     in, one press. Not for a hidden report. ~%]
-[% IF problem.state != 'hidden' %]
+[% IF problem.state != 'hidden' AND NOT can_moderate %]
 <form class="gr-follow" action="[% c.uri_for('/alert/subscribe') %]" method="post">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="hidden" name="id" value="[% problem.id %]">

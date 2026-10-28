@@ -252,6 +252,11 @@ sub greece_last_edit_when {
     return DateTime->from_epoch(epoch => $last->{at}, time_zone => FixMyStreet->local_time_zone)->strftime('%d/%m/%Y %H:%M');
 }
 
+# Who hosts the site, for the footer of the web pages and of the emails (general.yml GREECE_HOST_NAME, GREECE_HOST_URL).
+sub greece_host {
+    return { name => FixMyStreet->config('GREECE_HOST_NAME') || '', url => FixMyStreet->config('GREECE_HOST_URL') || '' };
+}
+
 sub greece_anonymous_report {
     my ($self, $report) = @_;
     my $anon = $self->anonymous_account or return 0;

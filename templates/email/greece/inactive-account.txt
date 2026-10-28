@@ -21,3 +21,5 @@ If you want to keep your account, sign in once before then:
 
 If you do nothing, you do not need to reply.
 [% signature %]
+
+[% INCLUDE '_site_footer.txt' %]

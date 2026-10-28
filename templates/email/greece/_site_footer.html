@@ -1,0 +1,14 @@
+[%# The site's footer for the HTML emails (the same links and lines as web/greece/front/footer-marketing.html). ~%]
+[% base = cobrand.base_url; host = cobrand.greece_host; fl = "color: #64748b; text-decoration: underline;" %]
+<p style="margin: 0 0 8px 0; font-size: 13px; line-height: 20px; color: #64748b;">
+  <a href="[% base %]/about" style="[% fl %]">[% cobrand.greece_t('Σχετικά', 'About') %]</a> ·
+  <a href="[% base %]/faq" style="[% fl %]">[% cobrand.greece_t('Συχνές ερωτήσεις', 'FAQ') %]</a> ·
+  <a href="[% base %]/contact" style="[% fl %]">[% cobrand.greece_t('Επικοινωνία', 'Contact') %]</a> ·
+  <a href="[% base %]/about/foreis" style="[% fl %]">[% cobrand.greece_t('Για δήμους και φορείς', 'For municipalities and public bodies') %]</a> ·
+  <a href="[% base %]/about/terms" style="[% fl %]">[% cobrand.greece_t('Όροι χρήσης', 'Terms of use') %]</a> ·
+  <a href="[% base %]/about/privacy" style="[% fl %]">[% cobrand.greece_t('Απόρρητο', 'Privacy') %]</a></p>
+<p style="margin: 0 0 8px 0; font-size: 12px; line-height: 18px; color: #64748b;">
+  <a href="https://github.com/VitalData-Services/fixmystreet/tree/greece" style="[% fl %]">[% cobrand.greece_t('Ανοιχτός κώδικας', 'Open source') %]</a> (GNU AGPL v3),
+  [% cobrand.greece_t('βασισμένος στην', 'built on the') %] <a href="https://fixmystreet.org/" style="[% fl %]">[% cobrand.greece_t('Πλατφόρμα FixMyStreet', 'FixMyStreet Platform') %]</a>.</p>
+[% IF host.name %]<p style="margin: 0 0 8px 0; font-size: 12px; line-height: 18px; color: #64748b;">[% cobrand.greece_t('Hosting, hardware &amp; services παρέχονται από την', 'Hosting, hardware &amp; services provided by') | safe %]
+  [% IF host.url %]<a href="[% host.url | html %]" style="[% fl %]">[% host.name | html %]</a>[% ELSE %][% host.name | html %][% END %]</p>[% END %]

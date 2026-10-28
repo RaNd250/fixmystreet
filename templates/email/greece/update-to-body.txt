@@ -27,3 +27,5 @@ Subject: Ενημέρωση για την αναφορά [% report.greece_ref %]
 το email πηγαίνουν στην ομάδα του [% site_name %].
 
 [% signature %]
+
+[% INCLUDE '_site_footer.txt' %]

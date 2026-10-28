@@ -56,4 +56,6 @@ Email: [% IF reporter_email %][% reporter_email %] (επιβεβαιωμένο, 
 επόμενες αναφορές να πηγαίνουν στη σωστή διεύθυνση.
 
 [% signature %]
+
+[% INCLUDE '_site_footer.txt' %]
 [%~ END %]

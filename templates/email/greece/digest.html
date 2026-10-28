@@ -1,7 +1,7 @@
 [%# A municipality's reports of the last hours in one email (sent every 6 hours instead of one email
     per report; bin/greece/send-digest). Variables: body_name, period (e.g. «26/10/2026 06:00–12:00»),
     items: [{ report, url, gmaps_url, address, detail, email, phone, photos, video_seconds }],
-    sent_to, would_go_to (a staging site sends to the site's own address instead). ~%]
+    period_from, period_to, sent_to, would_go_to (a staging site sends to the site's own address instead). ~%]
 [%
 email_summary = items.size _ (items.size == 1 ? " νέα αναφορά" : " νέες αναφορές") _ " για " _ body_name _ ", " _ period;
 email_footer = "Το μήνυμα στάλθηκε αυτόματα από το " _ site_name _ ".";
@@ -17,8 +17,7 @@ small = "margin: 0 0 6px 0; font-size: 14px; line-height: 19px; color: #475569;"
   [% start_padded_box | safe %]
   <p style="margin: 0 0 6px 0; font-size: 13px; line-height: 18px; font-weight: 700; letter-spacing: 0.04em; color: #1f5fd6;">ΑΝΑΦΟΡΕΣ ΠΟΛΙΤΩΝ · [% period | html %]</p>
   <h1 style="[% h1_style %]">[% items.size %] [% items.size == 1 ? 'νέα αναφορά' : 'νέες αναφορές' %] προς: [% body_name | html %]</h1>
-  <p style="[% p_style %]">Όσες καταχωρήθηκαν στο [% site_name %] στο παραπάνω διάστημα, σε ένα μήνυμα. Κάθε αναφορά έχει
-  τον δικό της σύνδεσμο με χάρτη, φωτογραφίες και ενημερώσεις.</p>
+  <p style="[% p_style %]">Οι παρακάτω αναφορές καταχωρήθηκαν στο [% site_name %] από [% period_from | html %] έως [% period_to | html %].</p>
 
   [% FOR it IN items; r = it.report %]
   <table [% table_reset | safe %] style="margin: 0 0 18px 0; border: 1px solid #e3e8f0; border-radius: 10px; border-collapse: separate; overflow: hidden;">

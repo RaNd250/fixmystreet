@@ -1,0 +1,15 @@
+[%# The site's footer for the plain-text emails (the same links and lines as web/greece/front/footer-marketing.html).
+    Set en = 1 for the English text. ~%]
+[%~ SET base = cobrand.base_url ~%]
+[%~ SET host = cobrand.greece_host ~%]
+———
+[% en ? 'About' : 'Σχετικά' %]: [% base %]/about
+[% en ? 'FAQ' : 'Συχνές ερωτήσεις' %]: [% base %]/faq
+[% en ? 'Contact' : 'Επικοινωνία' %]: [% base %]/contact
+[% en ? 'For municipalities and public bodies' : 'Για δήμους και φορείς' %]: [% base %]/about/foreis
+[% en ? 'Terms of use' : 'Όροι χρήσης' %]: [% base %]/about/terms
+[% en ? 'Privacy' : 'Απόρρητο' %]: [% base %]/about/privacy
+
+[% en ? 'Open source (GNU AGPL v3), built on the FixMyStreet Platform: ' : 'Ανοιχτός κώδικας (GNU AGPL v3), βασισμένος στην Πλατφόρμα FixMyStreet: ' %]https://github.com/VitalData-Services/fixmystreet/tree/greece
+[% IF host.name %][% en ? 'Hosting, hardware & services provided by ' : 'Hosting, hardware & services παρέχονται από την ' %][% host.name %][% IF host.url %] ([% host.url %])[% END %]
+[% END %]

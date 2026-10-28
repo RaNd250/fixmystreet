@@ -9,3 +9,5 @@ Subject: Αιτήματα πολιτών: [% items.size %] με προθεσμί
 Αιτήματα: [% url %]
 Η προθεσμία είναι 1 μήνας από την ημέρα που το πήρες. Τι κάνω σε κάθε περίπτωση: [% cobrand.base_url %]/admin/greece/handbook
 [% signature %]
+
+[% INCLUDE '_site_footer.txt' %]

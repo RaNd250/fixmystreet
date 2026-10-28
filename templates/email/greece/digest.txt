@@ -3,8 +3,7 @@ Subject: [% items.size %] [% items.size == 1 ? 'νέα αναφορά' : 'νέε
 
 Προς: [% body_name %]
 
-Αναφορές πολιτών που καταχωρήθηκαν στο [% site_name %] από [% period %].
-Κάθε αναφορά έχει τον δικό της σύνδεσμο με χάρτη, φωτογραφίες και ενημερώσεις.
+Οι παρακάτω αναφορές καταχωρήθηκαν στο [% site_name %] από [% period_from %] έως [% period_to %].
 [% FOR it IN items; r = it.report %]
 ----------
 [% loop.count %]. [% r.category %] · αρ. [% r.greece_ref %] · [% r.greece_local_time %]
@@ -26,3 +25,5 @@ Subject: [% items.size %] [% items.size == 1 ? 'νέα αναφορά' : 'νέε
 στείλτε μας τη σωστή στο [% cobrand.contact_email %] γράφοντας: MAIL ΔΗΜΟΥ:ΧΧΧ@ΥΥΥ.ΖΖΖ
 
 [% signature %]
+
+[% INCLUDE '_site_footer.txt' %]

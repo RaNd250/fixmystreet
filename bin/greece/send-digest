@@ -79,6 +79,9 @@ sub main {
         whensent => undef,
         bodies_str => { '!=', undef },
     }, { order_by => [ 'confirmed', 'id' ] })->all;
+    # A report hidden from the public for privacy (the «Απόκρυψη για λόγους ιδιωτικότητας» button, non_public) is not sent
+    # while it is hidden: what has not left yet stays here until an admin looks at it.
+    @reports = grep { !$_->non_public && !$_->get_extra_metadata('greece_privacy_flag') } @reports;
     # A municipality's report waits for an admin's approval (/admin/greece/approve); the contact address is told.
     my @waiting = grep { $cobrand->greece_needs_approval($_) } @reports;
     @reports = grep { !$cobrand->greece_needs_approval($_) } @reports;
@@ -131,6 +134,8 @@ sub main {
         my $from = min map { local_epoch($_->{report}->confirmed) } @items;
         my $period = DateTime->from_epoch(epoch => $from, time_zone => $tz)->strftime('%d/%m/%Y %H:%M')
             . '–' . $now->strftime($now->ymd eq DateTime->from_epoch(epoch => $from, time_zone => $tz)->ymd ? '%H:%M' : '%d/%m/%Y %H:%M');
+        my $period_from = DateTime->from_epoch(epoch => $from, time_zone => $tz)->strftime('%d/%m/%Y %H:%M');
+        my $period_to = $now->strftime('%d/%m/%Y %H:%M');
         my $to = $opt{to} || ($staging ? $cobrand->contact_email : $email);
         my @cc = grep { $_ ne $email } sort keys %{ $g->{cc} };
         printf "%s: %d report(s) (%s) for %s%s\n", $email, scalar @items, join(',', map { $_->{report}->id } @items),
@@ -141,7 +146,7 @@ sub main {
         my $tok = sprintf '%x%s', time, substr(Digest::SHA::sha1_hex($email . rand), 0, 8);
         my $env = "fms-digest-$tok\@" . (FixMyStreet->config('EMAIL_DOMAIN') || 'fixmystreets.gr');
         my $failed = FixMyStreet::Email::send_cron($schema, 'digest.txt', {
-            body_name => $body_name, cobrand => $cobrand, period => $period, items => \@items,
+            body_name => $body_name, cobrand => $cobrand, period => $period, period_from => $period_from, period_to => $period_to, items => \@items,
             sent_to => $email, sent_cc => join(', ', @cc), would_go_to => $to ne $email && !$opt{to} ? $email : '',
         }, { To => [ [ $to, $body_name ] ], ($to eq $email && @cc ? (Cc => [ map { [ $_, $body_name ] } @cc ]) : ()) },
             $env, 0, $cobrand, 'el');
