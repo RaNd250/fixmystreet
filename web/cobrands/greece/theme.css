@@ -1507,3 +1507,6 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 
 /* A report that has been put right: the fixed green, on the banner of its page. */
 .banner--fixed, .problem-header .fixed { background: var(--gr-fixed-soft); color: var(--gr-fixed-ink); border-left: 4px solid var(--gr-fixed); }
+
+/* [hidden] wins over the display the checkbox wrappers get (the show-my-name box is hidden for complaints). */
+.gr-showname[hidden], .govuk-checkboxes__item[hidden], .checkbox-group[hidden] { display: none !important; }

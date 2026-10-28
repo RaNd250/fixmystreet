@@ -15,7 +15,7 @@
         var show = document.getElementById('form_may_show_name');
         var cat = document.querySelector('input[name="category"]:checked');
         var complaint = !!(cat && cat.value === 'Στάθμευση σε φορτιστή EV ή εμπόδιο στη διέλευση');
-        var box = show && (show.closest('.checkbox-group') || show.parentNode);
+        var box = show && (show.closest('.gr-showname') || show.closest('.checkbox-group') || show.parentNode);
         if (box) { box.hidden = complaint; }
         if (complaint && show) { show.checked = false; }
         var required = !!(show && show.checked && show.offsetParent !== null);
