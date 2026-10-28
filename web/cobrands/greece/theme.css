@@ -1510,3 +1510,16 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 
 /* [hidden] wins over the display the checkbox wrappers get (the show-my-name box is hidden for complaints). */
 .gr-showname[hidden], .govuk-checkboxes__item[hidden], .checkbox-group[hidden] { display: none !important; }
+
+/* The credit of the report maps (OpenLayers): an (i) button that opens the text (map-greece.js). */
+.olControlAttribution.gr-attrib { cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.olControlAttribution.gr-attrib::before {
+    content: "i"; flex: none; display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+    background: #fff; color: #0f172a; font: 700 15px/1 Georgia, serif; box-shadow: 0 1px 4px rgba(15, 23, 42, .35);
+}
+.olControlAttribution.gr-attrib--closed { background: transparent !important; padding: 0 !important; box-shadow: none; width: 26px !important; right: auto !important; }
+.olControlAttribution.gr-attrib--closed > * { display: none !important; }
+.olControlAttribution.gr-attrib:not(.gr-attrib--closed) { padding: 4px 8px 4px 4px; }
+
+/* The name of a complaint: «Ανώνυμος», not to be changed. */
+input.gr-name-locked, input.gr-name-locked:focus { background: var(--gr-surface-2); color: var(--gr-ink-3); cursor: not-allowed; box-shadow: none; }

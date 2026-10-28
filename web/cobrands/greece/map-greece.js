@@ -81,3 +81,29 @@ OpenLayers.Layer.Greece = OpenLayers.Class(OpenLayers.Layer.OSM, {
         return markers;
     };
 })();
+
+/*
+ * The map credit (OpenMapTiles, OpenStreetMap: both licences require it) folds into a small (i) button, as on
+ * the home page's map: a tap opens it, another closes it. The links inside still open normally.
+ */
+(function() {
+    var EN = /^en/i.test(document.documentElement.lang || '');
+    function toggle(el) { el.classList.toggle('gr-attrib--closed'); el.setAttribute('aria-expanded', el.classList.contains('gr-attrib--closed') ? 'false' : 'true'); }
+    function setup(el) {
+        if (el.classList.contains('gr-attrib')) { return; }
+        el.classList.add('gr-attrib', 'gr-attrib--closed');
+        el.setAttribute('tabindex', '0');
+        el.setAttribute('role', 'button');
+        el.setAttribute('aria-expanded', 'false');
+        el.setAttribute('aria-label', EN ? 'Map credits' : 'Πηγές χάρτη');
+        el.addEventListener('click', function(e) { if (!(e.target.closest && e.target.closest('a'))) { toggle(el); } });
+        el.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(el); } });
+    }
+    function scan() {
+        var els = document.querySelectorAll('.olControlAttribution');
+        for (var i = 0; i < els.length; i++) { setup(els[i]); }
+    }
+    if (window.MutationObserver) { new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true }); }
+    document.addEventListener('DOMContentLoaded', scan);
+    scan();
+})();

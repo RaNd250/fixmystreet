@@ -43,7 +43,9 @@
                 p.setAttribute('role', 'alert');
                 box.parentNode.insertBefore(p, box);
             }
-            p.textContent = NEED;
+            p.textContent = box.readOnly
+                ? (EN ? 'Complaints are published without a name: add a photo.' : 'Οι καταγγελίες δημοσιεύονται χωρίς όνομα: πρόσθεσε φωτογραφία.')
+                : NEED;
             box.scrollIntoView({ block: 'center' });
             box.focus();
         }, true);
@@ -58,7 +60,7 @@
 
     document.addEventListener('focusin', function(e) {
         var box = e.target;
-        if (box.id !== 'form_name' || box.value !== box.dataset.grDefault) { return; }
+        if (box.id !== 'form_name' || box.readOnly || box.value !== box.dataset.grDefault) { return; }
         box.value = '';
         box.classList.remove('gr-name-default');
     });

@@ -537,6 +537,8 @@ sub greece_public_complaint {
     my ($self, $report) = @_;
     return unless $self->greece_is_complaint($report);
     $report->anonymous(1);
+    # No name, whatever the form sent: the page shows none and the letter says «Ανώνυμος».
+    $report->name($self->anonymous_account->{name});
     my $detail = $report->detail // '';
     (my $masked = $detail) =~ s/$GREECE_PLATE/***/g;
     if ($masked ne $detail) {

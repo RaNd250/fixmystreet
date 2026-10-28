@@ -9,12 +9,41 @@
 (function() {
     'use strict';
 
+    var EN = /^en/i.test(document.documentElement.lang || '');
+    var ANON = EN ? 'Anonymous' : 'Ανώνυμος';
+    // A complaint is anonymous: the name field is filled in with «Ανώνυμος» and cannot be changed; it gets what
+    // was in it back when another category is chosen.
+    function lockName(complaint) {
+        var name = document.getElementById('form_name');
+        if (!name || !name.form || name.form.id !== 'mapForm') { return; }
+        var hint = name.form.querySelector('label[for="form_name"] span');
+        if (complaint && !name.dataset.grLocked) {
+            name.dataset.grLocked = '1';
+            name.dataset.grSaved = name.value;
+            name.value = ANON;
+            name.readOnly = true;
+            name.setAttribute('aria-readonly', 'true');
+            name.classList.add('gr-name-default', 'gr-name-locked');
+            if (hint) { name.dataset.grHint = hint.textContent; hint.textContent = EN ? ' (complaints are always anonymous)' : ' (οι καταγγελίες είναι πάντα ανώνυμες)'; }
+        } else if (!complaint && name.dataset.grLocked) {
+            delete name.dataset.grLocked;
+            name.readOnly = false;
+            name.removeAttribute('aria-readonly');
+            name.classList.remove('gr-name-locked');
+            var saved = name.dataset.grSaved;
+            name.value = saved && saved !== ANON ? saved : ANON;
+            name.classList.toggle('gr-name-default', name.value === ANON);
+            if (hint && name.dataset.grHint !== undefined) { hint.textContent = name.dataset.grHint; }
+        }
+    }
+
     function sync() {
         var email = document.getElementById('form_username_register');
         if (!email || email.form && email.form.id !== 'mapForm') { return; }
         var show = document.getElementById('form_may_show_name');
         var cat = document.querySelector('input[name="category"]:checked');
         var complaint = !!(cat && cat.value === 'Στάθμευση σε φορτιστή EV ή εμπόδιο στη διέλευση');
+        lockName(complaint);
         var box = show && (show.closest('.gr-showname') || show.closest('.checkbox-group') || show.parentNode);
         if (box) { box.hidden = complaint; }
         if (complaint && show) { show.checked = false; }
