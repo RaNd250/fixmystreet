@@ -661,9 +661,9 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
    blue header; a CSS drop-shadow blurred it. */
 #site-logo {
     width: 157px; background-size: 157px 36px; background-position: 0 50%;
-    background-image: url("logo/site-logo-v6.png");
-    background-image: -webkit-image-set(url("logo/site-logo-v6.png") 1x, url("logo/site-logo-v6@2x.png") 2x, url("logo/site-logo-v6@3x.png") 3x, url("logo/site-logo-v6@4x.png") 4x);
-    background-image: image-set(url("logo/site-logo-v6.png") 1x, url("logo/site-logo-v6@2x.png") 2x, url("logo/site-logo-v6@3x.png") 3x, url("logo/site-logo-v6@4x.png") 4x);
+    background-image: url("logo/site-logo-v7.png");
+    background-image: -webkit-image-set(url("logo/site-logo-v7.png") 1x, url("logo/site-logo-v7@2x.png") 2x, url("logo/site-logo-v7@3x.png") 3x, url("logo/site-logo-v7@4x.png") 4x);
+    background-image: image-set(url("logo/site-logo-v7.png") 1x, url("logo/site-logo-v7@2x.png") 2x, url("logo/site-logo-v7@3x.png") 3x, url("logo/site-logo-v7@4x.png") 4x);
 }
 
 /* Desktop menu. base.css colours visited menu links #333/#000 (.nav-menu a:visited), which on the
