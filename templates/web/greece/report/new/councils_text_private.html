@@ -1,13 +1,17 @@
 [%# The line above the reporter's details. FixMyStreet's «…δεν θα εμφανιστούν ποτέ online χωρίς την
     άδειά σου» said less than is true here: email and phone are never public, the name only if chosen. ~%]
 [% FILTER collapse %]
+[% is_complaint = (category == 'Στάθμευση σε φορτιστή EV ή εμπόδιο στη διέλευση') %]
 [% category = mark_safe(category) %]
-[% IF unresponsive.$category OR unresponsive.ALL OR bodies_to_list.size == 0 %]
+[% IF is_complaint %]
+    [% c.cobrand.greece_t('Η καταγγελία δημοσιεύεται πάντα ανώνυμα. Email και τηλέφωνο: μόνο στην υπηρεσία.',
+        'A complaint is always published anonymously. Email and phone: only the service.') %]
+[% ELSIF unresponsive.$category OR unresponsive.ALL OR bodies_to_list.size == 0 %]
     [% c.cobrand.greece_t('Το email και το τηλέφωνο δεν εμφανίζονται ποτέ δημόσια· το όνομα μόνο αν το επιλέξεις.',
         'Your email and phone are never shown publicly; your name only if you choose.') %]
 [% ELSE %]
-    [% c.cobrand.greece_t('Μόνο στην υπηρεσία· το όνομα φαίνεται μόνο αν το επιλέξεις.',
-        'Only the service gets them; your name is shown only if you choose.') %]
+    [% c.cobrand.greece_t('Email και τηλέφωνο: μόνο στην υπηρεσία. Όνομα: φαίνεται μόνο αν το επιλέξεις.',
+        'Email and phone: only the service. Name: shown only if you choose.') %]
 [% END %]
 (<a href="[% c.cobrand.privacy_policy_url %]">[% c.cobrand.greece_t('Πολιτική απορρήτου', 'Privacy policy') %]</a>)
 [% END -%]
