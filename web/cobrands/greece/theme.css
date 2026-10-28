@@ -15,11 +15,15 @@
     --gr-line: #e3e8f0;
     --gr-line-2: #cfd7e3;
     --gr-header: rgba(12, 27, 51, 0.94);
-    --gr-accent: #1f5fd6;
-    --gr-accent-hover: #184bb0;
-    --gr-accent-soft: #e9f0ff;
-    --gr-accent-ink: #123f99;
+    --gr-accent: #0055a4;
+    --gr-accent-hover: #004485;
+    --gr-accent-soft: #e6eef8;
+    --gr-accent-ink: #003a73;
     --gr-warm: #ffb21e;
+    --gr-fixed: #15803d;        /* fixed reports: 5.0:1 on white */
+    --gr-fixed-hover: #166534;
+    --gr-fixed-soft: #e8f5ec;
+    --gr-fixed-ink: #14532d;    /* 8:1 on the soft green */
     --gr-danger: #dc2626;
     --gr-radius-s: 10px;
     --gr-radius: 16px;
@@ -28,7 +32,7 @@
     --gr-shadow-1: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.07);
     --gr-shadow-2: 0 6px 16px -4px rgba(15, 23, 42, 0.10), 0 2px 6px rgba(15, 23, 42, 0.05);
     --gr-shadow-3: 0 24px 48px -16px rgba(15, 23, 42, 0.28);
-    --gr-ring: 0 0 0 3px rgba(31, 95, 214, 0.28);
+    --gr-ring: 0 0 0 3px rgba(0, 85, 164, 0.28);
     --gr-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     --gr-fast: 0.16s;
     --gr-med: 0.28s;
@@ -52,7 +56,7 @@ h1 { font-weight: 700; line-height: 1.15; }
 h2 { font-weight: 650; }
 a { color: var(--gr-accent); text-underline-offset: 0.18em; transition: color var(--gr-fast) ease; }
 a:hover { color: var(--gr-accent-hover); }
-::selection { background: rgba(31, 95, 214, 0.18); }
+::selection { background: rgba(0, 85, 164, 0.18); }
 
 :focus-visible { outline: 2px solid var(--gr-accent); outline-offset: 2px; }
 
@@ -202,7 +206,7 @@ a:hover { color: var(--gr-accent-hover); }
     color: #fff !important;
     background: var(--gr-accent);
     border-color: var(--gr-accent);
-    box-shadow: 0 8px 20px -10px rgba(31, 95, 214, 0.75);
+    box-shadow: 0 8px 20px -10px rgba(0, 85, 164, 0.75);
 }
 .btn--primary:hover { color: #fff !important; background: var(--gr-accent-hover); border-color: var(--gr-accent-hover); }
 .btn--primary:focus { color: #fff !important; background: var(--gr-accent); border-color: var(--gr-accent-hover); }
@@ -299,7 +303,7 @@ input.form-error:focus, textarea.form-error:focus, select.form-error:focus { box
     padding-top: 1em;
     color: var(--gr-ink);
     background:
-        radial-gradient(1200px 420px at 15% -10%, rgba(31, 95, 214, 0.16), transparent 60%),
+        radial-gradient(1200px 420px at 15% -10%, rgba(0, 85, 164, 0.16), transparent 60%),
         radial-gradient(900px 380px at 95% 0%, rgba(255, 178, 30, 0.18), transparent 60%),
         var(--gr-bg);
 }
@@ -397,7 +401,7 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
         background-color: var(--gr-accent);
         background-position: right 1em center;
         background-size: 1.2em auto;
-        box-shadow: 0 12px 28px -14px rgba(31, 95, 214, 0.8);
+        box-shadow: 0 12px 28px -14px rgba(0, 85, 164, 0.8);
     }
 }
 .big-green-banner { background-color: var(--gr-accent); }
@@ -447,7 +451,7 @@ h2.static-with-rule { border-top: 0; border-radius: var(--gr-radius-s); backgrou
         box-shadow: var(--gr-shadow-3);
     }
     .sub-map-links #mob_ok { background: var(--gr-accent); color: #fff; font-weight: 650; }
-    .map-mobile-report-button { border-radius: var(--gr-pill); background-color: var(--gr-accent); box-shadow: 0 12px 28px -12px rgba(31, 95, 214, 0.9); }
+    .map-mobile-report-button { border-radius: var(--gr-pill); background-color: var(--gr-accent); box-shadow: 0 12px 28px -12px rgba(0, 85, 164, 0.9); }
     .map-mobile-report-button:hover, .map-mobile-report-button:focus { background-color: var(--gr-accent-hover); }
     .map-fullscreen .olControlAttribution { bottom: calc(74px + env(safe-area-inset-bottom)) !important; }
 }
@@ -945,7 +949,7 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
 .dashboard-search h2, .dashboard-search label { color: var(--gr-ink); }
 .dashboard-search input[type="submit"] {
     background: var(--gr-accent); color: #fff; border: 1px solid var(--gr-accent); border-radius: var(--gr-pill);
-    text-transform: none; font-weight: 700; box-shadow: 0 6px 16px -6px rgba(31, 95, 214, 0.55); cursor: pointer;
+    text-transform: none; font-weight: 700; box-shadow: 0 6px 16px -6px rgba(0, 85, 164, 0.55); cursor: pointer;
     transition: background-color var(--gr-fast) ease, border-color var(--gr-fast) ease, transform var(--gr-fast) ease;
 }
 .dashboard-search input[type="submit"]:hover, .dashboard-search input[type="submit"]:focus { background: var(--gr-accent-hover); border-color: var(--gr-accent-hover); }
@@ -973,7 +977,7 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
    marker element is positioned by MapLibre, so only the button inside it grows on hover. */
 .gr-rmap__totals { display: flex; flex-wrap: wrap; gap: 0.25em 1.5em; margin: 0 0 0.9em; color: var(--gr-ink-2); font-weight: 600; }
 .gr-rmap__totals strong { margin-right: 0.15em; font-size: 1.6em; font-weight: 750; color: var(--gr-accent); vertical-align: -0.08em; }
-.gr-rmap__totals .gr-rmap__fixed strong { color: #16a34a; }
+.gr-rmap__totals .gr-rmap__fixed strong { color: var(--gr-fixed); }
 .gr-rmap[hidden] { display: none; }
 .gr-rmap { margin: 0 0 0.75em; animation: gr-fade-in 0.4s ease; }
 .gr-rmap__map { height: 320px; border: 1px solid var(--gr-line); border-radius: var(--gr-radius); overflow: hidden; background: #eef1f5; box-shadow: var(--gr-shadow-2); }
@@ -981,7 +985,7 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
 .gr-rmap__marker { line-height: 0; }
 .gr-rmap__dot {
     display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;
-    border: 2px solid #fff; border-radius: 50%; background: rgba(31, 95, 214, 0.9); color: #fff;
+    border: 2px solid #fff; border-radius: 50%; background: rgba(0, 85, 164, 0.9); color: #fff;
     font: 700 13px/1 var(--gr-font); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.28); cursor: pointer;
     transition: transform var(--gr-fast) var(--gr-ease), background-color var(--gr-fast) ease;
     animation: gr-pop 0.35s var(--gr-ease) backwards;
@@ -1403,14 +1407,14 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 .gr-otp__code { flex: 1 1 auto; min-width: 0; margin: 0 !important; letter-spacing: 0.3em; font-variant-numeric: tabular-nums; }
 .gr-otp__row .btn { margin: 0; white-space: nowrap; }
 .gr-otp__msg { margin: 4px 0 0; }
-.gr-otp__msg--ok { color: #15803d; font-weight: 600; }
+.gr-otp__msg--ok { color: var(--gr-fixed); font-weight: 600; }
 .gr-otp__msg--bad { color: var(--gr-danger); }
 
 /* A category's picture beside its emoji (category-emoji.js PICTURE). */
 .gr-cat-emoji .gr-cat-pic { width: 1.7em; height: 1.7em; margin-left: 0.2em; vertical-align: -0.45em; object-fit: contain; }
 
 /* Delivery of a report's email (bin/greece/mail-delivery): ✓ on the report page, details in the admin. */
-.gr-delivered { color: #15803d; font-weight: 600; white-space: nowrap; }
+.gr-delivered { color: var(--gr-fixed); font-weight: 600; white-space: nowrap; }
 .gr-undelivered { color: #b45309; font-weight: 600; white-space: nowrap; }
 .gr-delivery { margin: 0 0 1em; padding: 0.6em 0.9em; border-radius: 8px; border: 1px solid #d9dee8; background: #f6f8fc; }
 .gr-delivery--delivered { border-color: #86efac; background: #f0fdf4; }
@@ -1494,7 +1498,12 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 /* The municipality's contact card (home page): the name and an arrow; the contacts open on a tap. */
 .gr-dimos > summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .gr-dimos > summary::-webkit-details-marker { display: none; }
-.gr-dimos__arrow { flex: none; font-weight: 700; color: var(--gr-primary, #1d6fe0); transition: transform .15s; }
+.gr-dimos__arrow { flex: none; display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+    background: var(--gr-accent); color: #fff; font-size: 1.25rem; font-weight: 700; line-height: 1;
+    box-shadow: 0 1px 4px rgba(29, 95, 216, .35); transition: transform .15s; }
 .gr-dimos[open] .gr-dimos__arrow { transform: rotate(90deg); }
-.gr-dimos > summary:focus-visible { outline: 2px solid var(--gr-primary, #1d6fe0); outline-offset: 3px; border-radius: 4px; }
+.gr-dimos > summary:focus-visible { outline: 2px solid var(--gr-accent); outline-offset: 3px; border-radius: 4px; }
 .gr-dimos[open] > summary { margin-bottom: 8px; }
+
+/* A report that has been put right: the fixed green, on the banner of its page. */
+.banner--fixed, .problem-header .fixed { background: var(--gr-fixed-soft); color: var(--gr-fixed-ink); border-left: 4px solid var(--gr-fixed); }

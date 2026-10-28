@@ -47,7 +47,7 @@ OpenLayers.Layer.Greece = OpenLayers.Class(OpenLayers.Layer.OSM, {
         'Πράσινο και δέντρα': '🌳', 'Trees and green spaces': '🌳',
         'Οδοφωτισμός': '💡', 'Street lighting': '💡'
     };
-    var RING = { yellow: '#f59e0b', green: '#16a34a', grey: '#6b7280', gray: '#6b7280', red: '#dc2626', blue: '#1f5fd6' };
+    var RING = { yellow: '#f59e0b', green: '#15803d', grey: '#6b7280', gray: '#6b7280', red: '#dc2626', blue: '#0055a4' };
     var cache = {};
     function graphic(emoji, colour) {
         var key = emoji + colour;
