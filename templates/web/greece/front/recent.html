@@ -27,6 +27,28 @@
 [% ELSIF gr_front_recent %]
 <div id="front-recently">
     <h2>[% loc('Recently reported problems') %]</h2>
-    <p class="gr-recent-none">[% c.cobrand.greece_t('Δεν υπάρχουν ακόμα αναφορές. Γίνε ο πρώτος: δείξε το πρόβλημα στον χάρτη.', 'No reports yet. Be the first: show the problem on the map.') %]</p>
+    <div class="gr-howto">
+        <h3>[% c.cobrand.greece_t('Πώς λειτουργεί', 'How it works') %]</h3>
+        <ol class="gr-howto__steps">
+            <li><span class="gr-howto__icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+                <span><strong>[% c.cobrand.greece_t('Δείξε το σημείο', 'Mark the spot') %]</strong>
+                [% c.cobrand.greece_t('Μετακίνησε τον χάρτη ώστε η καρφίτσα να δείχνει το πρόβλημα.', 'Move the map so the pin sits on the problem.') %]</span></li>
+            <li><span class="gr-howto__icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.2"/></svg></span>
+                <span><strong>[% c.cobrand.greece_t('Πες τι συμβαίνει', 'Say what is wrong') %]</strong>
+                [% c.cobrand.greece_t('Διάλεξε κατηγορία, πρόσθεσε φωτογραφία και λίγες λέξεις.', 'Pick a category, add a photo and a few words.') %]</span></li>
+            <li><span class="gr-howto__icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 21 4l-7.5 17-2.3-7.2z"/><path d="M11.2 13.8 21 4"/></svg></span>
+                <span><strong>[% c.cobrand.greece_t('Φτάνει στην αρμόδια υπηρεσία', 'It reaches the right service') %]</strong>
+                [% c.cobrand.greece_t('Στέλνεται με email στον δήμο ή στην αστυνομία, χωρίς στοιχεία επικοινωνίας αν δεν τα δώσεις, και φαίνεται δημόσια.', 'It is emailed to the municipality or the police, without contact details unless you give them, and shown publicly.') %]</span></li>
+        </ol>
+        <div class="gr-example" role="group" aria-label="[% c.cobrand.greece_t('Παράδειγμα αναφοράς', 'Example report') %]">
+            <span class="gr-example__tag">[% c.cobrand.greece_t('Παράδειγμα', 'Example') %]</span>
+            <div class="gr-example__body">
+                <strong>[% c.cobrand.greece_t('Λακκούβα στο οδόστρωμα', 'Pothole in the road') %]</strong>
+                <span>[% c.cobrand.greece_t('Κεντρική οδός, ο δήμος σου', 'A main street in your municipality') %]</span>
+                <span class="gr-example__status">[% c.cobrand.greece_t('Στάλθηκε στην Τεχνική Υπηρεσία', 'Sent to the Technical Service') %]</span>
+            </div>
+        </div>
+        <p class="gr-recent-none">[% c.cobrand.greece_t('Δεν υπάρχουν ακόμα αναφορές. Γίνε ο πρώτος: δείξε το πρόβλημα στον χάρτη.', 'No reports yet. Be the first: show the problem on the map.') %]</p>
+    </div>
 </div>
 [% END %]

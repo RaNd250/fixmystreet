@@ -1,0 +1,22 @@
+[%# Hide a report for privacy reasons (App::Controller::GreecePrivacy). ~%]
+[% INCLUDE 'header.html', title = c.cobrand.greece_t('Απόκρυψη αναφοράς για λόγους ιδιωτικότητας', 'Hide a report for privacy reasons'), sidebar = 'about/_sidebar.html', bodyclass = 'gr-terms' %]
+<h1>[% c.cobrand.greece_t('Απόκρυψη για λόγους ιδιωτικότητας', 'Hide for privacy reasons') %]</h1>
+[% IF done %]
+<p><strong>[% c.cobrand.greece_t('Η αναφορά κρύφτηκε από το κοινό.', 'The report has been hidden from the public.') %]</strong>
+[% c.cobrand.greece_t('Θα την ελέγξουμε και θα αποφασίσουμε αν θα εμφανιστεί ξανά, θα διορθωθεί ή θα διαγραφεί. Ό,τι έχει ήδη σταλεί σε δήμο ή στην αστυνομία δεν μπορούμε να το ανακαλέσουμε.', 'We will review it and decide whether it comes back, is corrected or is deleted. What has already been sent to a municipality or the police cannot be recalled by us.') %]</p>
+<p><a href="/">[% c.cobrand.greece_t('Αρχική', 'Home') %]</a></p>
+[% ELSE %]
+<p>[% c.cobrand.greece_t('Αν η αναφορά δείχνει κάτι που δεν πρέπει να φαίνεται (πρόσωπο, πινακίδα, σπίτι, προσωπικά στοιχεία), κρύβεται αμέσως από το κοινό μέχρι να τη δούμε. Δεν διαγράφεται και δεν ανακαλείται ό,τι έχει ήδη σταλεί στην υπηρεσία.', 'If the report shows something that should not be visible (a face, a number plate, a home, personal details), it is hidden from the public at once until we have looked at it. It is not deleted, and what was already sent to the service is not recalled.') %]</p>
+<p><strong>[% problem.title | html %]</strong>[% IF problem.greece_ref %] · [% problem.greece_ref | html %][% END %]</p>
+[% IF error %]<p class="form-error">[% error | html %]</p>[% END %]
+<form method="post" action="/greece/privacy/[% problem.id %]" class="validate">
+    <p><label for="gr_pf_reason">[% c.cobrand.greece_t('Τι πρέπει να κρυφτεί; (προαιρετικό)', 'What should be hidden? (optional)') %]</label>
+    <textarea class="form-control" name="reason" id="gr_pf_reason" rows="4" maxlength="1000">[% c.get_param('reason') | html %]</textarea></p>
+    <p><label for="gr_pf_contact">[% c.cobrand.greece_t('Το email σου, αν θες απάντηση (προαιρετικό)', 'Your email, if you want a reply (optional)') %]</label>
+    <input type="email" class="form-control" name="contact" id="gr_pf_contact" autocomplete="email" value="[% c.get_param('contact') | html %]"></p>
+    [% INCLUDE '_turnstile.html' %]
+    <p><button type="submit" class="btn btn--primary">[% c.cobrand.greece_t('Απόκρυψη τώρα', 'Hide now') %]</button>
+       <a href="[% problem.url %]">[% c.cobrand.greece_t('Άκυρο', 'Cancel') %]</a></p>
+</form>
+[% END %]
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

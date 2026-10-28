@@ -1,0 +1,23 @@
+[%# Sent by bin/greece/anonymise-old, once, 30 days before an account that has not been used for 24 months is anonymised. Greek and English. ~%]
+Subject: Ο λογαριασμός σου στο FixMyStreets θα διαγραφεί σε [% days %] ημέρες / Your FixMyStreets account will be deleted in [% days %] days
+
+Γεια σου[% IF name %] [% name %][% END %],
+
+δεν έχεις συνδεθεί στο FixMyStreets εδώ και σχεδόν δύο χρόνια. Σύμφωνα με την πολιτική απορρήτου μας, σε [% days %] ημέρες ο λογαριασμός σου και τα στοιχεία που κρατάμε γι' αυτόν (όνομα, email, τηλέφωνο) θα διαγραφούν. Οι αναφορές σου μένουν στον χάρτη χωρίς το όνομά σου.
+
+Αν θέλεις να κρατήσεις τον λογαριασμό σου, συνδέσου μία φορά πριν από αυτό:
+[% sign_in_url %]
+
+Αν δεν κάνεις τίποτα, δεν χρειάζεται να απαντήσεις.
+
+---
+
+Hello[% IF name %] [% name %][% END %],
+
+you have not signed in to FixMyStreets for almost two years. In line with our privacy policy, in [% days %] days your account and the data we keep for it (name, email, phone) will be deleted. Your reports stay on the map without your name.
+
+If you want to keep your account, sign in once before then:
+[% sign_in_url %]
+
+If you do nothing, you do not need to reply.
+[% signature %]

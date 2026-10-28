@@ -13,7 +13,8 @@
 # not send it twice), and marks the report sent when all its addresses are done.
 #
 # An email for many reports cannot have each reporter in Cc or as Reply-To, as one report's email
-# did: their email is in the table, with «(χωρίς επιβεβαίωση)» where it was not confirmed.
+# did: their email is in the table when it was confirmed (signed in, or the emailed code); an email
+# that was not confirmed stays out, as on the single letter (Cobrand::Greece munge_sendreport_params).
 # On a staging site that does not send reports (STAGING_FLAGS send_reports 0) the emails go to the
 # site's contact address, saying where they would have gone.
 #
@@ -41,7 +42,15 @@ use Digest::SHA ();
 
 binmode STDOUT, ':utf8';
 
-our @HOURS = (7, 13, 19);    # Europe/Athens
+our @HOURS = (1, 7, 13, 19);    # Europe/Athens
+
+sub notify_waiting {
+    my ($schema, $cobrand, $count) = @_;
+    my $env = 'fms-approval@' . (FixMyStreet->config('EMAIL_DOMAIN') || 'fixmystreets.gr');
+    FixMyStreet::Email::send_cron($schema, 'approval-pending.txt', {
+        count => $count, cobrand => $cobrand, approve_url => $cobrand->base_url . '/admin/greece/approve',
+    }, { To => [ [ $cobrand->contact_email, $cobrand->contact_name ] ] }, $env, 0, $cobrand, 'el');
+}
 
 sub main {
     my @args = @_;
@@ -70,6 +79,11 @@ sub main {
         whensent => undef,
         bodies_str => { '!=', undef },
     }, { order_by => [ 'confirmed', 'id' ] })->all;
+    # A municipality's report waits for an admin's approval (/admin/greece/approve); the contact address is told.
+    my @waiting = grep { $cobrand->greece_needs_approval($_) } @reports;
+    @reports = grep { !$cobrand->greece_needs_approval($_) } @reports;
+    print scalar(@waiting), " report(s) wait for approval\n" if @waiting;
+    notify_waiting($schema, $cobrand, scalar @waiting) if @waiting && !$opt{'dry-run'} && !$opt{to};
 
     # address => { bodies => { name => 1 }, items => [ { report, ... } ] }
     my (%group, %pending);
@@ -173,14 +187,17 @@ sub digest_item {
     $address =~ s/, (Περιφερειακή Ενότητα|Περιφέρεια|Αποκεντρωμένη Διοίκηση)[^,]*//g;
     $address =~ s/, Ελλάς$//;
     my $user = $r->user;
+    # The name the reporter typed goes to the municipality; the site's placeholder for «no name» does not.
+    my $name = $r->name // '';
+    $name = '' if $name =~ /^\s*$/ || $name eq ($cobrand->anonymous_account->{name} // '') || $name =~ /^Ανώνυμ/;
     return {
         report => $r,
         url => $cobrand->base_url_for_report($r) . $r->url,
         gmaps_url => sprintf('https://maps.google.com/maps?q=%s,%s', $r->latitude, $r->longitude),
         address => $address,
         detail => $r->get_extra_metadata('greece_detail_full') || $r->detail,
-        email => $anonymous || !$user ? '' : $user->email // '',
-        email_unconfirmed => $anonymous || $r->get_extra_metadata('greece_email_confirmed') ? 0 : 1,
+        name => $name,
+        email => $anonymous || !$user || !$r->get_extra_metadata('greece_email_confirmed') ? '' : $user->email // '',
         phone => ($user && !$anonymous ? $user->phone : '') || $r->get_extra_metadata('greece_phone') || '',
         photos => $r->photo ? scalar(grep { /\S/ } split /,/, $r->photo) : 0,
         video_seconds => $r->get_extra_metadata('greece_video_seconds') || 0,

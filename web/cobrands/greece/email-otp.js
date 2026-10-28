@@ -35,7 +35,7 @@
             box.innerHTML = '<button type="button" class="gr-otp__ask">' + t('Επιβεβαίωση email', 'Confirm email') + '</button>' +
                 '<span class="gr-otp__why">' + (hasVideo()
                     ? t('απαιτείται για το βίντεο', 'required for the video')
-                    : t('προαιρετικό · για να σε έχει η υπηρεσία σε κοινοποίηση', 'optional · so the service copies you in')) + '</span>';
+                    : t('προαιρετικό · χωρίς επιβεβαίωση το email δεν φτάνει στην υπηρεσία', 'optional · without it your email does not reach the service')) + '</span>';
             box.hidden = !EMAIL.test(input.value.trim());
             box.querySelector('.gr-otp__ask').onclick = send;
         }
@@ -63,7 +63,7 @@
                     post('/greece/otp/check', { code: code.value }).then(function(r) {
                         if (r.ok) {
                             confirmed = (r.email || email).toLowerCase();
-                            box.innerHTML = '<p class="gr-otp__msg gr-otp__msg--ok">✓ ' + t('Το email επιβεβαιώθηκε· η υπηρεσία θα σε έχει σε κοινοποίηση.', 'Email confirmed; the service will copy you in.') + '</p>';
+                            box.innerHTML = '<p class="gr-otp__msg gr-otp__msg--ok">✓ ' + t('Το email επιβεβαιώθηκε· η υπηρεσία θα το βλέπει και θα μπορεί να σου απαντήσει.', 'Email confirmed; the service will see it and can reply to you.') + '</p>';
                         } else {
                             say(r.error === 'expired' ? t('Ο κωδικός έληξε. Ζήτησε νέο.', 'The code expired. Ask for a new one.')
                                 : t('Λάθος κωδικός.', 'Wrong code.'), 'gr-otp__msg--bad');

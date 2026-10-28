@@ -1,0 +1,26 @@
+[%# The author edits the description of their report (App::Controller::GreeceEdit). ~%]
+[% INCLUDE 'header.html', title = c.cobrand.greece_t('Επεξεργασία αναφοράς', 'Edit report') %]
+<h1>[% c.cobrand.greece_t('Επεξεργασία της περιγραφής', 'Edit the description') %]</h1>
+[% IF held %]
+<p><strong>[% c.cobrand.greece_t('Η αλλαγή αποθηκεύτηκε, αλλά η αναφορά κρατήθηκε για έλεγχο από διαχειριστή και δεν φαίνεται προς το παρόν.', 'The change was saved, but the report is held for a moderator and is not shown for now.') %]</strong></p>
+<p><a href="/my">[% c.cobrand.greece_t('Οι αναφορές μου', 'My reports') %]</a></p>
+[% ELSE %]
+<p><strong>[% problem.title | html %]</strong>[% IF problem.greece_ref %] · [% problem.greece_ref | html %][% END %]</p>
+<p class="gr-edit-note">[% c.cobrand.greece_t(
+    'Η αναφορά θα γράφει ότι επεξεργάστηκε από τον συντάκτη, με την ημερομηνία και την ώρα. Το προηγούμενο κείμενο το βλέπουν μόνο οι διαχειριστές και σβήνεται σε 3 μήνες. Η κατηγορία, η θέση και οι φωτογραφίες δεν αλλάζουν· για κάτι άλλο κάνε νέα αναφορά.',
+    'The report will say it was edited by its author, with the date and time. The earlier text is seen only by the moderators and is deleted after 3 months. The category, the place and the photos do not change; for anything else make a new report.') %]</p>
+[% IF problem.whensent %]
+<p class="gr-edit-note">[% c.cobrand.greece_t(
+    'Η αναφορά έχει ήδη σταλεί στον φορέα: η αλλαγή φαίνεται εδώ αλλά δεν στέλνεται ξανά. Για να τον ενημερώσεις, πρόσθεσε μια ενημέρωση στη σελίδα της αναφοράς.',
+    'The report has already been sent to the service: the change shows here but is not sent again. To tell them, add an update on the report page.') %]</p>
+[% END %]
+[% IF error %]<p class="form-error" role="alert">[% error | html %]</p>[% END %]
+<form method="post" action="/greece/edit/[% problem.id %]" class="gr-edit-form">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <p><label for="gr_edit_detail">[% c.cobrand.greece_t('Περιγραφή', 'Description') %]</label>
+    <textarea class="form-control" name="detail" id="gr_edit_detail" rows="8" maxlength="[% max %]" required>[% current | html %]</textarea></p>
+    <p><button type="submit" class="btn btn--primary">[% c.cobrand.greece_t('Αποθήκευση', 'Save') %]</button>
+       <a href="[% problem.url %]">[% c.cobrand.greece_t('Άκυρο', 'Cancel') %]</a></p>
+</form>
+[% END %]
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

@@ -28,9 +28,15 @@
 
     <dt>Can I report anonymously?</dt>
     <dd>Yes, if the report has a photo; without a photo it needs a name, so the service knows a person is
-    behind it. Your name is not shown on the site unless you tick “Show my name publicly”. The email is optional
+    behind it. Your name is not shown on the site unless you tick “Show my name”. The email is optional
     as long as your name is not shown; without an email, though, you will not hear what happened to the
-    report. Any name and phone number you give go only to the responsible service.</dd>
+    report. Any name and phone number you give go only to the responsible service. If you give no email and no phone, the report reaches the municipality or the police without contact details.</dd>
+
+    <dt>What data reaches the municipality or the police?</dt>
+    <dd>The place and address, the category, the description, the photos (with plates and faces blurred) and the date. Your
+    name and phone reach them only if you gave them, and your email only if you confirm it with the code we send you.
+    Complaints to the police also carry the photo with the plate readable. In the emails to municipalities the photos are not attached: they are on the report page, linked in the email. The video is not emailed; the service sees
+    it inside the platform.</dd>
 
     <dt>Where does my report go?</dt>
     <dd>To the municipality where the place is. Exceptions:
@@ -47,10 +53,19 @@
             recorded by <a href="https://xorisempodia.gr/reports/new">Χωρίς Εμπόδια (xorisempodia.gr)</a>,
             and the form takes you there.</li>
     </ul>
-    [% IF c.cobrand.greece_digest_active %]<p>Reports to municipalities go together three times a day: at 07:00, 13:00 and 19:00
-    (those made after 19:00 go at 07:00 in the morning). Complaints to the police go at once.</p>[% END %]
+    [% IF c.cobrand.greece_digest_active %]<p>Reports to municipalities are reviewed by an administrator and go together four times a day: at 01:00, 07:00, 13:00 and 19:00
+    (those made after 19:00 go at 01:00). Complaints to the police go at once.</p>[% END %]
     </dd>
 
+    <dt id="statuses">What do “Reported”, “Delivered” and “Fixed” mean?</dt>
+    <dd>
+    <ul>
+        <li><strong>Reported</strong>: the report was recorded on the platform.</li>
+        <li><strong>Delivered</strong>: the recipient’s mail server accepted the message.</li>
+        <li><strong>Fixed</strong>: the problem was put right.</li>
+    </ul>
+    <p>“Delivered” does not mean the municipality read the message or that it will go on to fix the problem: it only shows that the email reached its server. To see whether it was fixed, look at the report’s status.</p>
+    </dd>
     <dt>What happens to the photos?</dt>
     <dd>Number plates and faces are blurred automatically before a photo is stored; that is the copy everyone
     sees and the one sent to the municipality. Only in complaints to the police does the photo go with the
@@ -101,8 +116,9 @@
     <a href="/contact">contact page</a> or as described at the end of each message.</dd>
 
     <dt>How do we reply to the citizen?</dt>
-    <dd>Reply to the email itself: the reply goes straight to the citizen who made the report, or to us if they
-    gave no email.</dd>
+    <dd>For complaints to the police, reply to the email itself: the reply goes straight to the citizen if they
+    confirmed their email, otherwise to us. The emails to municipalities carry many reports: write to the citizen's
+    email where it is shown, or leave an update on the report page; replies to the message itself come to us.</dd>
 </dl>
 
 <h2><a name="organisation"></a>About the site</h2>

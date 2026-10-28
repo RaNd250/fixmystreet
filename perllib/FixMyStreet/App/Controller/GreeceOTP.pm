@@ -57,6 +57,9 @@ sub send_code : Path('/greece/otp/send') : Args(0) {
     my $for_email = grep { lc(($_->data || {})->{email} // '') eq $email }
         $c->model('DB::Token')->search({ scope => 'greece_otp', created => { '>', \"now() - interval '1 hour'" } })->all;
     return _answer($c, 429, 'too_many') if $for_email >= 3;
+    # A ceiling whatever the addresses: every code is mail from our relay, and Outlook rates it by its volume.
+    my $all = $c->model('DB::Token')->search({ scope => 'greece_otp', created => { '>', \"now() - interval '1 hour'" } })->count;
+    return _answer($c, 429, 'too_many') if $all >= 200;
 
     open my $ur, '<:raw', '/dev/urandom' or return _answer($c, 500, 'random');
     read($ur, my $bytes, 4) == 4 or return _answer($c, 500, 'random');

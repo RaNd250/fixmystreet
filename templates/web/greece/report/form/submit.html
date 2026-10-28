@@ -1,0 +1,19 @@
+[%# Greece: what happens to a report once it has been sent, before the button (privacy page, section 8). ~%]
+[% IF field_errors.greece_terms %]<p class="form-error">[% field_errors.greece_terms %]</p>[% END %]
+[% accepted_on = c.cobrand.greece_terms_cookie_date(c) %]
+[% IF accepted_on %]
+<p class="gr-terms-accept gr-terms-done">[% c.cobrand.greece_t(
+    '✓ Έχεις αποδεχτεί τους <a href="/about/terms" target="_blank" rel="noopener">Όρους χρήσης</a> και την <a href="/about/privacy" target="_blank" rel="noopener">Πολιτική απορρήτου</a> (' _ accepted_on _ ' · το θυμόμαστε με ένα cookie). Με την υποβολή βεβαιώνεις ξανά ότι οι πληροφορίες που υποβάλλεις είναι ακριβείς και δεν περιέχουν προσωπικά δεδομένα τρίτων (π.χ. ονόματα, αριθμούς κυκλοφορίας).',
+    '✓ You have accepted the <a href="/about/terms" target="_blank" rel="noopener">Terms of use</a> and the <a href="/about/privacy" target="_blank" rel="noopener">Privacy policy</a> (' _ accepted_on _ ' · remembered with a cookie). By submitting you confirm again that the information you submit is accurate and does not contain personal data of third parties (for example names or number plates).') | safe %]</p>
+[% ELSE %]
+<p class="gr-terms-accept"><label><input type="checkbox" name="greece_terms" value="1" required
+    data-msg-required="[% c.cobrand.greece_t('Για να στείλεις την αναφορά, αποδέξου τους όρους.', 'To send the report, accept the terms.') %]">
+    [% c.cobrand.greece_t(
+    'Έχω διαβάσει και αποδέχομαι τους <a href="/about/terms" target="_blank" rel="noopener">Όρους χρήσης</a> και την <a href="/about/privacy" target="_blank" rel="noopener">Πολιτική απορρήτου</a>. Βεβαιώνω ότι οι πληροφορίες που υποβάλλω είναι ακριβείς και δεν περιέχουν προσωπικά δεδομένα τρίτων (π.χ. ονόματα, αριθμούς κυκλοφορίας).',
+    'I have read and accept the <a href="/about/terms" target="_blank" rel="noopener">Terms of use</a> and the <a href="/about/privacy" target="_blank" rel="noopener">Privacy policy</a>. I confirm that the information I submit is accurate and does not contain personal data of third parties (for example names or number plates).') | safe %]</label></p>
+[% END %]
+<p class="gr-submit-note">[% c.cobrand.greece_t(
+    'Μόλις η αναφορά σταλεί στον δήμο ή στην αστυνομία, τα στοιχεία που περιλαμβάνει τα διαχειρίζεται πλέον η υπηρεσία που τη λαμβάνει. Μπορούμε να διαγράψουμε το δικό μας αντίγραφο, όχι αυτό που έχει ήδη φτάσει εκεί.',
+    'Once the report has been sent to the municipality or the police, the service that receives it handles the data it contains. We can delete our own copy, not the one that has already reached them.') %] <a href="/about/privacy">[% c.cobrand.greece_t('Απόρρητο', 'Privacy') %]</a></p>
+<input class="desk-only btn btn--primary btn--block btn--final js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]" data-disable>
+<input class="mob-only btn btn--primary btn--block btn--final js-submit_register" type="submit" name="submit_register_mobile" value="[% loc('Submit') %]" data-disable>

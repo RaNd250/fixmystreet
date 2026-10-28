@@ -1,0 +1,17 @@
+[%# Greece: the footer (legal and about links) on every page except the full-screen map pages. ~%]
+[% gr_path = c.req.uri.path %]
+[% RETURN IF ajax_loading ~%]
+                    [% IF pagefooter OR NOT gr_path.match('^/(around|report|my)(/|$)') %]
+                    <footer role="contentinfo">
+                        [% INCLUDE 'front/footer-marketing.html' %]
+                    </footer>
+                    [% END %]
+                </div><!-- .content role=main -->
+            </div><!-- .container -->
+        </div><!-- .table-cell -->
+    </div> <!-- .wrapper -->
+
+    [% INCLUDE 'common_footer_tags.html' %]
+
+</body>
+</html>

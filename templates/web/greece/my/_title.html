@@ -1,0 +1,42 @@
+[%# Greece: the top of /my (FixMyStreet's my/my.html includes this file in place of its heading): the account's
+    details, which FixMyStreet only shows. The form posts to App::Controller::GreeceAccount, which comes back
+    with ?acc=saved or ?acc=<what is wrong>. ~%]
+<h1>[% loc('Your account') %]</h1>
+
+[% acc = c.req.params.acc %]
+[% IF acc == 'saved' %]
+<p class="form-success" role="status">[% c.cobrand.greece_t('Αποθηκεύτηκε.', 'Saved.') %]</p>
+[% ELSIF acc == 'name_short' %]
+<p class="form-error" role="alert">[% c.cobrand.greece_t('Το όνομα θέλει τουλάχιστον 4 χαρακτήρες (ή άφησέ το κενό).', 'The name needs at least 4 characters (or leave it empty).') %]</p>
+[% ELSIF acc == 'name_bad' %]
+<p class="form-error" role="alert">[% c.cobrand.greece_t('Το όνομα δεν επιτρέπεται. Γράψε το πραγματικό σου όνομα.', 'That name is not allowed. Write your real name.') %]</p>
+[% ELSIF acc == 'phone' %]
+<p class="form-error" role="alert">[% c.cobrand.greece_t('Το τηλέφωνο δεν φαίνεται σωστό (ψηφία, προαιρετικά με + μπροστά).', 'The phone number does not look right (digits, optionally starting with +).') %]</p>
+[% END %]
+
+<form method="post" action="/greece/account" class="gr-account-form">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <h2>[% c.cobrand.greece_t('Τα στοιχεία σου', 'Your details') %]</h2>
+    <p class="gr-account-form__field">
+        <label for="gr-acc-name">[% c.cobrand.greece_t('Όνομα', 'Name') %]</label>
+        <input type="text" id="gr-acc-name" name="name" value="[% c.user.name | html %]" maxlength="100" autocomplete="name">
+        <span class="gr-account-form__hint">[% c.cobrand.greece_t(
+            'Το βλέπουν ο δήμος ή η αστυνομία όταν στέλνεις αναφορά, και εμφανίζεται στις νέες αναφορές σου. Δημόσια φαίνεται μόνο αν το επιλέξεις σε κάθε αναφορά.',
+            'The municipality or the police see it when you send a report, and it is filled in on your new reports. It is shown publicly only if you choose that on each report.') %]</span>
+    </p>
+    <p class="gr-account-form__field">
+        <label for="gr-acc-phone">[% c.cobrand.greece_t('Τηλέφωνο (προαιρετικό)', 'Phone (optional)') %]</label>
+        <input type="tel" id="gr-acc-phone" name="phone" value="[% c.user.phone | html %]" maxlength="20" autocomplete="tel">
+        <span class="gr-account-form__hint">[% c.cobrand.greece_t(
+            'Πηγαίνει στον δήμο ή στην αστυνομία μαζί με τις αναφορές σου, ώστε να μπορούν να σε βρουν.',
+            'It goes to the municipality or the police with your reports, so they can reach you.') %]</span>
+    </p>
+    <p class="gr-account-form__field">
+        <label for="gr-acc-email">Email</label>
+        <input type="email" id="gr-acc-email" value="[% c.user.email | html %]" readonly aria-describedby="gr-acc-email-hint">
+        <span class="gr-account-form__hint" id="gr-acc-email-hint">[% c.cobrand.greece_t(
+            'Είναι η σύνδεσή σου και δεν αλλάζει από εδώ. Για άλλο email, γράψε μας από τη φόρμα <a href="/contact">επικοινωνίας</a>.',
+            'It is your sign-in and is not changed here. For another email, write to us from the <a href="/contact">contact</a> form.') | safe %]</span>
+    </p>
+    <p><button type="submit" class="btn btn--primary">[% c.cobrand.greece_t('Αποθήκευση', 'Save') %]</button></p>
+</form>

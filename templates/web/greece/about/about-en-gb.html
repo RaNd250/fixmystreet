@@ -1,0 +1,39 @@
+[%# About page (/about), in English; see about.html. ~%]
+[% INCLUDE 'header.html', title = 'About FixMyStreets', sidebar = 'about/_sidebar.html', bodyclass = 'gr-terms' %]
+<h1>About [% site_name %]</h1>
+<p class="gr-terms__lead">Who we are, why we do it and how it runs without charging anyone.</p>
+<p class="gr-terms__date">Last updated: 28 October 2026</p>
+
+<h2 id="who">Who we are</h2>
+<p>[% site_name %] is an independent citizens' initiative. It is run by a team of volunteers, with hardware and hosting from
+<a href="[% c.config.GREECE_HOST_URL | html %]">[% c.config.GREECE_HOST_NAME | html %]</a>. It is not a public service or a service of
+any municipality, and it does not speak for any public authority.</p>
+
+<h2 id="why">Why we do it</h2>
+<p>A problem in public space, such as a pothole, a broken pavement, a ramp blocked by a parked vehicle or a street light that is
+out, often never reaches the right service, because it is not easy to know which one that is. Here you mark the spot on the map,
+write what is wrong, and the report is emailed to the service responsible. Reports are also public, so the whole neighbourhood
+can see what has been reported.</p>
+<p>To be clear about what we do not do: <strong>we do not repair the problems and we cannot promise they will be fixed.</strong> The
+service that receives the report decides that. We make sure it gets there and that it is visible.</p>
+
+<h2 id="funding">How it runs and who pays</h2>
+<ul>
+    <li>It is free for everyone. There are no ads and we do not sell or share personal data
+        (see the <a href="/about/privacy">Privacy policy</a>).</li>
+    <li>[% c.config.GREECE_HOST_NAME | html %] provides the hardware, the hosting and the related costs.
+        Development and day-to-day running are done by volunteers.</li>
+    <li>If any of this changes, we will say so here.</li>
+</ul>
+
+<h2 id="open">Open source</h2>
+<p>We build on the open-source <a href="https://fixmystreet.org/">FixMyStreet</a> platform by mySociety. The code of this site is also
+open, under the GNU AGPL v3: <a href="https://github.com/VitalData-Services/fixmystreet/tree/greece">source code</a>. Anyone can
+inspect it.</p>
+
+<h2 id="contact">Contact</h2>
+<p>For questions, corrections or requests write to
+<a href="mailto:[% c.cobrand.contact_email | html %]">[% c.cobrand.contact_email | html %]</a> or use the
+<a href="/contact">Contact</a> page. See also the <a href="/about/terms">Terms of use</a> and the
+<a href="/faq">FAQ</a>.</p>
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

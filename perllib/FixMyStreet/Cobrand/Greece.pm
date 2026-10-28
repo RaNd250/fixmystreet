@@ -233,6 +233,25 @@ sub extra_contact_validation {
 }
 
 # Whether the report was made without an email (filed under anonymous_account).
+# The author of a report may edit its description while the report is visible (owner, 2026-10-28;
+# App::Controller::GreeceEdit). Not a report made without signing in: it is filed under the shared
+# anonymous account, so nobody can show it is theirs.
+sub greece_may_edit {
+    my ($self, $user, $problem) = @_;
+    return 0 unless $user && $problem && $problem->user_id && $user->id == $problem->user_id;
+    return 0 if $self->greece_anonymous_report($problem);
+    return 0 if $problem->state eq 'hidden' || $problem->state eq 'unconfirmed';
+    return 1;
+}
+
+# When a report was last edited (greece_edits), as «28/10/2026 14:20» in Athens time; empty if never.
+sub greece_last_edit_when {
+    my ($self, $problem) = @_;
+    my $edits = $problem->get_extra_metadata('greece_edits') or return '';
+    my $last = $edits->[-1] or return '';
+    return DateTime->from_epoch(epoch => $last->{at}, time_zone => FixMyStreet->local_time_zone)->strftime('%d/%m/%Y %H:%M');
+}
+
 sub greece_anonymous_report {
     my ($self, $report) = @_;
     my $anon = $self->anonymous_account or return 0;
@@ -242,6 +261,28 @@ sub greece_anonymous_report {
 # The report form has no title field, only the description (templates/web/greece/report/new/
 # form_report.html). The title is the category, which is what lists, the report page and the
 # emails to the body show above the description; for «Άλλα» it is the start of the description.
+# The version of the terms the reporter accepts: the date at the top of the terms page. Change it
+# when the terms change, and the box is asked again.
+sub greece_terms_version { '2026-10-28' }
+
+# A reporter who ticked the box keeps a cookie «gr_terms» = <terms version>|<time> for a year, so the box
+# is not asked again on every report. It is only a convenience: the proof is the record kept on each
+# report (extra greece_terms), not the cookie. Returns the time it was set, or undef when the cookie is
+# missing or is for an older version of the terms.
+sub greece_terms_cookie {
+    my ($self, $c) = @_;
+    my $cookie = $c->req->cookie('gr_terms') or return;
+    my ($version, $at) = $cookie->value =~ /^(\d{4}-\d\d-\d\d)\|(\d+)$/ or return;
+    return $version eq $self->greece_terms_version ? $at : undef;
+}
+
+# The date, for the form, of the acceptance the cookie remembers.
+sub greece_terms_cookie_date {
+    my ($self, $c) = @_;
+    my $at = $self->greece_terms_cookie($c) or return;
+    return DateTime->from_epoch(epoch => $at, time_zone => FixMyStreet->local_time_zone)->strftime('%d/%m/%Y');
+}
+
 sub report_check_for_errors {
     my ($self, $c) = @_;
     my $report = $c->stash->{report};
@@ -259,6 +300,8 @@ sub report_check_for_errors {
             'To send the video, enter your email and confirm it with the code we send you.') unless $ok;
     }
     $more{turnstile} = $self->greece_turnstile_error unless $self->greece_turnstile_ok($c);
+    # The terms are accepted with the report (an unticked box on the form).
+    $more{greece_terms} = $self->greece_t('Για να στείλεις την αναφορά, αποδέξου τους όρους.', 'To send the report, accept the terms.') unless $c->get_param('greece_terms') || $self->greece_terms_cookie($c);
     # Its own key: FixMyStreet drops errors under «name» for anonymous reports (Report/New.pm).
     my $name_error = $self->greece_name_error($c->get_param('name'));
     $name_error = $self->greece_t('Χωρίς φωτογραφία, γράψε το όνομά σου (τουλάχιστον 4 χαρακτήρες). Ανώνυμα γίνεται μόνο με φωτογραφία.',
@@ -335,6 +378,20 @@ sub disable_login_for_email {
 sub report_new_munge_before_insert {
     my ($self, $report) = @_;
     my $c = $self->{c};
+    if ($c) {
+        # What was accepted, when, and how: the record that goes with the report (privacy page §6, terms §8).
+        my $ticked = $c->get_param('greece_terms') ? 1 : 0;
+        my $earlier = $self->greece_terms_cookie($c);
+        my $now = time;
+        $report->set_extra_metadata(greece_terms => {
+            version => $self->greece_terms_version,
+            at => $now,
+            via => $ticked ? 'box' : 'cookie',
+            ($ticked || !$earlier ? () : (first_accepted => $earlier)),
+        });
+        $c->res->cookies->{gr_terms} = { value => $self->greece_terms_version . '|' . ($ticked ? $now : ($earlier || $now)),
+            expires => '+1y', path => '/', secure => 1, httponly => 1 };
+    }
     if ($c && !$c->user_exists && $c->stash->{contributing_as_anonymous_user}) {
         # FixMyStreet put the shared account's name on the report; keep what was typed instead.
         my $name = $c->get_param('name') // '';
@@ -413,9 +470,37 @@ sub greece_digest_next {
     my @bodies = FixMyStreet::DB->resultset('Body')->search({ id => \@ids })->all;
     return unless @bodies && !grep { ($_->send_method // '') ne 'Noop' || ($_->extra || {})->{greece_police} } @bodies;
     my $now = DateTime->now(time_zone => 'Europe/Athens');
-    my ($next) = grep { $_ > $now->hour } 7, 13, 19;
+    my ($next) = grep { $_ > $now->hour } 1, 7, 13, 19;
     return sprintf('%02d:00', $next) if $next;
-    return $self->greece_t('αύριο', 'tomorrow') . ' 07:00';
+    return $self->greece_t('αύριο', 'tomorrow') . ' 01:00';
+}
+
+# The admin's Users page lists every user, 20 to a page (?p=N), until a search narrows it (FixMyStreet
+# lists only the staff and admins by default). The pager is for templates/web/greece/admin/users/index.html.
+sub users_staff_admin {
+    my $self = shift;
+    my $c = $self->{c};
+    my $page = $c ? ($c->get_param('p') // 1) : 1;
+    $page = 1 unless $page =~ /^\d+$/ && $page > 0;
+    my $rs = FixMyStreet::DB->resultset('User')->search(undef, { rows => 20, page => $page });
+    $c->stash->{gr_users_pager} = $rs->pager if $c;
+    return $rs;
+}
+
+# A municipality's report waits for an admin's approval (/admin/greece/approve) before the digest sends it
+# (extra greece_approved); the police's complaints do not wait.
+sub greece_digest_body_ids {
+    my $self = shift;
+    return $self->{greece_digest_body_ids} //= { map { $_->id => 1 }
+        grep { !(($_->extra || {})->{greece_police}) }
+        FixMyStreet::DB->resultset('Body')->search({ deleted => 0, send_method => 'Noop' })->all };
+}
+sub greece_needs_approval {
+    my ($self, $report) = @_;
+    return 0 if !$report || $report->whensent || !$report->bodies_str || $report->get_extra_metadata('greece_approved');
+    my @ids = grep { /^\d+$/ } split /,/, $report->bodies_str;
+    my $ok = $self->greece_digest_body_ids;
+    return @ids && !grep({ !$ok->{$_} } @ids) ? 1 : 0;
 }
 
 # Whether the municipalities' digest is on (any municipality with send_method Noop), for the FAQ.
@@ -975,7 +1060,7 @@ sub greece_voter {
         read $fh, my $bytes, 16;
         close $fh;
         $id = unpack 'H*', $bytes;
-        $c->res->cookies->{gr_voter} = { value => $id, expires => '+2y', path => '/', httponly => 1, secure => 1 };
+        $c->res->cookies->{gr_voter} = { value => $id, expires => '+90d', path => '/', httponly => 1, secure => 1 };
     }
     require Digest::SHA;
     return 'c:' . Digest::SHA::sha256_hex($id);

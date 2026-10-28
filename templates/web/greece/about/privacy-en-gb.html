@@ -3,30 +3,30 @@
 
 <h1>Privacy policy</h1>
 <p class="gr-terms__lead">In plain words: what we need, where it goes, and what you can ask for.</p>
-<p class="gr-terms__date">Last updated: 26 October 2026</p>
+<p class="gr-terms__date">Last updated: 28 October 2026</p>
 
 <h2 id="who">1. Who is responsible</h2>
-<p>[% site_name %] is run by a team of volunteers, who are responsible for the data described here. For any
+<p>The controller is [% c.config.GREECE_CONTROLLER_NAME | html %][% IF c.config.GREECE_CONTROLLER_ADDRESS %] ([% c.config.GREECE_CONTROLLER_ADDRESS | html %])[% END %]. The team of volunteers that runs [% site_name %] acts under the instructions of [% c.config.GREECE_CONTROLLER_NAME | html %]. To exercise your rights you can contact [% c.config.GREECE_CONTROLLER_NAME | html %] or use the <a href="/contact">contact form</a>. For any
 question or request write to <a href="mailto:[% c.cobrand.contact_email | html %]">[% c.cobrand.contact_email | html %]</a>.</p>
 
 <h2 id="collect">2. What we collect</h2>
 <p><strong>With every report:</strong> the place on the map and the address found for it, the category, the answers
-to the category's questions, the description, the photos and the date.</p>
+to the category's questions, the description, the photos and the date. If you edit the description of one of your reports, we keep the text before each change for 3 months (only moderators see it), and for good the note that the report was edited, when and by whom.</p>
 <p><strong>If you add a video:</strong> up to 45 seconds. We process it on our own server (720p, without
 location or device details) and it is <strong>not published</strong>: only the accounts of the service that
 receives the report see it, inside the platform. It is not sent by email.</p>
-<p><strong>If you give them:</strong> name, email and phone. All are optional; without an email the report is sent
-anonymously.</p>
-<p><strong>With an account:</strong> email, name and password (stored only hashed) or, if you sign in with Google,
-Apple or Microsoft, the identifier and email the provider gives us.</p>
+<p><strong>If you give them:</strong> name, email and phone. Email and phone are optional; without an email and phone the report is sent
+without contact details. A name (at least 4 characters) is needed when the report has no photo.</p>
+<p><strong>With an account:</strong> email, name and password (stored only hashed) or, if you sign in with Google, the identifier and email the provider gives us.</p>
 <p><strong>Technical:</strong> IP address, browser type and request times in the server logs, for security and
 fixing faults.</p>
 
 <h2 id="why">3. Why we use it, and on what legal basis</h2>
 <ul>
     <li><strong>To get the report to the responsible service and show it on the map</strong>: legitimate interest
-        (GDPR Art. 6(1)(f)), in having problems in public space recorded and fixed.</li>
-    <li><strong>To show your name publicly</strong>: your consent (Art. 6(1)(a)), with the “Show my name publicly”
+        (GDPR Art. 6(1)(f)), in having problems in public space recorded and fixed.
+        The legitimate interest rests on the public benefit of recording and resolving problems in public space. The personal data that is published is limited (the point, the category, the description, blurred photos) and you can ask for it to be anonymised.</li>
+    <li><strong>To show your name publicly</strong>: your consent (Art. 6(1)(a)), with the “Show my name”
         box; you can withdraw it from your account.</li>
     <li><strong>To send you, if you gave an email, news of the report and the account link</strong>: the service you
         asked for (Art. 6(1)(b)).</li>
@@ -38,8 +38,8 @@ fixing faults.</p>
 
 <h2 id="recipients">4. Who receives the report</h2>
 <p>The report is emailed to the service responsible for the place and the category, usually the municipality or,
-for some categories, the Hellenic Police. The name and phone you gave go with it; your email only if you confirm it with the code we send
-you (the service then copies you in and replies to you directly).</p>
+for some categories, the Hellenic Police. With it go the place and address, the category, the description, the photos and the date and, only if you gave them, your name and phone; your email only if you confirm it with the code we send
+you (the service can then reply to you directly). If you give no email and no phone, the report is sent without contact details.</p>
 <p>Number plates and faces in photos are blurred automatically, on our own server. Only reports to the police also
 carry the photo with the plate readable, because without it the report cannot be examined.</p>
 
@@ -48,13 +48,14 @@ carry the photo with the plate readable, because without it the report cannot be
 updates. Email and phone are never shown; your name only if you choose. Complaints about parking and obstacles
 are shown without a name, and number plates in the description are replaced with ***; the plate goes only to the
 police or the municipality.</p>
-<p>Do not write names, number plates or other details of other people in the description.</p>
+<p>Do not write names, number plates or other details of other people in the description. If a published report shows something that should not be visible, you can hide it at once from its page (the “Hide for privacy reasons” link); we will review it afterwards.</p>
 
 <h2 id="cookies">6. Cookies and browser storage</h2>
 <p>We use only what the site needs to work; no advertising or analytics cookies. That is why we do not ask for consent with a banner.</p>
 <ul>
     <li>a sign-in cookie, while you are signed in;</li>
     <li>a cookie with a random identifier, so your vote (👍/👎) on a report counts once;</li>
+    <li>a cookie (<code>gr_terms</code>, one year) that remembers you accepted the terms of use, so we do not ask on every report. With each report we also keep which version of the terms you accepted and when (needed as proof of the acceptance);</li>
     <li>the draft of the report you are writing, only in your browser, so it is not lost if you leave by mistake;
         it is cleared once the report is sent;</li>
     <li>whatever the Cloudflare Turnstile security check needs.</li>
@@ -68,19 +69,26 @@ police or the municipality.</p>
         your IP address or cookies.</li>
     <li><strong>OpenStreetMap / Nominatim</strong>: to find the address of a place, our server sends its coordinates,
         with nothing else.</li>
-    <li><strong>MapIt (mySociety)</strong>: where the municipalities' boundaries come from; none of your data is sent to it.</li>
-    <li><strong>Google, Apple, Microsoft</strong>: only if you choose to sign in with them.</li>
-    <li><strong>Plausible Analytics</strong>, on our own installation: counts visits in aggregate (which pages, from
-        which country and device), with no cookies, without storing your IP address or telling visitors apart
-        from one day to the next.</li>
+    <li><strong>MapIt (mySociety)</strong>: where the municipalities' boundaries come from. We mostly work them out locally; when a point is very close to a boundary or the coast and cannot be decided locally, only the coordinates of that point are sent to it, with nothing else.</li>
+    <li><strong>Google</strong>: only if you choose to sign in with it.</li>
 </ul>
+<p>Some providers (in particular Cloudflare) may process data outside the European Economic Area. In those cases appropriate safeguards under Article 46 GDPR (Standard Contractual Clauses) are used.</p>
 <p>The map is drawn by our own server, from OpenStreetMap data.</p>
 
 <h2 id="retention">8. How long we keep it</h2>
-<p>Reports stay, so it shows over time where and how often problems occur. Account details stay as long as the
-account. Logs are kept only as long as security needs. Videos are deleted automatically 6 months after the
-report; those uploaded without a report being sent, within a day. If you ask for deletion, we remove or anonymise your personal
-details; what has already been sent to a municipality or the police is then handled by that service.</p>
+<p>We keep the map history apart from the personal data of each report.</p>
+<ul>
+    <li><strong>Map history:</strong> the place, the category, the municipality, the state, the dates and the services' replies stay, so it shows over time where and how often problems occur. They hold nothing that identifies you.</li>
+    <li><strong>The personal data of a report</strong> (name, phone, photos, free text, citizens' updates): <strong>24 months</strong> after the last activity on the report. Then the report is anonymised: only its category remains, and the photos are removed by the daily clean-up.</li>
+    <li><strong>Accounts:</strong> as long as you use them. If you do not sign in for <strong>24 months</strong>, we email you 30 days before and then the account is anonymised. If you ask for deletion, it happens sooner.</li>
+    <li><strong>Reports you did not confirm:</strong> 14 days. <strong>Sign-in links and codes:</strong> up to 7 days. <strong>Alerts</strong> that were disabled or never confirmed: 90 days.</li>
+    <li><strong>Photos:</strong> those uploaded without joining a report are removed in 7 days. The copy with a readable plate (for the police only) is deleted as soon as the complaint is sent, and in any case within 30 days.</li>
+    <li><strong>Earlier texts of reports you edited:</strong> 3 months from the change. Only the note «edited», with date and time, remains.</li>
+    <li><strong>Videos:</strong> 6 months after the report; those uploaded without a report being sent, one day.</li>
+    <li><strong>Messages from the contact form and emails that bounced:</strong> 90 days.</li>
+    <li><strong>Logs</strong> (IP address, time, request): at most three files of 10 MB per service, which wear out and are replaced as new traffic arrives; a few MB are written a day, so they cover a few days to a few weeks. The logs of the automatic clean-ups (report numbers, recipients' addresses) are kept 8 weeks.</li>
+</ul>
+<p>What has already been emailed to a municipality or the police we cannot recall; the service that received it handles it, under its own retention rules. If you ask for deletion, we anonymise or delete your personal details from the site (<a href="#rights">your rights</a>).</p>
 
 <h2 id="security">9. Security</h2>
 <ul>

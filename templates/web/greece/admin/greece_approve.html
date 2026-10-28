@@ -1,0 +1,32 @@
+[%# The municipalities' reports waiting for an admin's approval (App::Controller::GreeceApprove). ~%]
+[% INCLUDE 'admin/header.html' title = 'Αναφορές προς έγκριση' %]
+<h1>Αναφορές προς έγκριση</h1>
+<p>Οι αναφορές προς τους δήμους φεύγουν μαζί στις 01:00, 07:00, 13:00 και 19:00 (ώρα Αθήνας), αφού εγκριθούν εδώ.
+Οι καταγγελίες προς την αστυνομία δεν περνούν από εδώ: φεύγουν αμέσως.</p>
+[% IF done.defined && done != '' %]<p class="gr-approve-done"><strong>Εγκρίθηκαν [% done | html %] αναφορές.</strong></p>[% END %]
+[% IF waiting.size %]
+<form method="post" action="[% c.uri_for('/admin/greece/approve') %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <table class="gr-approve">
+        <thead><tr><th></th><th>Αρ.</th><th>Κατηγορία</th><th>Περιγραφή</th><th>Δήμος</th><th>Πότε</th></tr></thead>
+        <tbody>
+        [% FOR r IN waiting %]
+        <tr>
+            <td><input type="checkbox" name="id" value="[% r.id %]" id="gr-ap-[% r.id %]" checked></td>
+            <td><a href="[% c.uri_for('/admin/report_edit', r.id) %]">[% r.greece_ref | html %]</a></td>
+            <td>[% r.category_display | html %]</td>
+            <td><label for="gr-ap-[% r.id %]"><strong>[% r.title | html %]</strong>[% IF r.detail %]<br>[% r.detail | truncate(180) | html %][% END %]</label></td>
+            <td>[% r.body | html %]</td>
+            <td>[% r.greece_local_time | html %]</td>
+        </tr>
+        [% END %]
+        </tbody>
+    </table>
+    <p><button type="submit" class="btn btn--primary">Έγκριση επιλεγμένων</button>
+       <button type="submit" name="all" value="1" class="btn">Έγκριση όλων ([% waiting.size %])</button></p>
+    <p class="sm">Για να μην εγκρίνεις μια αναφορά, ξετσέκαρέ την ή κρύψε/διόρθωσέ την από το «Αρ.». Μένει δημόσια και περιμένει.</p>
+</form>
+[% ELSE %]
+<p>Δεν υπάρχουν αναφορές που περιμένουν έγκριση.</p>
+[% END %]
+[% INCLUDE 'admin/footer.html' %]

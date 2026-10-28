@@ -1,6 +1,6 @@
 [%# A municipality's reports of the last hours in one email (sent every 6 hours instead of one email
     per report; bin/greece/send-digest). Variables: body_name, period (e.g. «26/10/2026 06:00–12:00»),
-    items: [{ report, url, gmaps_url, address, detail, email, email_unconfirmed, phone, photos, video_seconds }],
+    items: [{ report, url, gmaps_url, address, detail, email, phone, photos, video_seconds }],
     sent_to, would_go_to (a staging site sends to the site's own address instead). ~%]
 [%
 email_summary = items.size _ (items.size == 1 ? " νέα αναφορά" : " νέες αναφορές") _ " για " _ body_name _ ", " _ period;
@@ -31,14 +31,15 @@ small = "margin: 0 0 6px 0; font-size: 14px; line-height: 19px; color: #475569;"
     [%~ IF it.photos OR it.video_seconds %]
     <tr><th style="[% tth %]">Υλικό</th><td style="[% ttd %]">[% IF it.photos %]📷 [% it.photos %] [% it.photos == 1 ? 'φωτογραφία' : 'φωτογραφίες' %][% END %][% IF it.photos AND it.video_seconds %] · [% END %][% IF it.video_seconds %]🎬 βίντεο [% it.video_seconds | format('%d') %]" (στην πλατφόρμα)[% END %]</td></tr>
     [%~ END %]
-    <tr><th style="[% tth %]">Πολίτης</th><td style="[% ttd %]">[% r.anonymous ? 'Ανώνυμα' : r.name | html %]
-      [%~ IF it.email %]<br><a href="mailto:[% it.email | html %]?subject=[% ('Η αναφορά σας ' _ r.greece_ref) | uri %]">[% it.email | html %]</a>[% IF it.email_unconfirmed %] <span style="color: #64748b;">(χωρίς επιβεβαίωση)</span>[% END %][% END ~%]
-      [%~ IF it.phone %]<br><a href="tel:[% it.phone | html %]">[% it.phone | html %]</a>[% END %]</td></tr>
+    <tr><th style="[% tth %]">Πολίτης</th><td style="[% ttd %]">[% (it.name || 'χωρίς όνομα') | html %]
+      [%~ IF it.email %]<br><a href="mailto:[% it.email | html %]?subject=[% ('Η αναφορά σας ' _ r.greece_ref) | uri %]">[% it.email | html %]</a>[% END ~%]
+      [%~ IF it.phone %]<br><a href="tel:[% it.phone | html %]">[% it.phone | html %]</a>[% END %]
+      [%~ UNLESS it.email OR it.phone %]<br><span style="color: #64748b;">χωρίς στοιχεία επικοινωνίας</span>[% END %]</td></tr>
     <tr><td colspan="2" style="padding: 10px 12px; text-align: right;"><a style="[% button_style %] font-size: 14px; border-width: 8px 16px;" href="[% it.url %]">Άνοιγμα αναφοράς</a></td></tr>
   </table>
   [% END %]
 
-  <p style="[% secondary_p_style %]">Για να απαντήσετε στον πολίτη, γράψτε στο email του (όπου το έδωσε) ή αφήστε μια ενημέρωση
+  <p style="[% secondary_p_style %]">Για να απαντήσετε στον πολίτη, γράψτε στο email του (όπου το έδωσε και το επιβεβαίωσε) ή αφήστε μια ενημέρωση
   στη σελίδα της αναφοράς. Οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν στην ομάδα του [% site_name %].</p>
   <div style="margin: 16px 0 0 0; padding: 12px 16px; border: 1px solid #dbe4f5; border-radius: 10px; background-color: #f2f6fd;">
     <p style="[% secondary_p_style %] margin-bottom: 0;">

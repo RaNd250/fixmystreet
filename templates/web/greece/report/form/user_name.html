@@ -2,7 +2,7 @@
 [%# FixMyStreet's name field, optional: it comes filled in with «Ανώνυμος» in grey (name-default.js),
     and empty or left so it is sent as «Ανώνυμος πολίτης» (Greece.pm greece_default_name). A name given
     needs at least 4 characters (greece_name_error checks it on the server too). ~%]
-<label for="form_name">[% loc('Name') %]<span> [% loc('(optional)') %]</span>
+<label for="form_name">[% loc('Name') %]<span> [% c.cobrand.greece_t('(χρειάζεται αν δεν βάλεις φωτογραφία)', '(needed if you add no photo)') %]</span>
 [% TRY %]
     [% INCLUDE 'report/form/after_name.html' %]
     [% CATCH file %]

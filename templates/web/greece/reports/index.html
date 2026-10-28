@@ -65,7 +65,15 @@
             </ul>
         </details>
       [% ELSE %]
-        <p class="gr-rmap__none">[% c.cobrand.greece_t('Δεν υπάρχουν ακόμα δημόσιες αναφορές.', 'There are no public reports yet.') %]</p>
+        <div class="gr-rmap__empty">
+            <span class="gr-rmap__empty-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+            <div>
+                <p class="gr-rmap__none"><strong>[% c.cobrand.greece_t('Δεν υπάρχουν ακόμα δημόσιες αναφορές.', 'There are no public reports yet.') %]</strong></p>
+                <p>[% c.cobrand.greece_t('Οι πρώτες αναφορές θα εμφανιστούν εδώ, στον χάρτη και στη λίστα ανά δήμο.', 'The first reports will appear here, on the map and in the list by municipality.') %]</p>
+                <p><a class="btn btn--primary" href="/">[% c.cobrand.greece_t('Αναφορά προβλήματος', 'Report a problem') %]</a>
+                   <a href="/faq">[% c.cobrand.greece_t('Πώς λειτουργεί', 'How it works') %]</a></p>
+            </div>
+        </div>
       [% END %]
         <script defer src="[% version('/cobrands/greece/vendor/maplibre-gl-4.7.1/maplibre-gl.js') %]"></script>
         <script defer src="[% version('/cobrands/greece/reports-map.js') %]"></script>

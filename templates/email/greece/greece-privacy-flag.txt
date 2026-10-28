@@ -1,0 +1,13 @@
+[%# To the contact address when someone hides a report for privacy reasons (App::Controller::GreecePrivacy). ~%]
+Subject: Απόκρυψη αναφοράς για ιδιωτικότητα: [% problem.greece_ref %]
+
+Η αναφορά [% problem.greece_ref %] ([% problem.title %]) κρύφτηκε από το κοινό, γιατί κάποιος σημείωσε πιθανή παραβίαση ιδιωτικότητας.
+
+Τι ειπώθηκε: [% reason || '(τίποτα)' %]
+Email για απάντηση: [% contact || '(δεν δόθηκε)' %]
+IP: [% ip %]
+
+Έλεγχος και επαναφορά (ή διαγραφή): [% admin_url %]
+
+Η αναφορά δεν διαγράφηκε, και ό,τι έχει ήδη σταλεί σε δήμο ή αστυνομία δεν ανακαλείται. Αν η σήμανση είναι άδικη, κάνε την αναφορά ξανά δημόσια από το admin.
+[% signature %]

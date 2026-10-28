@@ -13,12 +13,12 @@ Subject: [% items.size %] [% items.size == 1 ? 'νέα αναφορά' : 'νέε
 [% it.detail || r.detail %]
 
 [% IF it.photos %]Φωτογραφίες: [% it.photos %]. [% END %][% IF it.video_seconds %]Βίντεο: [% it.video_seconds | format('%d') %]" (στην πλατφόρμα). [% END %]
-Από: [% r.anonymous ? 'Ανώνυμα' : r.name %][% IF it.email %] · [% it.email %][% IF it.email_unconfirmed %] (χωρίς επιβεβαίωση)[% END %][% END %][% IF it.phone %] · [% it.phone %][% END %]
+Από: [% it.name || 'χωρίς όνομα' %][% IF it.email %] · [% it.email %][% END %][% IF it.phone %] · [% it.phone %][% END %][% UNLESS it.email OR it.phone %] · χωρίς στοιχεία επικοινωνίας[% END %]
 Αναφορά: [% it.url %]
 [% END %]
 ----------
 
-Για να απαντήσετε στον πολίτη, γράψτε στο email του (όπου το έδωσε) ή αφήστε μια ενημέρωση στη σελίδα
+Για να απαντήσετε στον πολίτη, γράψτε στο email του (όπου το έδωσε και το επιβεβαίωσε) ή αφήστε μια ενημέρωση στη σελίδα
 της αναφοράς. Οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν στην ομάδα του [% site_name %].
 
 [% IF would_go_to %]Δοκιμαστική λειτουργία: κανονικά θα πήγαινε στη διεύθυνση [% would_go_to %].
