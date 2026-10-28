@@ -1,10 +1,12 @@
 /*
  * Each photo picked or taken for a report or an update can be cropped before it is uploaded: a
- * dialog shows it with a frame that can be moved and resized (finger or mouse); «Περικοπή» sends
- * the part inside the frame, «Ολόκληρη» the photo as it is. It hooks into Dropzone's transformFile,
- * which runs just before the upload, and then hands over to Dropzone's own resizing. One dialog at
- * a time when several photos are picked together. GIFs are sent as they are (a crop would lose the
- * animation). The anonymiser blurs the cropped photo, so nothing is published outside the frame.
+ * dialog shows it with a frame that can be moved and resized (finger or mouse). It can also hide a spot (owner,
+ * 2026-10-29): «Θόλωμα» pixelates the part you draw a rectangle over, «Μαύρισμα» paints it black, and «Αναίρεση» takes the
+ * last one back. This is done here, on the phone, so the original never leaves it. «Εφαρμογή» sends the part inside the
+ * frame with the hidden spots; «Ολόκληρη» sends the whole photo (with the hidden spots, if there are any).
+ * It hooks into Dropzone's transformFile, which runs just before the upload, and then hands over to Dropzone's own
+ * resizing. One dialog at a time when several photos are picked together. GIFs are sent as they are (a crop would lose
+ * the animation). The anonymiser blurs plates and faces in the photo that arrives, so nothing is published outside the frame.
  */
 (function() {
     'use strict';
@@ -13,33 +15,77 @@
     if (!window.HTMLCanvasElement || !document.createElement('canvas').toBlob) { return; }
 
     var MIN = 48;   // smallest frame side, in screen pixels
+    var MIN_MARK = 10;
     var queue = Promise.resolve();
 
     function build() {
         var d = document.createElement('dialog');
         d.className = 'gr-camera gr-crop';
-        d.setAttribute('aria-label', t('Περικοπή φωτογραφίας', 'Crop photo'));
+        d.setAttribute('aria-label', t('Επεξεργασία φωτογραφίας', 'Edit photo'));
         d.innerHTML =
-            '<div class="gr-crop__stage"><img class="gr-crop__img" alt=""><div class="gr-crop__box" tabindex="0" aria-label="' +
+            '<div class="gr-crop__tools" role="group" aria-label="' + t('Εργαλεία', 'Tools') + '">' +
+            '<button type="button" class="btn gr-crop__tool" data-mode="crop" aria-pressed="true">' + t('Περικοπή', 'Crop') + '</button>' +
+            '<button type="button" class="btn gr-crop__tool" data-mode="blur" aria-pressed="false">' + t('Θόλωμα', 'Blur') + '</button>' +
+            '<button type="button" class="btn gr-crop__tool" data-mode="black" aria-pressed="false">' + t('Μαύρισμα', 'Black out') + '</button>' +
+            '<button type="button" class="btn gr-crop__undo" disabled>' + t('Αναίρεση', 'Undo') + '</button></div>' +
+            '<div class="gr-crop__stage"><img class="gr-crop__img" alt=""><div class="gr-crop__marks"></div><div class="gr-crop__box" tabindex="0" aria-label="' +
             t('Πλαίσιο περικοπής', 'Crop frame') + '">' +
             '<span class="gr-crop__h" data-h="nw"></span><span class="gr-crop__h" data-h="ne"></span>' +
             '<span class="gr-crop__h" data-h="sw"></span><span class="gr-crop__h" data-h="se"></span></div></div>' +
-            '<p class="gr-camera__status">' + t('Σύρε το πλαίσιο ή τις γωνίες του για να κρατήσεις μόνο ό,τι χρειάζεται.',
-                'Drag the frame or its corners to keep only what is needed.') + '</p>' +
+            '<p class="gr-camera__status"></p>' +
             '<div class="gr-camera__actions">' +
             '<button type="button" class="btn gr-crop__whole">' + t('Ολόκληρη', 'Whole photo') + '</button>' +
-            '<button type="button" class="btn btn--primary gr-crop__ok">' + t('Περικοπή', 'Crop') + '</button></div>';
+            '<button type="button" class="btn btn--primary gr-crop__ok">' + t('Εφαρμογή', 'Apply') + '</button></div>';
         document.body.appendChild(d);
         return d;
     }
 
-    // Shows the dialog for one image file; resolves with a Blob of the crop, or null for the whole photo.
+    var STATUS = {
+        crop: t('Σύρε το πλαίσιο ή τις γωνίες του για να κρατήσεις μόνο ό,τι χρειάζεται.', 'Drag the frame or its corners to keep only what is needed.'),
+        blur: t('Σύρε πάνω στη φωτογραφία για να θολώσεις ένα σημείο (πρόσωπο, πινακίδα, σπίτι, έγγραφο).', 'Drag over the photo to blur a spot (a face, a plate, a house, a document).'),
+        black: t('Σύρε πάνω στη φωτογραφία για να μαυρίσεις ένα σημείο. Στις καταγγελίες προς την αστυνομία μην καλύπτεις την πινακίδα.',
+            'Drag over the photo to black out a spot. In complaints to the police do not cover the number plate.')
+    };
+
+    // Draws the part of the image inside the crop (sx, sy, sw, sh in image pixels) with the marks on it.
+    function render(img, crop, marks) {
+        var c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(crop.w)); c.height = Math.max(1, Math.round(crop.h));
+        var g = c.getContext('2d');
+        g.drawImage(img, crop.x, crop.y, crop.w, crop.h, 0, 0, c.width, c.height);
+        marks.forEach(function(m) {
+            var x = Math.round(m.x - crop.x), y = Math.round(m.y - crop.y), w = Math.round(m.w), h = Math.round(m.h);
+            var x0 = Math.max(0, x), y0 = Math.max(0, y), x1 = Math.min(c.width, x + w), y1 = Math.min(c.height, y + h);
+            if (x1 - x0 < 2 || y1 - y0 < 2) { return; }
+            if (m.kind === 'black') {
+                g.fillStyle = '#000'; g.fillRect(x0, y0, x1 - x0, y1 - y0);
+            } else {
+                // Pixelated into about seven blocks along the longer side: nothing readable is left.
+                var rw = x1 - x0, rh = y1 - y0, cells = 7, bw = Math.max(1, Math.round(Math.max(rw, rh) / cells));
+                var sw = Math.max(1, Math.round(rw / bw)), sh = Math.max(1, Math.round(rh / bw));
+                var small = document.createElement('canvas');
+                small.width = sw; small.height = sh;
+                var sg = small.getContext('2d');
+                sg.drawImage(c, x0, y0, rw, rh, 0, 0, sw, sh);
+                g.save();
+                g.imageSmoothingEnabled = false;
+                g.drawImage(small, 0, 0, sw, sh, x0, y0, rw, rh);
+                g.restore();
+            }
+        });
+        return c;
+    }
+
+    // Shows the dialog for one image file; resolves with a Blob of the edited photo, or null for the photo as it is.
     function ask(file) {
         return new Promise(function(resolve) {
             var d = build();
-            var img = d.querySelector('.gr-crop__img'), box = d.querySelector('.gr-crop__box');
+            var img = d.querySelector('.gr-crop__img'), box = d.querySelector('.gr-crop__box'), layer = d.querySelector('.gr-crop__marks');
+            var status = d.querySelector('.gr-camera__status'), undo = d.querySelector('.gr-crop__undo');
             var url = URL.createObjectURL(file);
-            var r = { x: 0, y: 0, w: 0, h: 0 }, W = 0, H = 0, finished = false;
+            var r = { x: 0, y: 0, w: 0, h: 0 }, W = 0, H = 0, finished = false, mode = 'crop';
+            var marks = [];   // in screen pixels over the image: { x, y, w, h, kind, el }
+            status.textContent = STATUS.crop;
 
             function draw() {
                 box.style.left = r.x + 'px'; box.style.top = r.y + 'px';
@@ -56,12 +102,64 @@
             img.onload = function() {
                 W = img.clientWidth; H = img.clientHeight;
                 r = { x: W * 0.05, y: H * 0.05, w: W * 0.9, h: H * 0.9 };
+                layer.style.width = W + 'px'; layer.style.height = H + 'px';
+                layer.style.left = img.offsetLeft + 'px'; layer.style.top = img.offsetTop + 'px';
                 draw();
             };
             img.onerror = function() { finish(null); };
             img.src = url;
 
-            // Moving and resizing
+            // The tools
+            function setMode(m) {
+                mode = m;
+                Array.prototype.forEach.call(d.querySelectorAll('.gr-crop__tool'), function(b) {
+                    b.setAttribute('aria-pressed', b.getAttribute('data-mode') === m ? 'true' : 'false');
+                });
+                d.classList.toggle('is-redact', m !== 'crop');
+                status.textContent = STATUS[m];
+            }
+            Array.prototype.forEach.call(d.querySelectorAll('.gr-crop__tool'), function(b) {
+                b.addEventListener('click', function() { setMode(b.getAttribute('data-mode')); });
+            });
+            function refreshUndo() { undo.disabled = !marks.length; }
+            undo.addEventListener('click', function() {
+                var m = marks.pop();
+                if (m && m.el.parentNode) { m.el.parentNode.removeChild(m.el); }
+                refreshUndo();
+            });
+
+            // Drawing a mark (in the blur and black modes)
+            var mk = null;
+            layer.addEventListener('pointerdown', function(e) {
+                if (mode === 'crop') { return; }
+                var b = layer.getBoundingClientRect();
+                var x = Math.min(Math.max(0, e.clientX - b.left), W), y = Math.min(Math.max(0, e.clientY - b.top), H);
+                var el = document.createElement('div');
+                el.className = 'gr-crop__mark gr-crop__mark--' + mode;
+                layer.appendChild(el);
+                mk = { x0: x, y0: y, x: x, y: y, w: 0, h: 0, kind: mode, el: el };
+                layer.setPointerCapture && layer.setPointerCapture(e.pointerId);
+                e.preventDefault();
+            });
+            layer.addEventListener('pointermove', function(e) {
+                if (!mk) { return; }
+                var b = layer.getBoundingClientRect();
+                var x = Math.min(Math.max(0, e.clientX - b.left), W), y = Math.min(Math.max(0, e.clientY - b.top), H);
+                mk.x = Math.min(mk.x0, x); mk.y = Math.min(mk.y0, y); mk.w = Math.abs(x - mk.x0); mk.h = Math.abs(y - mk.y0);
+                mk.el.style.left = mk.x + 'px'; mk.el.style.top = mk.y + 'px';
+                mk.el.style.width = mk.w + 'px'; mk.el.style.height = mk.h + 'px';
+            });
+            function endMark() {
+                if (!mk) { return; }
+                if (mk.w < MIN_MARK || mk.h < MIN_MARK) { mk.el.parentNode && mk.el.parentNode.removeChild(mk.el); }
+                else { marks.push(mk); }
+                mk = null;
+                refreshUndo();
+            }
+            layer.addEventListener('pointerup', endMark);
+            layer.addEventListener('pointercancel', endMark);
+
+            // Moving and resizing the crop frame
             var drag = null;
             function down(e) {
                 var h = e.target.getAttribute('data-h') || 'move';
@@ -101,18 +199,25 @@
                 draw();
             });
 
-            d.querySelector('.gr-crop__whole').addEventListener('click', function() { finish(null); });
-            d.addEventListener('cancel', function(e) { e.preventDefault(); finish(null); });
-            d.querySelector('.gr-crop__ok').addEventListener('click', function() {
-                if (!W || !H) { finish(null); return; }
-                // The whole photo, near enough: send it as it is.
-                if (r.w > W * 0.97 && r.h > H * 0.97) { finish(null); return; }
+            // The photo with the marks, cropped to the frame (or whole), as a Blob; null when nothing is changed.
+            function result(whole) {
+                if (!W || !H) { return null; }
                 var sx = img.naturalWidth / W, sy = img.naturalHeight / H;
-                var c = document.createElement('canvas');
-                c.width = Math.round(r.w * sx); c.height = Math.round(r.h * sy);
-                c.getContext('2d').drawImage(img, r.x * sx, r.y * sy, r.w * sx, r.h * sy, 0, 0, c.width, c.height);
+                var nearWhole = r.w > W * 0.97 && r.h > H * 0.97;
+                if ((whole || nearWhole) && !marks.length) { return null; }
+                var crop = (whole || nearWhole) ? { x: 0, y: 0, w: img.naturalWidth, h: img.naturalHeight }
+                                                : { x: r.x * sx, y: r.y * sy, w: r.w * sx, h: r.h * sy };
+                var scaled = marks.map(function(m) { return { x: m.x * sx, y: m.y * sy, w: m.w * sx, h: m.h * sy, kind: m.kind }; });
+                return render(img, crop, scaled);
+            }
+            function send(whole) {
+                var c = result(whole);
+                if (!c) { finish(null); return; }
                 c.toBlob(function(blob) { finish(blob); }, 'image/jpeg', 0.92);
-            });
+            }
+            d.querySelector('.gr-crop__whole').addEventListener('click', function() { send(true); });
+            d.addEventListener('cancel', function(e) { e.preventDefault(); finish(null); });
+            d.querySelector('.gr-crop__ok').addEventListener('click', function() { send(false); });
             d.showModal ? d.showModal() : d.setAttribute('open', '');
         });
     }
