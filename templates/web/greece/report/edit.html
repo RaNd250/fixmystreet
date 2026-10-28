@@ -7,8 +7,8 @@
 [% ELSE %]
 <p><strong>[% problem.title | html %]</strong>[% IF problem.greece_ref %] · [% problem.greece_ref | html %][% END %]</p>
 <p class="gr-edit-note">[% c.cobrand.greece_t(
-    'Η αναφορά θα γράφει ότι επεξεργάστηκε από τον συντάκτη, με την ημερομηνία και την ώρα. Το προηγούμενο κείμενο το βλέπουν μόνο οι διαχειριστές και σβήνεται σε 3 μήνες. Η κατηγορία, η θέση και οι φωτογραφίες δεν αλλάζουν· για κάτι άλλο κάνε νέα αναφορά.',
-    'The report will say it was edited by its author, with the date and time. The earlier text is seen only by the moderators and is deleted after 3 months. The category, the place and the photos do not change; for anything else make a new report.') %]</p>
+    'Η αναφορά θα γράφει «επεξεργάστηκε», με ημερομηνία και ώρα. Η κατηγορία, η θέση και οι φωτογραφίες δεν αλλάζουν. <a href="/about/privacy">Απόρρητο</a>',
+    'The report will say it was edited, with the date and time. The category, the place and the photos do not change. <a href="/about/privacy">Privacy</a>') | safe %]</p>
 [% IF problem.whensent %]
 <p class="gr-edit-note">[% c.cobrand.greece_t(
     'Η αναφορά έχει ήδη σταλεί στον φορέα: η αλλαγή φαίνεται εδώ αλλά δεν στέλνεται ξανά. Για να τον ενημερώσεις, πρόσθεσε μια ενημέρωση στη σελίδα της αναφοράς.',

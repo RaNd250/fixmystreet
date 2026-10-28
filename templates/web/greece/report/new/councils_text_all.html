@@ -9,14 +9,10 @@
 [% SET names = mark_safe(list_of_names.join('</strong>' _ c.cobrand.greece_t(' ή ', ' or ') _ '<strong>')) %]
 <p>
 [% IF NOT non_public_categories.$category %]
-    [% c.cobrand.greece_t('Παραλήπτης:', 'Sent to:') %] <strong>[% names %]</strong>.
-    [% c.cobrand.greece_t('Στέλνονται το σημείο και η διεύθυνση, η κατηγορία, η περιγραφή, οι φωτογραφίες και η ημερομηνία· το όνομα και το τηλέφωνο μόνο αν τα δώσεις, το email μόνο αν το επιβεβαιώσεις.', 'What is sent: the place and address, the category, the description, the photos and the date; your name and phone only if you give them, your email only if you confirm it.') %]
-    [% c.cobrand.greece_t('Δημοσιεύεται στον χάρτη, με θολωμένες πινακίδες και πρόσωπα', 'Published on the map, with plates and faces blurred') %]
-    (<a href="[% c.cobrand.privacy_policy_url %]">[% c.cobrand.greece_t('πολιτική απορρήτου', 'privacy policy') %]</a>).
+    [% c.cobrand.greece_t('Παραλήπτης:', 'Sent to:') %] <strong>[% names %]</strong>. [% c.cobrand.greece_t('Δημοσιεύεται και στον χάρτη.', 'Also published on the map.') %]
 [% ELSE %]
-    [% c.cobrand.greece_t('Παραλήπτης:', 'Sent to:') %] <strong>[% names %]</strong>.
-    [% c.cobrand.greece_t('Στέλνονται το σημείο και η διεύθυνση, η κατηγορία, η περιγραφή, η φωτογραφία (στην αστυνομία με ευανάγνωστη πινακίδα) και η ημερομηνία· το όνομα και το τηλέφωνο μόνο αν τα δώσεις, το email μόνο αν το επιβεβαιώσεις.', 'What is sent: the place and address, the category, the description, the photo (to the police with the plate readable) and the date; your name and phone only if you give them, your email only if you confirm it.') %]
-    [% c.cobrand.greece_t('Η αναφορά δεν δημοσιεύεται.', 'The report is not published.') %]
+    [% c.cobrand.greece_t('Παραλήπτης:', 'Sent to:') %] <strong>[% names %]</strong>. [% c.cobrand.greece_t('Δεν δημοσιεύεται.', 'Not published.') %]
 [% END %]
+    <a href="[% c.cobrand.privacy_policy_url %]#recipients">[% c.cobrand.greece_t('Τι στέλνεται', 'What is sent') %]</a>
 [% TRY %][% INCLUDE 'report/new/councils_extra_text.html' %][% CATCH file %][% END %]
 </p>

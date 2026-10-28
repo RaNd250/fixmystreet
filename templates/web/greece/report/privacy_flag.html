@@ -3,10 +3,10 @@
 <h1>[% c.cobrand.greece_t('Απόκρυψη για λόγους ιδιωτικότητας', 'Hide for privacy reasons') %]</h1>
 [% IF done %]
 <p><strong>[% c.cobrand.greece_t('Η αναφορά κρύφτηκε από το κοινό.', 'The report has been hidden from the public.') %]</strong>
-[% c.cobrand.greece_t('Θα την ελέγξουμε και θα αποφασίσουμε αν θα εμφανιστεί ξανά, θα διορθωθεί ή θα διαγραφεί. Ό,τι έχει ήδη σταλεί σε δήμο ή στην αστυνομία δεν μπορούμε να το ανακαλέσουμε.', 'We will review it and decide whether it comes back, is corrected or is deleted. What has already been sent to a municipality or the police cannot be recalled by us.') %]</p>
+[% c.cobrand.greece_t('Θα την ελέγξουμε. Ό,τι έχει ήδη σταλεί στην υπηρεσία δεν ανακαλείται.', 'We will review it. What has already been sent to the service cannot be recalled.') %]</p>
 <p><a href="/">[% c.cobrand.greece_t('Αρχική', 'Home') %]</a></p>
 [% ELSE %]
-<p>[% c.cobrand.greece_t('Αν η αναφορά δείχνει κάτι που δεν πρέπει να φαίνεται (πρόσωπο, πινακίδα, σπίτι, προσωπικά στοιχεία), κρύβεται αμέσως από το κοινό μέχρι να τη δούμε. Δεν διαγράφεται και δεν ανακαλείται ό,τι έχει ήδη σταλεί στην υπηρεσία.', 'If the report shows something that should not be visible (a face, a number plate, a home, personal details), it is hidden from the public at once until we have looked at it. It is not deleted, and what was already sent to the service is not recalled.') %]</p>
+<p>[% c.cobrand.greece_t('Αν η αναφορά δείχνει κάτι που δεν πρέπει να φαίνεται (πρόσωπο, πινακίδα, σπίτι, προσωπικά στοιχεία), κρύβεται αμέσως από το κοινό μέχρι να τη δούμε.', 'If the report shows something that should not be visible (a face, a number plate, a home, personal details), it is hidden from the public at once until we have looked at it.') %]</p>
 <p><strong>[% problem.title | html %]</strong>[% IF problem.greece_ref %] · [% problem.greece_ref | html %][% END %]</p>
 [% IF error %]<p class="form-error">[% error | html %]</p>[% END %]
 <form method="post" action="/greece/privacy/[% problem.id %]" class="validate">
