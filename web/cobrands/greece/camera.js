@@ -196,7 +196,30 @@
         startStream();
     }
 
+    // FixMyStreet sets a photo box up once for each time its form is shown; on the staff panel of a report that gave two
+    // boxes (and two «Λήψη») for the one set of photo fields. A box that has another box before it, after the same
+    // original field, is a copy: it is taken away, with its buttons.
+    function isCopy(el) {
+        var p = el.previousElementSibling;
+        while (p) {
+            if (p.classList.contains('dropzone')) { return true; }
+            if (p.id === 'form_photos' || p.classList.contains('js-photo-fields')) { return false; }
+            p = p.previousElementSibling;
+        }
+        return false;
+    }
+    function removeCopies() {
+        Array.prototype.forEach.call(document.querySelectorAll('.dropzone'), function(el) {
+            if (!isCopy(el)) { return; }
+            var next = el.nextElementSibling;
+            if (next && next.classList.contains('gr-photo-actions')) { next.parentNode.removeChild(next); }
+            if (el.dropzone) { try { el.dropzone.destroy(); } catch (e) { /* the element goes anyway */ } }
+            if (el.parentNode) { el.parentNode.removeChild(el); }
+        });
+    }
+
     function enhance() {
+        removeCopies();
         var zones = document.querySelectorAll('.dropzone');
         Array.prototype.forEach.call(zones, function(el) {
             var dz = el.dropzone;
