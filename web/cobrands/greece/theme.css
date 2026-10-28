@@ -1056,7 +1056,7 @@ body.gr-has-dock .gr-toast { bottom: calc(62px + env(safe-area-inset-bottom, 0px
     #front-main h1 { font-size: 1.125rem; line-height: 1.25; margin: 0 0 8px; }
     #front-main h2 { display: none; }
     .gr-minimap { margin-bottom: 8px; }
-    .gr-minimap__map { height: 250px; height: clamp(170px, calc(100svh - 310px), 420px); max-height: none; }
+    .gr-minimap__map { height: 250px; height: clamp(140px, calc(100svh - 440px), 210px); max-height: none; }
     .gr-minimap__status {
         position: absolute; top: 8px; left: 8px; right: 48px; z-index: 1001; margin: 0; padding: 4px 30px 4px 10px;
         border-radius: 10px; background: rgba(12, 27, 51, 0.82); color: #fff; font-size: 0.75rem; line-height: 1.3;
