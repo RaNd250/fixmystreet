@@ -1523,3 +1523,20 @@ a[href*="/auth/forgot"], .js-new-report-show-sign-in, .js-hide-name { display: i
 
 /* The name of a complaint: «Ανώνυμος», not to be changed. */
 input.gr-name-locked, input.gr-name-locked:focus { background: var(--gr-surface-2); color: var(--gr-ink-3); cursor: not-allowed; box-shadow: none; }
+
+/* Staff pages (the report edit page and the inspector panel of a report; owner, 2026-10-29). */
+
+/* FixMyStreet's «saving reports offline – 2/1» banner (offline.js) sat across the header and the menu; the site has no offline use. */
+.top_banner--offline { display: none !important; }
+
+/* «FixMyStreet Platform»: a plain text link, not the wide logo image that overlapped the staff panels. */
+a.platform-logo { background: none; text-indent: 0; width: auto; height: auto; padding: 0; filter: none; }
+
+/* The edit form is wider and the map narrower: form 56% of the window, notes 29%, map the rest (about 15%). */
+@media (min-width: 60em) {
+    body.mappage.with-notes #map_sidebar {
+        width: calc(85vw - 2em);
+        background-image: linear-gradient(90deg, transparent 56vw, #E9F2FF 56vw);
+    }
+    body.mappage.with-notes #map_box { left: 85vw; }
+}
