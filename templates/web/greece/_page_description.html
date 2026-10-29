@@ -2,7 +2,7 @@
     header_opengraph.html): a report's own text, a municipality's reports page, the reports and help
     pages each their own, and the home page's for the rest. Plain text; the caller escapes it. ~%]
 [%- gr_path = c.req.uri.path;
-    IF problem AND gr_path.match('^/report/[0-9]+$') AND problem.detail;
+    IF problem AND gr_path.match('^/(greece/report-ref/[0-9-]+|report/[0-9]+)/?$') AND problem.detail;
         gr_text = problem.detail.replace('\s+', ' ');
         gr_text = gr_text.length > 150 ? gr_text.substr(0, 147) _ '…' : gr_text;
         problem.category_display _ ': ' _ gr_text;

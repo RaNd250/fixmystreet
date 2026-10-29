@@ -3,6 +3,9 @@
     αναφορές»; empty for other pages. Used by header/title.html and header_opengraph.html. ~%]
 [%- IF c.req.uri.path == '/reports';
         c.cobrand.greece_t('Αναφορές προβλημάτων ανά δήμο', 'Problem reports by municipality');
+    ELSIF problem AND c.req.uri.path.match('^/(greece/report-ref/[0-9-]+|report/[0-9]+)/?$');
+        gr_pb = problem.bodies.values.0;
+        problem.category_display _ (gr_pb ? ' – ' _ gr_pb.name : '');
     ELSIF body AND c.req.uri.path.match('^/reports/');
         c.cobrand.greece_t('Αναφορές προβλημάτων', 'Problem reports') _ ' – ' _ body.name;
     END -%]
