@@ -19,6 +19,7 @@
   <p>[% c.cobrand.greece_t(
       'Δείχνεις το πρόβλημα στον χάρτη και γράφεις δυο λόγια. Εμείς βρίσκουμε ποιος είναι αρμόδιος και του το στέλνουμε, ώστε να μη χρειαστεί να ψάξεις διευθύνσεις και τηλέφωνα. Η αναφορά μένει και δημόσια στον χάρτη, για να φαίνεται τι έχει αναφερθεί και τι λύθηκε. Στέλνονται το σημείο και η διεύθυνση, η κατηγορία, η περιγραφή, οι φωτογραφίες και η ημερομηνία· το όνομα και το τηλέφωνο μόνο αν τα δώσεις, το email μόνο αν το επιβεβαιώσεις.',
       'You point at the problem on the map and write a few words. We find who is responsible and send it to them, so you do not have to look for addresses and phone numbers. The report also stays on the public map, so anyone can see what was reported and what was fixed. What is sent: the place and address, the category, the description, the photos and the date; your name and phone only if you give them, your email only if you confirm it.') %]</p>
+  <p>[% c.cobrand.greece_t('Η πλατφόρμα είναι μη κερδοσκοπικού χαρακτήρα και η χρήση είναι δωρεάν.', 'The platform is non-profit and free to use.') %]</p>
   <ul class="gr-about-home__list">
     <li>[% c.cobrand.greece_t(
         '<strong>Δρόμοι, πεζοδρόμια, φωτισμός, φρεάτια, καθαριότητα, πράσινο:</strong> στον Δήμο όπου βρίσκεται το σημείο, με email στη διεύθυνση που έχει για αναφορές πολιτών.',
@@ -27,12 +28,26 @@
     <li>[% c.cobrand.greece_t(
         '<strong>Στάθμευση σε φορτιστή ή που εμποδίζει τη διέλευση:</strong> αμέσως, ως καταγγελία στο Αστυνομικό Τμήμα και την Τροχαία της περιοχής.',
         '<strong>Parking at a charger or blocking the way:</strong> at once, as a complaint to the local police station and traffic police.') | safe %]</li>
-    <li>[% c.cobrand.greece_t(
-        '<strong>Στάθμευση σε ράμπα ή θέση ΑμεΑ, σε πεζοδρόμιο ή διάβαση:</strong> στο <a href="https://xorisempodia.gr">Χωρίς Εμπόδια</a>, όπου σε οδηγεί η φόρμα.',
-        '<strong>Parking on a disabled ramp or bay, a pavement or a crossing:</strong> to <a href="https://xorisempodia.gr">Χωρίς Εμπόδια</a>, where the form takes you.') | safe %]</li>
+    <li class="gr-about-home__xe">[% c.cobrand.greece_t(
+        '<strong>Στάθμευση σε ράμπα ή θέση ΑμεΑ, σε πεζοδρόμιο ή διάβαση:</strong> στο <a href="https://xorisempodia.gr" class="gr-xe-link">Χωρίς Εμπόδια · xorisempodia.gr</a>, όπου σε οδηγεί η φόρμα.',
+        '<strong>Parking on a disabled ramp or bay, a pavement or a crossing:</strong> to <a href="https://xorisempodia.gr" class="gr-xe-link">Χωρίς Εμπόδια · xorisempodia.gr</a>, where the form takes you.') | safe %]</li>
   </ul>
   <p>[% c.cobrand.greece_t(
       'Πριν δημοσιευτεί μια φωτογραφία, θολώνουν αυτόματα πινακίδες και πρόσωπα. Το email και το τηλέφωνό σου πηγαίνουν μόνο στην υπηρεσία· το όνομα φαίνεται μόνο αν το επιλέξεις. Όταν ο διακομιστής email της υπηρεσίας δεχτεί την αναφορά, δίπλα της εμφανίζεται <span class="gr-delivered">✓ Παραδόθηκε</span>. Η υπηρεσία απαντά σε σένα ή με ενημέρωση στη σελίδα της αναφοράς.',
       'Before a photo is published, number plates and faces are blurred automatically. Your email and phone go only to the service; your name is shown only if you choose. Once the service’s mail server accepts the report, it shows <span class="gr-delivered">✓ Delivered</span>. The service replies to you, or with an update on the report’s page.') | safe %]
     <a href="/faq">[% c.cobrand.greece_t('Συχνές ερωτήσεις', 'Questions and answers') %]</a></p>
 </section>
+
+[%# Full-screen notice until the first reports are sent (launch-notice.js shows it; it stops on 2026-11-01). ~%]
+<div id="gr-launch" class="gr-launch" role="dialog" aria-modal="true" aria-labelledby="gr-launch-h" aria-describedby="gr-launch-d" hidden>
+  <div class="gr-launch__card">
+    <p class="gr-launch__tag">[% c.cobrand.greece_t('ΔΟΚΙΜΑΣΤΙΚΗ ΛΕΙΤΟΥΡΓΙΑ', 'TEST PHASE') %]</p>
+    <h2 id="gr-launch-h">[% c.cobrand.greece_t('Η πλατφόρμα βρίσκεται στο τελικό στάδιο δοκιμών', 'The platform is in its final test stage') %]</h2>
+    <p id="gr-launch-d">[% c.cobrand.greece_t(
+        'Μπορείς να περιηγηθείς στον ιστότοπο και να δεις πώς λειτουργεί. Οι αναφορές δεν στέλνονται ακόμα στους δήμους και στις αρχές.',
+        'You can browse the site and see how it works. Reports are not yet sent to municipalities and authorities.') %]</p>
+    <p class="gr-launch__date">[% c.cobrand.greece_t('Η αποστολή των αιτημάτων ξεκινά από', 'Reports start to be sent from') %]
+      <strong>[% c.cobrand.greece_t('1 Νοεμβρίου 2026', '1 November 2026') %]</strong></p>
+    <button type="button" class="btn btn--primary" data-gr-launch-close>[% c.cobrand.greece_t('Συνέχεια στον ιστότοπο', 'Continue to the site') %]</button>
+  </div>
+</div>

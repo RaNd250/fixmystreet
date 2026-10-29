@@ -49,8 +49,8 @@ OpenLayers.Layer.Greece = OpenLayers.Class(OpenLayers.Layer.OSM, {
     };
     var RING = { yellow: '#f59e0b', green: '#15803d', grey: '#6b7280', gray: '#6b7280', red: '#dc2626', blue: '#0055a4' };
     var cache = {};
-    function graphic(emoji, colour) {
-        var key = emoji + colour;
+    function graphic(emoji, colour, hl) {
+        var key = emoji + colour + (hl ? '!' : '');
         if (cache[key]) { return cache[key]; }
         var c = document.createElement('canvas'), s = 72;
         c.width = c.height = s;
@@ -58,10 +58,20 @@ OpenLayers.Layer.Greece = OpenLayers.Class(OpenLayers.Layer.OSM, {
         g.beginPath(); g.arc(s / 2, s / 2, s / 2 - 4, 0, 2 * Math.PI);
         g.fillStyle = '#fff'; g.fill();
         g.lineWidth = 6; g.strokeStyle = RING[colour] || '#6b7280'; g.stroke();
+        if (hl) { g.beginPath(); g.arc(s / 2, s / 2, s / 2 - 1.5, 0, 2 * Math.PI); g.lineWidth = 3; g.strokeStyle = '#0055a4'; g.stroke(); }
         g.font = '38px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
         g.textAlign = 'center'; g.textBaseline = 'middle';
         g.fillText(emoji, s / 2, s / 2 + 2);
         return (cache[key] = c.toDataURL('image/png'));
+    }
+    // A pin's look: its own graphic, bigger and ringed when it is the one pointed at, faded when another is.
+    function paint(m, hit, faded) {
+        var g = m._gr, w = hit ? Math.round(g.w * 1.45) : g.w;
+        m.style = {
+            externalGraphic: graphic(g.emoji, g.colour, hit), graphicWidth: w, graphicHeight: w,
+            graphicXOffset: -w / 2, graphicYOffset: -w / 2, graphicTitle: g.title,
+            graphicOpacity: faded ? 0.35 : 1, cursor: 'pointer', graphicZIndex: hit ? 10 : (g.big ? 2 : 1)
+        };
     }
     var original = maps.markers_list;
     maps.markers_list = function(pins, transform) {
@@ -69,17 +79,42 @@ OpenLayers.Layer.Greece = OpenLayers.Class(OpenLayers.Layer.OSM, {
         markers.forEach(function(m) {
             var a = m.attributes;
             if (!a || !a.id) { return; }
-            var emoji = EMOJI[a.title] || '📝';
             var big = a.size === 'big' || a.id === window.selected_problem_id;
-            var w = big ? 48 : 38;
-            m.style = {
-                externalGraphic: graphic(emoji, a.colour), graphicWidth: w, graphicHeight: w,
-                graphicXOffset: -w / 2, graphicYOffset: -w / 2, graphicTitle: a.title,
-                cursor: 'pointer', graphicZIndex: big ? 2 : 1
-            };
+            m._gr = { emoji: EMOJI[a.title] || '📝', colour: a.colour, w: big ? 48 : 38, big: big, title: a.title };
+            paint(m, false, false);
         });
         return markers;
     };
+    // Pointing at a report in the list (or at its pin) shows which pin it is: that one larger and ringed, the
+    // others faded. The list's own hook sends a NaN here (it reads a number from the link, and ours end in a
+    // date-number like 20261029-01), which is ignored; the list item's data-report-id is used below.
+    maps.markers_highlight = function(id) {
+        var layer = window.fixmystreet && fixmystreet.markers;
+        if (!layer || (typeof id === 'number' && isNaN(id))) { return; }
+        var none = typeof id === 'undefined';
+        layer.features.forEach(function(f) {
+            if (!f._gr) { return; }
+            var hit = !none && f.attributes.id == id;
+            f.attributes.faded = (none || hit) ? 0 : 1;
+            paint(f, hit, f.attributes.faded);
+        });
+        layer.redraw();
+    };
+    var $ = window.jQuery;
+    if ($) {
+        $(document).on('mouseenter focusin', '#js-reports-list .item-list--reports__item', function() {
+            var id = parseInt(this.getAttribute('data-report-id'), 10);
+            if (id) { maps.markers_highlight(id); }
+        });
+        // A click on a pin opens the report: FixMyStreet looks for a list link ending in /<id>, but ours end in
+        // the report's number (/report/20261029-01), so it finds none and nothing happens.
+        $(window.fixmystreet).on('maps:marker_click', function(e, feature) {
+            var id = feature && feature.attributes && feature.attributes.id;
+            if (!id) { return; }
+            var a = document.querySelector('[data-report-id="' + id + '"] a[href]');
+            window.location.href = a ? a.href : '/report/' + id;
+        });
+    }
 })();
 
 /*

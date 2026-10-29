@@ -30,7 +30,7 @@ sub lookup_by_ref {
 
 # Open reports within 100 m of a new report's pin, of any category, for the notice that asks the
 # reporter to check for a duplicate (web/cobrands/greece/nearby-check.js; FixMyStreet's default is 250 m).
-sub nearby_distances { { inspector => 1000, suggestions => 100 } }
+sub nearby_distances { { inspector => 100, suggestions => 100 } }
 
 # Values the report email templates use besides the stock ones.
 sub munge_sendreport_params {

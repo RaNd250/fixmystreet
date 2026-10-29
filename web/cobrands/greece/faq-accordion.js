@@ -49,6 +49,37 @@
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(dt); }
             });
         });
+        var dts = Array.prototype.slice.call(document.querySelectorAll('.gr-faq dl dt.gr-acc__q'));
+        var firstList = document.querySelector('.gr-faq dl');
+        if (firstList && dts.length > 5) {
+            var en = (document.documentElement.lang || '').indexOf('en') === 0;
+            var norm = function(t) { return t.toLowerCase().replace(/ς/g, 'σ').normalize('NFD').replace(/[\u0300-\u036f]/g, ''); };
+            var wrap = document.createElement('div');
+            wrap.className = 'gr-faq__search';
+            var input = document.createElement('input');
+            input.type = 'search';
+            input.placeholder = en ? 'Search the questions…' : 'Αναζήτηση στις ερωτήσεις…';
+            input.setAttribute('aria-label', input.placeholder);
+            var none = document.createElement('p');
+            none.className = 'gr-faq__none';
+            none.hidden = true;
+            none.textContent = en ? 'Nothing found.' : 'Δεν βρέθηκε τίποτα.';
+            wrap.appendChild(input);
+            firstList.parentNode.insertBefore(none, firstList);
+            firstList.parentNode.insertBefore(wrap, none);
+            input.addEventListener('input', function() {
+                var q = norm(input.value.trim());
+                var shown = 0;
+                dts.forEach(function(dt) {
+                    var dd = dt.nextElementSibling;
+                    var hit = !q || norm(dt.textContent + ' ' + dd.textContent).indexOf(q) !== -1;
+                    dt.style.display = hit ? '' : 'none';
+                    dd.style.display = hit ? '' : 'none';
+                    if (hit) { shown += 1; }
+                });
+                none.hidden = shown > 0;
+            });
+        }
         var target = location.hash && document.getElementById(location.hash.slice(1));
         if (target && target.tagName === 'DD') { toggle(target.previousElementSibling, true); }
     }

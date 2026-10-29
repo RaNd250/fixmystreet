@@ -1587,3 +1587,81 @@ body.gr-dragging { user-select: none; -webkit-user-select: none; cursor: col-res
 
 /* The crop frame and the marks are measured from the photo's own corner: the stage is as wide as the photo, not as the dialog. */
 .gr-crop .gr-crop__stage { display: block; width: fit-content; max-width: 100%; margin: 0 auto; }
+
+/* Help, privacy, terms and about pages, 2026 look (2026-10-29): no peach side column, pill menu, a card for the
+   text, questions as cards, a contents row (legal-toc.js) and a search box (faq-accordion.js). */
+body.gr-faq .sticky-sidebar--help, body.gr-terms .sticky-sidebar--help,
+body.gr-faq .sticky-sidebar--help aside, body.gr-terms .sticky-sidebar--help aside { background: transparent !important; box-shadow: none; border: 0; }
+body.gr-faq .sticky-sidebar--help ul, body.gr-terms .sticky-sidebar--help ul { margin: 0; padding: 0; list-style: none; }
+body.gr-faq .sticky-sidebar--help li, body.gr-terms .sticky-sidebar--help li { margin: 0 0 4px; padding: 0; background: transparent; }
+body.gr-faq .sticky-sidebar--help li a, body.gr-faq .sticky-sidebar--help li strong,
+body.gr-terms .sticky-sidebar--help li a, body.gr-terms .sticky-sidebar--help li strong {
+    display: block; padding: 0.6em 0.95em; border-radius: 12px; font-weight: 500; color: var(--gr-ink-2); text-decoration: none; background: transparent;
+    transition: background var(--gr-fast) ease, color var(--gr-fast) ease; }
+body.gr-faq .sticky-sidebar--help li strong, body.gr-terms .sticky-sidebar--help li strong { background: var(--gr-accent-soft); color: var(--gr-accent-ink); font-weight: 650; }
+body.gr-faq .sticky-sidebar--help li a:hover, body.gr-terms .sticky-sidebar--help li a:hover { background: var(--gr-surface); color: var(--gr-accent); }
+
+body.gr-faq .content, body.gr-terms .content {
+    border: 1px solid var(--gr-line); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 22px 44px -28px rgba(15, 23, 42, 0.28); padding: clamp(20px, 3.2vw, 44px); }
+body.gr-faq .content h1, body.gr-terms .content h1 { font-size: clamp(1.9rem, 1.35rem + 1.9vw, 2.75rem); line-height: 1.1; letter-spacing: -0.025em; margin: 0 0 0.5em; }
+body.gr-faq .content h1::after, body.gr-terms .content h1::after {
+    content: ""; display: block; width: 56px; height: 4px; border-radius: 4px; margin-top: 0.5em;
+    background: linear-gradient(90deg, var(--gr-accent), var(--gr-warm)); }
+body.gr-faq .content p, body.gr-terms .content p, body.gr-terms .content li { line-height: 1.65; }
+body.gr-terms .content li::marker { color: var(--gr-accent); }
+body.gr-terms .content p, body.gr-terms .content li { max-width: 72ch; }
+
+.gr-terms__lead { font-size: 1.15rem; line-height: 1.55; color: var(--gr-ink-2); background: var(--gr-accent-soft); padding: 1em 1.2em; border-radius: var(--gr-radius); margin: 0 0 0.9em; }
+.gr-terms__date { display: inline-block; margin: 0; padding: 0.25em 0.85em; border-radius: var(--gr-pill); font-size: 0.8rem; color: var(--gr-ink-3); background: var(--gr-surface-2); }
+body.gr-terms .content h2 { margin: 2em 0 0.5em; padding-top: 1.1em; border-top: 1px solid var(--gr-line); font-size: clamp(1.2rem, 1.05rem + 0.5vw, 1.45rem); letter-spacing: -0.01em; scroll-margin-top: 64px; }
+body.gr-terms .content .gr-toc-wrap + h2, body.gr-terms .content h1 + h2 { border-top: 0; padding-top: 0; }
+
+body.gr-terms .content .gr-toc li { list-style: none; max-width: none; margin: 0; padding: 0; }
+body.gr-terms .content .gr-toc li::marker { content: none; }
+.gr-toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 1.3em 0 0.2em; padding: 0; list-style: none; }
+.gr-toc a { display: block; padding: 0.35em 0.9em; border: 1px solid var(--gr-line); border-radius: var(--gr-pill); font-size: 0.85rem; color: var(--gr-ink-2); text-decoration: none; background: var(--gr-surface);
+    transition: border-color var(--gr-fast) ease, color var(--gr-fast) ease, background var(--gr-fast) ease; }
+.gr-toc a:hover, .gr-toc a:focus-visible { border-color: var(--gr-accent); color: var(--gr-accent); background: var(--gr-accent-soft); outline: none; }
+
+/* Help page: each question a card; the open one gets the accent. */
+body.gr-faq .content h2 { margin: 2.2em 0 0.6em; font-size: clamp(1.2rem, 1.05rem + 0.5vw, 1.45rem); letter-spacing: -0.01em; }
+.gr-faq dl { margin: 0 0 1.5em; }
+.gr-faq .gr-acc__q { margin: 10px 0 0; padding: 1em 1.1em; background: var(--gr-surface); border: 1px solid var(--gr-line); border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04); transition: border-color var(--gr-fast) ease, box-shadow var(--gr-fast) ease, background var(--gr-fast) ease, color var(--gr-fast) ease; }
+.gr-faq .gr-acc__q:hover { border-color: #c5d3e6; box-shadow: 0 8px 22px -14px rgba(0, 55, 115, 0.35); }
+.gr-faq .gr-acc__q[aria-expanded="true"] { border-color: var(--gr-accent); background: var(--gr-accent-soft); border-bottom-left-radius: 0; border-bottom-right-radius: 0; color: var(--gr-accent-ink); box-shadow: none; }
+.gr-faq .gr-acc__a { padding: 0.9em 1.1em 1.1em; background: var(--gr-surface); border: 1px solid var(--gr-accent); border-top: 0; border-radius: 0 0 14px 14px; }
+.gr-faq .gr-acc__a p:first-child { margin-top: 0; }
+.gr-faq__search { position: relative; margin: 1.3em 0 0.4em; }
+.gr-faq__search input { box-sizing: border-box; width: 100%; padding: 0.8em 1.1em 0.8em 2.8em; font: inherit; color: var(--gr-ink); background: var(--gr-surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 1em center;
+    border: 1px solid var(--gr-line); border-radius: var(--gr-pill); transition: border-color var(--gr-fast) ease, box-shadow var(--gr-fast) ease, background-color var(--gr-fast) ease; }
+.gr-faq__search input:focus { outline: none; border-color: var(--gr-accent); box-shadow: var(--gr-ring); background-color: var(--gr-surface); }
+.gr-faq__none { margin: 1em 0; color: var(--gr-ink-3); }
+
+@media (max-width: 47.99em) {
+    body.gr-faq .sticky-sidebar--help ul, body.gr-terms .sticky-sidebar--help ul { display: flex; flex-wrap: wrap; gap: 6px; }
+    body.gr-faq .content, body.gr-terms .content { padding: 18px; }
+}
+
+/* Notice over the home page until the first reports are sent (launch-notice.js). */
+.gr-launch { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;
+    background: radial-gradient(1200px 600px at 20% 10%, rgba(0, 85, 164, 0.55), transparent 60%), rgba(8, 17, 34, 0.88); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    animation: gr-launch-in 0.35s var(--gr-ease) both; }
+.gr-launch[hidden] { display: none; }
+.gr-launch__card { box-sizing: border-box; width: min(560px, 100%); padding: clamp(24px, 5vw, 40px); text-align: center; background: var(--gr-surface); border-radius: var(--gr-radius-l);
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.6); animation: gr-launch-card 0.45s var(--gr-ease) 0.05s both; }
+.gr-launch__tag { display: inline-block; margin: 0 0 1em; padding: 0.3em 0.9em; border-radius: var(--gr-pill); font-size: 0.8rem; font-weight: 650; letter-spacing: 0.04em; color: #5b3a00; background: var(--gr-warm); }
+.gr-launch__card h2 { margin: 0 0 0.5em; font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem); line-height: 1.15; letter-spacing: -0.02em; color: var(--gr-ink); }
+.gr-launch__card p { margin: 0 0 1em; line-height: 1.6; color: var(--gr-ink-2); }
+.gr-launch__date { display: block; margin: 1.2em 0 1.4em; padding: 0.9em 1em; border-radius: var(--gr-radius); font-size: 1.05rem; color: var(--gr-accent-ink); background: var(--gr-accent-soft); }
+.gr-launch__date strong { display: block; font-size: 1.35rem; }
+.gr-launch__card .btn { min-width: 14em; }
+body.gr-launch-open { overflow: hidden; }
+@keyframes gr-launch-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes gr-launch-card { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .gr-launch, .gr-launch__card { animation: none; } }
+.gr-launch__card p.gr-launch__date { color: var(--gr-accent-ink); }
+/* Home page: the item that sends people to xorisempodia.gr stands out in a blue frame. */
+.gr-about-home__list li.gr-about-home__xe { padding: 0.85em 1em; border: 2px solid var(--gr-accent); border-radius: var(--gr-radius); background: var(--gr-accent-soft); box-shadow: 0 8px 22px -16px rgba(0, 55, 115, 0.5); }
+.gr-about-home__xe .gr-xe-link { display: inline-block; margin: 0.15em 0; padding: 0.15em 0.7em; border: 1.5px solid var(--gr-accent); border-radius: var(--gr-pill); font-weight: 650; color: var(--gr-accent-ink); background: var(--gr-surface); text-decoration: none; }
+.gr-about-home__xe .gr-xe-link:hover, .gr-about-home__xe .gr-xe-link:focus-visible { background: var(--gr-accent); color: #fff; outline: none; }
