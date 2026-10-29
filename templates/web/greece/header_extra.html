@@ -1,15 +1,14 @@
 [%# For search engines: the page's address, its two language versions, its description
     (_page_description.html) and, on the home page, who runs the site. The English version is the
     same address with ?lang=en (the menu's switch), so a page shown in English names that address as
-    its own, and both versions point to each other. ~%]
+    its own. Only the Greek version is for search engines (owner, 2026-10-29: the results showed the English
+    text to people whose Google is set to English): the English one is «noindex» (common_header_tags.html) and
+    no hreflang points to it. ~%]
 [%- gr_path = c.req.uri.path.match('^/(greece/report-ref/|report/[0-9]+/?$)') && problem ? problem.url : c.req.uri.path;
     gr_url = c.cobrand.base_url _ gr_path;
     gr_url_en = gr_url _ '?lang=en';
     gr_description = INCLUDE '_page_description.html' -%]
 <link rel="canonical" href="[% c.cobrand.greece_t(gr_url, gr_url_en) | html %]">
-<link rel="alternate" hreflang="el" href="[% gr_url | html %]">
-<link rel="alternate" hreflang="en" href="[% gr_url_en | html %]">
-<link rel="alternate" hreflang="x-default" href="[% gr_url | html %]">
 <meta name="description" content="[% gr_description | html %]">
 <meta property="og:locale" content="[% c.cobrand.greece_t('el_GR', 'en_GB') %]">
 <meta property="og:locale:alternate" content="[% c.cobrand.greece_t('en_GB', 'el_GR') %]">

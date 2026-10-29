@@ -53,6 +53,8 @@ if ('serviceWorker' in navigator) {
 [%# Forked from base: indexing is decoupled from STAGING_SITE. Only the cobrand hook or a per-page robots value can noindex. %]
 [% IF c.cobrand.robots_noindex %]
     <meta name="robots" content="noindex,nofollow">
+[% ELSIF c.cobrand.greece_t(0, 1) %]
+    <meta name="robots" content="noindex,follow">
 [% ELSIF robots %]
     <meta name="robots" content="[% robots %]">
 [%# A municipality's reports page (/reports/<Δήμος>, action reports/body or reports/ward) without any
