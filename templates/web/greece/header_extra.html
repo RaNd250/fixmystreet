@@ -13,6 +13,32 @@
 <meta property="og:locale" content="[% c.cobrand.greece_t('el_GR', 'en_GB') %]">
 <meta property="og:locale:alternate" content="[% c.cobrand.greece_t('en_GB', 'el_GR') %]">
 <meta name="twitter:card" content="summary_large_image">
+[%# Breadcrumbs for the inner pages (home > section > page), and the FAQ as FAQPage data (Greek version only). ~%]
+[% IF !c.cobrand.greece_t(0, 1) %]
+[%- gr_crumbs = [];
+    IF c.req.uri.path == '/reports';
+        gr_crumbs = [ ['Όλες οι αναφορές', '/reports'] ];
+    ELSIF body AND c.req.uri.path.match('^/reports/');
+        gr_crumbs = [ ['Όλες οι αναφορές', '/reports'], [body.name, c.req.uri.path] ];
+    ELSIF c.req.uri.path == '/faq';
+        gr_crumbs = [ ['Βοήθεια', '/faq'] ];
+    ELSIF c.req.uri.path.match('^/about(/|$)');
+        gr_crumbs = [ ['Σχετικά', '/about'] ];
+        gr_title_for = { '/about/privacy' => 'Πολιτική απορρήτου', '/about/terms' => 'Όροι χρήσης', '/about/foreis' => 'Για δήμους και φορείς' };
+        gr_crumbs.push([ gr_title_for.$gr_path, gr_path ]) IF gr_title_for.$gr_path;
+    END -%]
+[% IF gr_crumbs.size %]
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+ {"@type":"ListItem","position":1,"name":"FixMyStreets","item":"[% c.cobrand.base_url %]/"}
+[%- FOREACH cr IN gr_crumbs %],
+ {"@type":"ListItem","position":[% loop.count + 1 %],"name":"[% cr.0 | replace('"', '') %]","item":"[% c.cobrand.base_url %][% cr.1 %]"}
+[%- END %]
+]}
+</script>
+[% END %]
+[% IF c.req.uri.path == '/faq' %][% INCLUDE '_faq_jsonld.html' %][% END %]
+[% END %]
 [% IF c.req.uri.path == '/' %]
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
