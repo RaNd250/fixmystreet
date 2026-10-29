@@ -1,7 +1,10 @@
 [%# Hide a report for privacy reasons (App::Controller::GreecePrivacy). ~%]
 [% INCLUDE 'header.html', title = c.cobrand.greece_t('Απόκρυψη αναφοράς για λόγους ιδιωτικότητας', 'Hide a report for privacy reasons'), sidebar = 'about/_sidebar.html', bodyclass = 'gr-terms' %]
 <h1>[% c.cobrand.greece_t('Απόκρυψη για λόγους ιδιωτικότητας', 'Hide for privacy reasons') %]</h1>
-[% IF done %]
+[% IF done && !hidden %]
+<p><strong>[% c.cobrand.greece_t('Λάβαμε τη σήμανσή σου. Την εξετάζουμε και θα κρύψουμε την αναφορά αν χρειάζεται.', 'We received your flag. We are looking at it and will hide the report if needed.') %]</strong></p>
+<p><a href="/">[% c.cobrand.greece_t('Αρχική', 'Home') %]</a></p>
+[% ELSIF done %]
 <p><strong>[% c.cobrand.greece_t('Η αναφορά κρύφτηκε από το κοινό.', 'The report has been hidden from the public.') %]</strong>
 [% c.cobrand.greece_t('Θα την ελέγξουμε. Ό,τι έχει ήδη σταλεί στην υπηρεσία δεν ανακαλείται.', 'We will review it. What has already been sent to the service cannot be recalled.') %]</p>
 <p><a href="/">[% c.cobrand.greece_t('Αρχική', 'Home') %]</a></p>

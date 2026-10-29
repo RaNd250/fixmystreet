@@ -10,6 +10,3 @@
 [% en ? 'Terms of use' : 'Όροι χρήσης' %]: [% base %]/about/terms
 [% en ? 'Privacy' : 'Απόρρητο' %]: [% base %]/about/privacy
 
-[% en ? 'Open source (GNU AGPL v3), built on the FixMyStreet Platform: ' : 'Ανοιχτός κώδικας (GNU AGPL v3), βασισμένος στην Πλατφόρμα FixMyStreet: ' %]https://github.com/VitalData-Services/fixmystreet/tree/greece
-[% IF host.name %][% en ? 'Hosting, hardware & services provided by ' : 'Hosting, hardware & services παρέχονται από την ' %][% host.name %][% IF host.url %] ([% host.url %])[% END %]
-[% END %]

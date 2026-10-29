@@ -17,7 +17,10 @@ the staff see it. It is not deleted, and what was already emailed to a municipal
 recalled. The flag is stored as extra greece_privacy_flag { at, reason, contact }; an admin looks at it
 (admin/report_edit/<id>) and makes the report public again, or deletes it, or anonymises it. Anyone can
 flag, so the form has the Turnstile check like the other public forms; a wrong flag costs a report a few
-hours of visibility, which the privacy side of the balance accepts.
+hours of visibility, which the privacy side of the balance accepts. The report numbers run in sequence, so
+the hiding has two ceilings, against someone emptying the map: 3 flags per visitor (session) and day, and 10
+hidden by flags in an hour whoever flags. Over the second, the flag still reaches the contact address and the
+report stays visible until an admin looks.
 
 =cut
 
@@ -34,6 +37,17 @@ sub flag : Path('/greece/privacy') : Args(1) {
         $c->stash->{error} = $c->cobrand->greece_turnstile_error;
         return;
     }
+    my $mine = $c->session->{greece_privacy_flags} || { day => '', n => 0 };
+    my $today = join '-', (gmtime)[5, 7];
+    $mine = { day => $today, n => 0 } if $mine->{day} ne $today;
+    if ($mine->{n} >= 3) {
+        $c->stash->{error} = $c->cobrand->greece_t(
+            'Έχεις στείλει ήδη αρκετές σημάνσεις σήμερα. Γράψε μας από τη σελίδα «Επικοινωνία».',
+            'You have already sent several flags today. Write to us from the Contact page.');
+        return;
+    }
+    $mine->{n}++;
+    $c->session->{greece_privacy_flags} = $mine;
     my $reason = $c->get_param('reason') // '';
     $reason =~ s/^\s+|\s+$//g;
     $reason = substr($reason, 0, 1000);
@@ -41,11 +55,19 @@ sub flag : Path('/greece/privacy') : Args(1) {
     $contact =~ s/^\s+|\s+$//g;
     $contact = '' unless $contact =~ /^[^\s\@]+\@[^\s\@]+\.[^\s\@]+$/;
 
+    # Ceiling on all visitors together (the tokens only count; retention removes them after a week).
+    my $recent = $c->model('DB::Token')->search({ scope => 'greece_privacy_flag',
+        created => { '>', \"now() - interval '1 hour'" } })->count;
+    my $hide = $recent < 10;
     unless ($problem->non_public) {
         $problem->set_extra_metadata(greece_privacy_flag => { at => time, reason => $reason, contact => $contact });
-        $problem->non_public(1);
+        if ($hide) {
+            $problem->non_public(1);
+            $c->model('DB::Token')->create({ scope => 'greece_privacy_flag', data => { id => $id } });
+        }
         $problem->update;
     }
+    $c->stash->{hidden} = $hide || $problem->non_public;
     $c->log->info("greece privacy flag: report $id hidden from the public");
 
     $c->stash->{reason} = $reason;

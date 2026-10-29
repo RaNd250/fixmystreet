@@ -41,7 +41,8 @@ sub index : Path('/greece/2fa') : Args(0) {
     return $c->res->redirect('/auth') unless $c->user_exists;
     my $user = $c->user->obj;
     my $r = $c->get_param('r') // '';
-    $r = '' unless $r =~ m{^/(?!/)} && $r !~ m{^/(auth|M|greece/2fa)(/|\?|$)};
+    # Only a path of this site: not //host, not /\host (browsers read the backslash as a slash), no control characters.
+    $r = '' unless $r =~ m{^/(?![/\\])} && $r !~ m{[\\\x00-\x20\x7f]} && $r !~ m{^/(auth|M|greece/2fa)(/|\?|$)};
     $c->stash->{r} = $r;
     return $c->res->redirect($r || '/my') if !$self->needs($user) || ($c->session->{greece_2fa} // 0) == $user->id;
 
@@ -56,10 +57,8 @@ sub index : Path('/greece/2fa') : Args(0) {
         if (!$token) {
             $c->stash->{error} = $cobrand->greece_t('Ο κωδικός έληξε. Σου στείλαμε νέο.', 'The code expired. We have sent a new one.');
         } else {
-            my $data = $token->data;
-            $data->{tries}++;
-            $token->update({ data => $data });
-            if (length $code == 6 && sha256_hex($code . $user->id) eq $data->{hash}) {
+            my $data = $self->_count_try($c, $token);
+            if ($data->{tries} <= $TRIES && length $code == 6 && sha256_hex($code . $user->id) eq ($data->{hash} // '')) {
                 $token->delete;
                 $c->session->{greece_2fa} = $user->id;
                 return $c->res->redirect($r || '/my');
@@ -81,6 +80,21 @@ sub index : Path('/greece/2fa') : Args(0) {
     return if $token && ($fresh || $c->req->method ne 'POST');
     $self->_send($c, $user) or $c->stash->{error} = $cobrand->greece_t(
         'Στάλθηκαν πολλοί κωδικοί. Περίμενε λίγα λεπτά και ζήτησε νέο.', 'Too many codes sent. Wait a few minutes and ask for a new one.');
+}
+
+# Counts one try on the code, under a lock on its row: requests sent in parallel wait for each other, so five
+# tries are five, not as many as can be sent at once. A code deleted meanwhile counts as used up.
+sub _count_try {
+    my ($self, $c, $token) = @_;
+    my $data;
+    $c->model('DB')->schema->txn_do(sub {
+        my $t = $c->model('DB::Token')->search({ scope => 'greece_2fa', token => $token->token }, { for => 'update' })->single
+            or return;
+        $data = $t->data;
+        $data->{tries}++;
+        $t->update({ data => $data });
+    });
+    return $data || { tries => $TRIES + 1 };
 }
 
 # The account's code still good (not expired, tries left), if any.

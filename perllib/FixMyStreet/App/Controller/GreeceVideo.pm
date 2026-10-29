@@ -68,7 +68,9 @@ sub _meta {
 sub _sweep {
     my $now = time;
     for my $dir (glob "$ROOT/incoming/*") {
-        remove_tree($dir) if -d $dir && $now - (stat $dir)[9] > 86400;
+        # An upload never finished is gone after 3 hours (a 300 MB file needs minutes), one that went on a day.
+        my $limit = -e "$dir/status.json" ? 86400 : 3 * 3600;
+        remove_tree($dir) if -d $dir && $now - (stat $dir)[9] > $limit;
     }
     for my $file (glob "$ROOT/ready/*.mp4") {
         my ($id) = $file =~ m{/([0-9a-f]{32})\.mp4$} or next;
@@ -88,6 +90,21 @@ sub start : Path('/greece/video/start') : Args(0) {
     return _answer($c, 413, 'too_big') if $size > $MAX_UPLOAD;
     for my $d ("$ROOT/incoming", "$ROOT/ready", "$ROOT/claimed") { make_path($d); chmod 0777, $d; }
     _sweep();
+    # Nobody signs in to send a video, so the ceilings are on what can be open at once: 3 uploads per visitor
+    # address, 20 and 3 GB in all, and 5 GB of free disk kept.
+    my $ip = $c->req->header('CF-Connecting-IP') // $c->req->address;
+    my ($open, $open_bytes, $mine) = (0, 0, 0);
+    for my $dir (glob "$ROOT/incoming/*") {
+        my ($i) = $dir =~ m{/([0-9a-f]{32})$} or next;
+        next if -e "$dir/status.json";
+        my $m = _meta($i) or next;
+        $open++; $open_bytes += $m->{size} || 0;
+        $mine++ if ($m->{ip} // '') eq $ip;
+    }
+    return _answer($c, 429, 'too_many') if $mine >= 3;
+    return _answer($c, 503, 'busy') if $open >= 20 || $open_bytes + $size > 3 * 1024 * 1024 * 1024;
+    my ($free_kb) = (split ' ', (`df -Pk $ROOT/incoming 2>/dev/null | tail -1` // ''))[3];
+    return _answer($c, 503, 'busy') if defined $free_kb && $free_kb =~ /^\d+$/ && $free_kb < 5 * 1024 * 1024;
     open my $ur, '<:raw', '/dev/urandom' or return _answer($c, 500, 'random');
     read($ur, my $bytes, 16) == 16 or return _answer($c, 500, 'random');
     my $id = unpack 'H*', $bytes;
@@ -96,7 +113,7 @@ sub start : Path('/greece/video/start') : Args(0) {
     chmod 0777, $dir;    # the video service (another user) writes status.json here
     open my $m, '>', "$dir/meta.json" or return _answer($c, 500, 'storage');
     print $m encode_json({ size => $size + 0, created => time,
-        ip => $c->req->header('CF-Connecting-IP') // $c->req->address });
+        ip => $ip });
     close $m;
     open my $u, '>', "$dir/upload" or return _answer($c, 500, 'storage');
     close $u;

@@ -80,10 +80,17 @@ sub check_code : Path('/greece/otp/check') : Args(0) {
     my $id = $c->session->{greece_otp_token} or return _answer($c, 400, 'no_code');
     my $token = $c->model('DB::Token')->find({ scope => 'greece_otp', token => $id })
         or return _answer($c, 400, 'no_code');
-    my $data = $token->data || {};
-    return _answer($c, 400, 'expired') if time - ($data->{at} || 0) > $TTL || ($data->{tries} || 0) >= $TRIES;
-    $data->{tries}++;
-    $token->update({ data => $data });
+    # The try is counted under a lock on the row: requests sent in parallel wait for each other.
+    my ($data, $over);
+    $c->model('DB')->schema->txn_do(sub {
+        my $t = $c->model('DB::Token')->search({ scope => 'greece_otp', token => $id }, { for => 'update' })->single
+            or return;
+        $data = $t->data || {};
+        if (time - ($data->{at} || 0) > $TTL || ($data->{tries} || 0) >= $TRIES) { $over = 1; return }
+        $data->{tries}++;
+        $t->update({ data => $data });
+    });
+    return _answer($c, 400, 'expired') if !$data || $over;
     return _answer($c, 400, 'wrong') unless length $code == 6 && sha256_hex($code . $data->{email}) eq $data->{hash};
     $c->session->{greece_otp_email} = $data->{email};
     $token->delete;

@@ -1,6 +1,8 @@
 [%# To the contact address when someone hides a report for privacy reasons (App::Controller::GreecePrivacy). ~%]
 Subject: Απόκρυψη αναφοράς για ιδιωτικότητα: [% problem.greece_ref %]
 
+[% UNLESS hidden %]ΠΡΟΣΟΧΗ: η αναφορά ΔΕΝ κρύφτηκε αυτόματα (πάνω από 10 σημάνσεις την τελευταία ώρα). Έλεγξέ την τώρα.
+[% END %]
 Η αναφορά [% problem.greece_ref %] ([% problem.title %]) κρύφτηκε από το κοινό, γιατί κάποιος σημείωσε πιθανή παραβίαση ιδιωτικότητας.
 
 Τι ειπώθηκε: [% reason || '(τίποτα)' %]
