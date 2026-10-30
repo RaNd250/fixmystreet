@@ -1703,3 +1703,12 @@ body #front-recently .full-width { margin: 0 !important; }
 
 /* The same pill, small, in the lists. */
 .gr-status--sm { display: inline-flex; margin: 0 0.5em 0 0; padding: 0.1em 0.65em 0.1em 0.5em; gap: 0.35em; font-size: 0.78rem; font-weight: 700; font-style: normal; vertical-align: middle; }
+
+/* Map type switch and the satellite map (Apple MapKit JS) over the home minimap (2026-10-30). */
+.gr-minimap__frame { position: relative; }
+.gr-minimap__sat { position: absolute; inset: 0; z-index: 1; border-radius: inherit; overflow: hidden; }
+.gr-minimap__pin { z-index: 3; }
+.gr-minimap__types { position: absolute; top: 8px; left: 8px; z-index: 4; display: inline-flex; padding: 3px; gap: 2px; border-radius: var(--gr-pill); background: rgba(255, 255, 255, 0.92); box-shadow: 0 1px 4px rgba(15, 23, 42, 0.3); }
+.gr-minimap__types button { padding: 0.25em 0.8em; border: 0; border-radius: var(--gr-pill); background: transparent; color: var(--gr-ink-2); font: inherit; font-size: 0.8125rem; font-weight: 600; cursor: pointer; }
+.gr-minimap__types button.is-on { background: var(--gr-accent); color: #fff; }
+.gr-minimap__types button:focus-visible { outline: 2px solid var(--gr-accent); outline-offset: 1px; }

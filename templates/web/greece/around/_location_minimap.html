@@ -10,6 +10,11 @@
 <div class="gr-minimap" id="gr-minimap-box" data-dimoi="/cobrands/greece/dimoi/" data-index="[% version('/cobrands/greece/dimoi/index.json') %]" hidden>
     <div class="gr-minimap__frame">
         <div class="gr-minimap__map" id="gr-minimap" role="application" aria-label="[% c.cobrand.greece_t('Χάρτης για την επιλογή σημείου', 'Map to choose the place') %]"></div>
+        <div class="gr-minimap__sat" id="gr-minimap-sat" hidden></div>
+        <div class="gr-minimap__types" role="group" aria-label="[% c.cobrand.greece_t('Τύπος χάρτη', 'Map type') %]">
+            <button type="button" class="is-on" data-map-type="standard" aria-pressed="true">[% c.cobrand.greece_t('Χάρτης', 'Map') %]</button>
+            <button type="button" data-map-type="satellite" aria-pressed="false">[% c.cobrand.greece_t('Δορυφόρος', 'Satellite') %]</button>
+        </div>
         <span class="gr-minimap__pin" aria-hidden="true"></span>
     </div>
     <p class="gr-minimap__status" id="gr-minimap-status" aria-live="polite"></p>

@@ -167,6 +167,84 @@
         });
         map.on('moveend', update);
 
+        // Map type: «Χάρτης» (our own tiles) or «Δορυφόρος» (Apple Maps, hybrid, MapKit JS, loaded only when chosen; the
+        // visitor's address reaching Apple is accepted, owner 2026-10-30). The MapLibre map stays underneath and
+        // follows the satellite one, so the buttons, the municipality card and the report link work the same.
+        (function () {
+            var satEl = document.getElementById('gr-minimap-sat');
+            var typeBtns = box.querySelectorAll('.gr-minimap__types button');
+            if (!satEl || !typeBtns.length) { return; }
+            var mk = null, loading = null, satOn = false, ignoreUntil = 0, driving = 0;
+            function loadMapKit() {
+                if (loading) { return loading; }
+                loading = new Promise(function (resolve, reject) {
+                    var s = document.createElement('script');
+                    s.src = 'https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js';
+                    s.crossOrigin = 'anonymous';
+                    s.onload = function () {
+                        window.mapkit.init({
+                            authorizationCallback: function (done) {
+                                fetch('/greece/mapkit-token', { credentials: 'same-origin' }).then(function (r) {
+                                    return r.ok ? r.text() : Promise.reject();
+                                }).then(done);
+                            },
+                            language: EN ? 'en' : 'el'
+                        });
+                        resolve();
+                    };
+                    s.onerror = function () { loading = null; reject(); };
+                    document.head.appendChild(s);
+                });
+                return loading;
+            }
+            // MapLibre's zoom z shows 360 * width / (512 * 2^z) degrees of longitude (512 px tiles).
+            function lonSpan(z) { return 360 * (satEl.clientWidth || 300) / (512 * Math.pow(2, z)); }
+            function zoomOf(lonDelta) { return Math.log(360 * (satEl.clientWidth || 300) / (512 * lonDelta)) / Math.LN2; }
+            function toSat() {
+                if (!mk) { return; }
+                var c = map.getCenter(), lon = lonSpan(map.getZoom());
+                var lat = lon * (satEl.clientHeight || 200) / (satEl.clientWidth || 300) * Math.cos(c.lat * Math.PI / 180);
+                ignoreUntil = Date.now() + 500;
+                mk.region = new mapkit.CoordinateRegion(new mapkit.Coordinate(c.lat, c.lng), new mapkit.CoordinateSpan(lat, lon));
+            }
+            function fromSat() {
+                if (Date.now() < ignoreUntil) { return; }
+                var r = mk.region;
+                driving = Date.now() + 500;
+                map.jumpTo({ center: [r.center.longitude, r.center.latitude], zoom: zoomOf(r.span.longitudeDelta) });
+            }
+            map.on('moveend', function () { if (satOn && Date.now() > driving) { toSat(); } });
+            function choose(type) {
+                var sat = type === 'satellite';
+                Array.prototype.forEach.call(typeBtns, function (b) {
+                    var on = b.getAttribute('data-map-type') === type;
+                    b.classList.toggle('is-on', on);
+                    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+                });
+                if (!sat) { satOn = false; satEl.hidden = true; return; }
+                loadMapKit().then(function () {
+                    if (!mk) {
+                        satEl.hidden = false;
+                        mk = new mapkit.Map(satEl, {
+                            mapType: mapkit.Map.MapTypes.Hybrid,
+                            showsMapTypeControl: false, showsCompass: mapkit.FeatureVisibility.Hidden,
+                            isRotationEnabled: false, showsZoomControl: true
+                        });
+                        mk.addEventListener('region-change-end', fromSat);
+                    }
+                    satOn = true;
+                    satEl.hidden = false;
+                    toSat();
+                }, function () {
+                    // MapKit did not load: back to the plain map.
+                    choose('standard');
+                });
+            }
+            Array.prototype.forEach.call(typeBtns, function (b) {
+                b.addEventListener('click', function () { choose(b.getAttribute('data-map-type')); });
+            });
+        })();
+
         function update() {
             var c = map.getCenter(), z = map.getZoom();
             var ready = z >= REPORT_ZOOM;

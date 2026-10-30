@@ -1468,16 +1468,31 @@ sub greece_apple_number {
     return '' unless length $have && length $want && (index($want, $have) >= 0 || index($have, $want) >= 0);
     return $a->{number} // '';
 }
+# The token MapKit JS (the satellite map) asks for: for this site's origin only, valid 30 minutes, made once per
+# 20 minutes in this process. Empty when no Apple Maps key is configured.
+my ($MAPKIT_TOKEN, $MAPKIT_UNTIL);
+sub greece_mapkit_token {
+    my $class = shift;
+    return $MAPKIT_TOKEN if $MAPKIT_TOKEN && $MAPKIT_UNTIL > time;
+    my $team = FixMyStreet->config('APPLE_MAPS_TEAM_ID');
+    my $kid = FixMyStreet->config('APPLE_MAPS_KEY_ID');
+    my $pem = FixMyStreet->config('APPLE_MAPS_PRIVATE_KEY');
+    my $origin = FixMyStreet->config('BASE_URL');
+    return '' unless $team && $kid && $pem && $origin;
+    $MAPKIT_TOKEN = eval { _greece_apple_jwt($team, $kid, $pem, $origin) } || '';
+    $MAPKIT_UNTIL = time + 1200;
+    return $MAPKIT_TOKEN;
+}
 sub _greece_b64url { require MIME::Base64; (my $b = MIME::Base64::encode_base64(shift, '')) =~ tr{+/}{-_}; $b =~ s/=+$//; $b }
 # The JWT Apple asks for, signed ES256 with the .p8 key (openssl does the signing, as no Perl module for it is
 # installed; its DER signature is turned into the raw r||s a JWT carries).
 sub _greece_apple_jwt {
-    my ($team, $kid, $pem) = @_;
+    my ($team, $kid, $pem, $origin) = @_;
     require JSON::MaybeXS; require File::Temp; require IPC::Open3; require Symbol;
     my $json = JSON::MaybeXS->new(canonical => 1);
     my $now = time;
     my $input = _greece_b64url($json->encode({ alg => 'ES256', kid => $kid, typ => 'JWT' })) . '.'
-        . _greece_b64url($json->encode({ iss => $team, iat => $now, exp => $now + 600 }));
+        . _greece_b64url($json->encode({ iss => $team, iat => $now, exp => $now + ($origin ? 1800 : 600), ($origin ? (origin => $origin) : ()) }));
     my $file = File::Temp->new(DIR => '/dev/shm', SUFFIX => '.pem');   # mode 0600, removed with the object
     print $file $pem; close $file;
     my $pid = IPC::Open3::open3(my $in, my $out, my $err = Symbol::gensym(), 'openssl', 'dgst', '-sha256', '-sign', $file->filename);

@@ -68,6 +68,19 @@ sub name_check : Path('/greece/name-check') : Args(0) {
     $name = $c->cobrand->greece_name_normalise($name);
     return $self->answer($c, 200, { name => $name, error => ($c->cobrand->greece_name_error($name) // '') });
 }
+# GET /greece/mapkit-token: the token the satellite map (Apple MapKit JS, loaded only when «Δορυφόρος» is chosen)
+# asks for, as plain text. It works for this site's address only (the token's origin), so it is no use elsewhere.
+sub mapkit_token : Path('/greece/mapkit-token') : Args(0) {
+    my ( $self, $c ) = @_;
+    return $self->answer($c, 404, 'not found') unless $c->cobrand->moniker eq 'greece';
+    my $token = FixMyStreet::DB::Result::Problem->greece_mapkit_token;
+    return $self->answer($c, 404, 'not configured') unless $token;
+    $c->res->status(200);
+    $c->res->content_type('text/plain; charset=utf-8');
+    $c->res->header('Cache-Control' => 'private, max-age=600');
+    $c->res->body($token);
+    return;
+}
 sub _metres {
     my ($la1, $lo1, $la2, $lo2) = map { deg2rad($_) } @_;
     my $a = sin(($la2 - $la1) / 2) ** 2 + cos($la1) * cos($la2) * sin(($lo2 - $lo1) / 2) ** 2;
