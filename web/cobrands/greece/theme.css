@@ -1679,3 +1679,24 @@ body #front-recently { box-sizing: border-box; margin: 0 0 1.2em !important; pad
 #front-recently .item-list--reports__item { margin: 0; border-radius: var(--gr-radius); }
 #front-recently .item-list--reports__item + .item-list--reports__item { border-top: 1px solid var(--gr-line); }
 body #front-recently .full-width { margin: 0 !important; }
+
+/* Status pill with an icon at the top of a report's details (2026-10-30). */
+.gr-status { display: inline-flex; align-items: center; gap: 0.5em; margin: 0 0 0.9em; padding: 0.45em 1em 0.45em 0.8em; border-radius: var(--gr-pill); font-weight: 700; font-size: 1rem; line-height: 1.2;
+    color: var(--gr-st, var(--gr-accent)); background: color-mix(in srgb, var(--gr-st, var(--gr-accent)) 13%, transparent); border: 1px solid color-mix(in srgb, var(--gr-st, var(--gr-accent)) 35%, transparent); }
+.gr-status svg { flex: none; }
+.gr-status--fixed { --gr-st: #15803d; }
+.gr-status--progress { --gr-st: #1d4ed8; }
+.gr-status--sent { --gr-st: #0f766e; }
+.gr-status--pending, .gr-status--review { --gr-st: #b45309; }
+.gr-status--closed { --gr-st: #64748b; }
+.gr-status--info { --gr-st: #475569; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gr-status--fixed { --gr-st: #4ade80; } :root:not([data-theme="light"]) .gr-status--progress { --gr-st: #93c5fd; }
+    :root:not([data-theme="light"]) .gr-status--sent { --gr-st: #5eead4; } :root:not([data-theme="light"]) .gr-status--pending, :root:not([data-theme="light"]) .gr-status--review { --gr-st: #fbbf24; }
+    :root:not([data-theme="light"]) .gr-status--closed, :root:not([data-theme="light"]) .gr-status--info { --gr-st: #cbd5e1; } }
+.gr-minimap__status:empty { display: none; }
+
+/* Pilot notice above the steps on the home page (2026-10-30): bold, strong colour. */
+.gr-pilot { display: flex; align-items: center; gap: 0.7em; margin: 0 0 1em; padding: 0.85em 1.1em; border-radius: var(--gr-radius); border-left: 6px solid #c2410c; background: #fff1e6; color: #9a3412; font-weight: 800; font-size: 1.0625rem; line-height: 1.35; }
+.gr-pilot svg { flex: none; color: #ea580c; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gr-pilot { background: #3a1d0b; color: #fdba74; border-left-color: #fb923c; } :root:not([data-theme="light"]) .gr-pilot svg { color: #fb923c; } }
+:root[data-theme="dark"] .gr-pilot { background: #3a1d0b; color: #fdba74; border-left-color: #fb923c; }

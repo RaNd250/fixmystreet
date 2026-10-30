@@ -15,3 +15,4 @@
     value="[% object.name || c.user.name | html %]" name="name" id="form_name" autocomplete="name" aria-required="false"
     minlength="4" maxlength="100" data-msg-minlength="[% c.cobrand.greece_t('Το όνομα θέλει τουλάχιστον 4 χαρακτήρες.', 'The name needs at least 4 characters.') %]">
 <!-- /user_name.html -->
+<p class="gr-reporter__warn" data-gr-private-note>[% c.cobrand.greece_t('Αν γράψεις όνομα, email ή τηλέφωνο, η υπηρεσία που θα τα λάβει μπορεί να τα κοινοποιήσει σε όποιον αφορά η αναφορά. Θέλεις ανωνυμία; Άφησέ τα κενά.', 'If you give a name, email or phone number, the service that receives them may disclose them to whoever the report concerns. Want to stay anonymous? Leave them empty.') %]</p>

@@ -46,6 +46,7 @@ INCLUDE '_email_top.html';
     <tr><th style="[% tth %]">Email</th><td style="[% ttd %]">[% IF reporter_email %]<a href="mailto:[% reporter_email | html %]">[% reporter_email | html %]</a> <span style="color: #15803d;">(επιβεβαιωμένο, σε κοινοποίηση)</span>[% ELSIF reporter_email_unconfirmed %]Δόθηκε, χωρίς επιβεβαίωση[% ELSE %]Δεν δόθηκε[% END %]</td></tr>
     <tr><th style="[% tth %] border-bottom: 0;">Τηλέφωνο</th><td style="[% ttd %] border-bottom: 0;">[% IF reporter_phone %]<a href="tel:[% reporter_phone | html %]">[% reporter_phone | html %]</a>[% ELSE %]Δεν δόθηκε[% END %]</td></tr>
   </table>
+[% IF reporter_phone OR reporter_email OR NOT report.anonymous %]<p style="margin: 10px 0 0; font-size: 13px; color: #555;">Σημείωση για την υπηρεσία: τα στοιχεία επικοινωνίας δόθηκαν από τον πολίτη μόνο για να επικοινωνήσετε μαζί του. Παρακαλούμε να μην κοινοποιούνται σε τρίτους (π.χ. στον ιδιοκτήτη ή στον φερόμενο ως παραβάτη) παρά μόνο αν είναι αναγκαίο και ο πολίτης έχει ενημερωθεί (άρθρα 5 και 14 ΓΚΠΔ).</p>[% END %]
 
   <p style="margin: 0 0 22px 0; text-align: center;"><a style="[% button_style %]" href="[% url %]">Άνοιγμα της αναφοράς</a></p>
   <p style="[% secondary_p_style %]">[% IF reporter_email %]Οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν και στον πολίτη που υπέβαλε την αναφορά.[% ELSE %]Οι απαντήσεις σε αυτό το μήνυμα πηγαίνουν στην ομάδα του [% site_name %].[% END %]</p>

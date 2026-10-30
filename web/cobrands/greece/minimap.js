@@ -90,6 +90,7 @@
     statusClose.setAttribute('aria-label', t('Κλείσιμο του μηνύματος', 'Close the message'));
     statusClose.textContent = '\u2715';
     status.parentNode.insertBefore(statusClose, status.nextSibling);
+    if (!status.textContent.trim()) { statusClose.hidden = true; }   // no message yet: no ✕
     function hideStatus(yes) {
         status.classList.toggle('gr-minimap__status--closed', yes);
         statusClose.hidden = yes;

@@ -12,7 +12,7 @@
         <div class="gr-minimap__map" id="gr-minimap" role="application" aria-label="[% c.cobrand.greece_t('Χάρτης για την επιλογή σημείου', 'Map to choose the place') %]"></div>
         <span class="gr-minimap__pin" aria-hidden="true"></span>
     </div>
-    <p class="gr-minimap__status" id="gr-minimap-status" aria-live="polite">[% c.cobrand.greece_t('Πατήστε εδώ για αναφορά.', 'Press here to report.') %]</p>
+    <p class="gr-minimap__status" id="gr-minimap-status" aria-live="polite"></p>
     <div class="gr-minimap__actions">
         <button type="button" class="btn btn--primary" id="gr-minimap-locate">[% c.cobrand.greece_t('Αναφορά με χρήση της τοποθεσίας μου', 'Report using my location') %]</button>
         <a class="btn btn--primary" id="gr-minimap-report" href="[% c.uri_for('/report/new') %]" hidden>[% c.cobrand.greece_t('Αναφορά εδώ', 'Report here') %]</a>
