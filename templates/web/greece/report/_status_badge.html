@@ -1,0 +1,35 @@
+[%# The status of a report as a pill with an icon: large at the top of the report page's card (_main_sent_info.html),
+    small (compact = 1) in the lists (_item_small.html). Needs `problem`. No sending times. ~%]
+[% SET sent = problem.bodies_str AND problem.send_state != 'skipped' %]
+[% SET gr_st = problem.state;
+   IF gr_st.match('^fixed');
+     gr_cls = 'fixed'; gr_ico = 'check'; gr_lbl = c.cobrand.greece_t('Διορθώθηκε', 'Fixed');
+   ELSIF gr_st == 'cancelled';
+     gr_cls = 'closed'; gr_ico = 'x'; gr_lbl = c.cobrand.greece_t('Ακυρώθηκε', 'Cancelled');
+   ELSIF gr_st == 'duplicate';
+     gr_cls = 'closed'; gr_ico = 'copy'; gr_lbl = c.cobrand.greece_t('Διπλότυπη αναφορά', 'Duplicate report');
+   ELSIF gr_st.match('^(not responsible|unable to fix|internal referral)$');
+     gr_cls = 'closed'; gr_ico = 'x'; gr_lbl = c.cobrand.greece_t('Έκλεισε', 'Closed');
+   ELSIF gr_st.match('^(in progress|investigating|action scheduled|planned|fix pending)$');
+     gr_cls = 'progress'; gr_ico = 'wrench'; gr_lbl = c.cobrand.greece_t('Σε εξέλιξη', 'In progress');
+   ELSIF gr_st.match('^(unconfirmed|partial|hidden|draft)$');
+     gr_cls = 'review'; gr_ico = 'clock'; gr_lbl = c.cobrand.greece_t('Σε έλεγχο', 'Being checked');
+   ELSIF problem.whensent;
+     gr_cls = 'sent'; gr_ico = 'send'; gr_lbl = c.cobrand.greece_t('Εστάλη στην υπηρεσία', 'Sent to the service');
+   ELSIF NOT sent;
+     gr_cls = 'info'; gr_ico = 'pin'; gr_lbl = c.cobrand.greece_t('Δημοσιεύτηκε', 'Published');
+   ELSIF c.cobrand.greece_needs_approval(problem);
+     gr_cls = 'review'; gr_ico = 'clock'; gr_lbl = c.cobrand.greece_t('Αναμένει έγκριση', 'Awaiting approval');
+   ELSE;
+     gr_cls = 'pending'; gr_ico = 'send'; gr_lbl = c.cobrand.greece_t('Αναμένει αποστολή', 'Waiting to be sent');
+   END %]
+[% BLOCK gr_status_svg %]<svg viewBox="0 0 24 24" width="[% gr_size %]" height="[% gr_size %]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  [%~ IF gr_ico == 'check' %]<path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><polyline points="22 4 12 14.01 9 11.01"/>
+  [%~ ELSIF gr_ico == 'x' %]<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+  [%~ ELSIF gr_ico == 'copy' %]<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+  [%~ ELSIF gr_ico == 'wrench' %]<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+  [%~ ELSIF gr_ico == 'clock' %]<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+  [%~ ELSIF gr_ico == 'send' %]<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+  [%~ ELSE %]<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+  [%~ END %]</svg>[% END %]
+[% IF compact %]<span class="gr-status gr-status--sm gr-status--[% gr_cls %]" title="[% gr_lbl | html %]">[% PROCESS gr_status_svg gr_size = 15 %]<span>[% gr_lbl %]</span></span>[% ELSE %]<p class="gr-status gr-status--[% gr_cls %]" role="status">[% PROCESS gr_status_svg gr_size = 22 %]<span>[% gr_lbl %]</span></p>[% END %]

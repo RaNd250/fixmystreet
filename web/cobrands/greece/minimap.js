@@ -11,7 +11,7 @@
         return;
     }
 
-    var REPORT_ZOOM = 15;   // pin precise enough to start a report
+    var REPORT_ZOOM = 11;   // «Αναφορά εδώ» shows as soon as the map is past regional level; the report's own map refines the pin (was 15: after moving the map only «Ξανά στη θέση μου» showed)
     var DIMOS_ZOOM = 11;    // municipality lookup only once the map is zoomed past regional level
     var STYLE_URL = '/tiles/styles/positron/style.json';   // our own tiles, as on the report maps
     var dataBase = box.getAttribute('data-dimoi');

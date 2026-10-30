@@ -1,0 +1,45 @@
+[%# FixMyStreet's _item_small.html with the status pill first (2026-10-30); its «Fixed» / «Closed» word is the pill. ~%]
+[% INCLUDE 'report/_status_badge.html' compact = 1 %]
+[% IF c.cobrand.moniker == 'bathnes' AND (c.user.from_body OR c.user.is_superuser) %]
+    [% problem.nearest_address.replace(', Bath and North East Somerset, West of England, England', '').replace(', United Kingdom', '') %].<br>
+[% ELSE %]
+<span class="visuallyhidden">
+    [% problem.nearest_address %].
+</span>
+[% END %]
+
+[% IF (c.user.has_permission_to('report_edit_priority', problem.bodies_str_ids) OR c.user.has_permission_to('report_inspect', problem.bodies_str_ids)) AND problem.response_priority %]
+    <span class="item-list__item__state">[% problem.response_priority.name %]</span>
+[% END %]
+[%- IF c.cobrand.moniker != 'fixamingata' %] [%# Default: %]
+    [%- IF problem.days_ago > 0 AND problem.days_ago <= c.cobrand.display_days_ago_threshold %]
+      [% tprintf( nget('Reported %d day ago', 'Reported %d days ago', problem.days_ago), problem.days_ago ) %]
+    [%- ELSE %]
+      [% prettify_dt( problem.confirmed, 1 ) %]
+    [%- END %]
+[%- ELSE %] [%# Swedish cobrand fixamingata: %]
+    [%- prettify_dt( problem.confirmed) %]
+[%- END %]
+[%- IF dist %], [% dist %]km[% END %]
+[%- IF problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %],
+    [%- IF problem.days_ago('lastupdate') > 0 AND problem.days_ago('lastupdate') <= c.cobrand.display_days_ago_threshold %]
+      [% tprintf( nget('last updated %d day ago', 'last updated %d days ago', problem.days_ago('lastupdate') ), problem.days_ago('lastupdate') ) %]
+    [%- ELSE %]
+      [% tprintf(loc('last updated %s'), prettify_dt( problem.lastupdate, 1 ) )  %]
+    [%- END %]
+[%- END %]
+
+[% IF include_sentinfo %]
+    [% IF c.cobrand.is_council && !c.cobrand.owns_problem( problem ) %]
+        (sent to [% problem.body %])
+    [% ELSIF problem.bodies_str_ids.size > 2 %] [% loc('(sent to all)') %]
+    [% ELSIF problem.bodies_str_ids.size == 2 %] [% loc('(sent to both)') %]
+    [% ELSIF problem.bodies_str_ids.size == 0 %] [% loc('(not sent to council)') %]
+    [% END %]
+[% END %]
+
+[% IF page != '' AND c.req.uri.path != '/my/planned' %]
+    <div class='assigned-to'>
+    [% INCLUDE 'admin/_report-assignment.html' %]
+    </div>
+[% END %]

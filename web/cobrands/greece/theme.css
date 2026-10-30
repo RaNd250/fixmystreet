@@ -1700,3 +1700,6 @@ body #front-recently .full-width { margin: 0 !important; }
 .gr-pilot svg { flex: none; color: #ea580c; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gr-pilot { background: #3a1d0b; color: #fdba74; border-left-color: #fb923c; } :root:not([data-theme="light"]) .gr-pilot svg { color: #fb923c; } }
 :root[data-theme="dark"] .gr-pilot { background: #3a1d0b; color: #fdba74; border-left-color: #fb923c; }
+
+/* The same pill, small, in the lists. */
+.gr-status--sm { display: inline-flex; margin: 0 0.5em 0 0; padding: 0.1em 0.65em 0.1em 0.5em; gap: 0.35em; font-size: 0.78rem; font-weight: 700; font-style: normal; vertical-align: middle; }
