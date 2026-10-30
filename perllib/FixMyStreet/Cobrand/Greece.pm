@@ -7,6 +7,7 @@ use utf8;
 use DateTime ();
 use Fcntl ();
 use JSON::MaybeXS ();
+use Unicode::Normalize ();
 
 # Reuse the Default cobrand's compiled CSS; this cobrand only adds templates and a little JS/CSS.
 sub asset_moniker { 'default' }
@@ -186,9 +187,13 @@ sub greece_default_name {
     return if $c->user_exists;   # an account's own name is never replaced
     my $name = $c->req->params->{name} // '';
     $name =~ s/^\s+|\s+$//g;
-    return unless $GREECE_NO_NAME{lc $name};
+    unless ($GREECE_NO_NAME{lc $name}) {
+        $c->req->params->{name} = $self->greece_name_normalise($name);   # greeklish into Greek letters
+        return;
+    }
     # A report without a photo needs a name (owner, 2026-10-26): report_check_for_errors says so.
-    if ($c->req->path =~ m{^report/new/?$} && !greece_has_photo($c)) {
+    # (Not a police complaint: it is anonymous by itself and needs no photo, owner 2026-10-30.)
+    if ($c->req->path =~ m{^report/new/?$} && !greece_has_photo($c) && ($c->req->params->{category} // '') ne $self->GREECE_COMPLAINT) {
         $c->stash->{greece_name_needed} = 1;
         $c->req->params->{name} = '';
         return;
@@ -353,8 +358,193 @@ sub greece_name_error {
     my (undef, $bad) = greece_mask_bad_words($name);
     return $self->greece_t('Το όνομα δεν επιτρέπεται. Γράψε το πραγματικό σου όνομα ή άφησέ το «Ανώνυμος».',
         'That name is not allowed. Write your real name, or leave it as «Anonymous».') if $bad;
-    return if length $name >= 4;
-    return $self->greece_t('Το όνομα θέλει τουλάχιστον 4 χαρακτήρες.', 'The name needs at least 4 characters.');
+    return $self->greece_t('Το όνομα θέλει τουλάχιστον 4 χαρακτήρες.', 'The name needs at least 4 characters.') if length $name < 4;
+    return $self->greece_t('Το όνομα δεν μοιάζει με πραγματικό. Γράψε το όνομά σου ή άφησέ το «Ανώνυμος».',
+        'That does not look like a real name. Write your name, or leave it as «Anonymous».') if $self->greece_name_nonsense($name);
+    return;
+}
+
+
+# ---- Names: greeklish into Greek letters, and a check that it is a name (owner, 2026-10-30) ----------------
+# A name typed with Latin letters that is plainly Greek («Giorgos Papadopoulos») is written with Greek ones
+# («Γιώργος Παπαδόπουλος»); any other name (John Smith) is left as it is. Accents are only known for the
+# first names below and for a few surname endings (-όπουλος, -άκης, -ίδης ...), so other words come without.
+# And a name that is not one («ΣΑΔΦΑΣΔΦ», «aaaa», «xzxzxz», digits) is refused, as the abusive words are.
+my @GR_FIRST_NAMES = (
+    # [ Greek, Latin spellings... ]
+    [qw(Γιώργος giorgos giwrgos yiorgos georgios giorgis gewrgios)], [qw(Γιάννης giannis yiannis giannhs ioannis yanis ιωάννης)],
+    [qw(Κώστας kostas costas kwstas konstantinos konstantinos constantinos)], [qw(Νίκος nikos nikolaos nikolas)],
+    [qw(Δημήτρης dimitris dhmhtris dimitrios mitsos dimitrhs)], [qw(Παναγιώτης panagiotis panagiwtis panos)],
+    [qw(Χρήστος christos xristos hristos)], [qw(Αθανάσιος athanasios thanasis thanos)], [qw(Μιχάλης michalis mixalis mihalis)],
+    [qw(Θοδωρής thodoris theodoros theodwros)], [qw(Βασίλης vasilis vasileios basilis vassilis)], [qw(Αντώνης antonis antonios)],
+    [qw(Στέλιος stelios)], [qw(Στάθης stathis)], [qw(Μανώλης manolis emmanouil manwlis)], [qw(Πέτρος petros)],
+    [qw(Παύλος pavlos pavlos paulos)], [qw(Σπύρος spyros spiros)], [qw(Αλέξανδρος alexandros aleksandros alexis)],
+    [qw(Ευάγγελος evangelos vaggelis vangelis)], [qw(Κυριάκος kyriakos kiriakos)], [qw(Λευτέρης lefteris eleftherios)],
+    [qw(Γρηγόρης grigoris gregoris)], [qw(Σωτήρης sotiris sotirios)], [qw(Φώτης fotis photis)], [qw(Άγγελος aggelos angelos)],
+    [qw(Ηλίας ilias elias)], [qw(Αλέκος alekos)], [qw(Μάριος marios)], [qw(Τάσος tasos anastasios)], [qw(Σταύρος stavros)],
+    [qw(Απόστολος apostolos)], [qw(Γεράσιμος gerasimos)], [qw(Διονύσης dionysis dionysios)], [qw(Ανδρέας andreas)],
+    [qw(Χαράλαμπος charalampos xaralampos haralampos)], [qw(Λάμπρος lampros)], [qw(Ορέστης orestis)], [qw(Πάρις paris)],
+    [qw(Μάκης makis)], [qw(Τάκης takis)], [qw(Σάκης sakis)], [qw(Λάκης lakis)], [qw(Αργύρης argyris)], [qw(Θεόδωρος theodoros)],
+    [qw(Δημοσθένης dimosthenis)], [qw(Λεωνίδας leonidas)], [qw(Φίλιππος filippos philippos)], [qw(Ραφαήλ rafail)],
+    [qw(Ευθύμιος efthymios)], [qw(Αριστείδης aristeidis aristidis)], [qw(Μιλτιάδης miltiadis)], [qw(Σωκράτης sokratis)],
+    [qw(Πλάτων platon)], [qw(Αχιλλέας achilleas axilleas)], [qw(Οδυσσέας odysseas)], [qw(Περικλής periklis perikles)],
+    [qw(Ηρακλής iraklis herakles)], [qw(Ιάσονας iasonas)], [qw(Θάνος thanos)], [qw(Βαγγέλης vaggelis vangelis)],
+    [qw(Ζήσης zisis)], [qw(Κλεάνθης kleanthis)], [qw(Ευστάθιος efstathios)], [qw(Ιωσήφ iosif)], [qw(Εμμανουήλ emmanouil)],
+    [qw(Μαρία maria)], [qw(Ελένη eleni)], [qw(Κατερίνα katerina)], [qw(Σοφία sofia sophia)], [qw(Αναστασία anastasia)],
+    [qw(Δήμητρα dimitra)], [qw(Χριστίνα christina xristina)], [qw(Αθανασία athanasia)], [qw(Παναγιώτα panagiota)],
+    [qw(Βασιλική vasiliki vasiliki basiliki)], [qw(Γεωργία georgia)], [qw(Ευαγγελία evangelia)], [qw(Άννα anna)],
+    [qw(Ιωάννα ioanna)], [qw(Θεοδώρα theodora)], [qw(Αικατερίνη aikaterini)], [qw(Αγγελική aggeliki angeliki)], [qw(Ζωή zoi)],
+    [qw(Παρασκευή paraskevi)], [qw(Στυλιανή styliani)], [qw(Μαργαρίτα margarita)], [qw(Ειρήνη eirini irini)],
+    [qw(Αλεξάνδρα alexandra)], [qw(Δέσποινα despoina)], [qw(Φωτεινή fotini)], [qw(Ουρανία ourania)], [qw(Μαρίνα marina)],
+    [qw(Νίκη niki)], [qw(Ελισάβετ elisavet)], [qw(Κωνσταντίνα konstantina constantina)], [qw(Ελπίδα elpida)],
+    [qw(Αντωνία antonia)], [qw(Μαριάνθη marianthi)], [qw(Βάσω vaso vasw)], [qw(Πόπη popi)], [qw(Λία lia)],
+    [qw(Χρυσούλα chrysoula xrisoula)], [qw(Σταματία stamatia)], [qw(Ιφιγένεια ifigeneia)], [qw(Κλεοπάτρα kleopatra)],
+    [qw(Ανδρομάχη andromachi)], [qw(Ευτυχία eftychia)], [qw(Ελευθερία eleftheria)], [qw(Ραφαέλα rafaela)], [qw(Δάφνη dafni)],
+);
+my %GR_PHONETIC;   # sound key of a Latin or Greek spelling -> the Greek first name
+sub _greece_sound_key {
+    my $w = lc shift;
+    $w = Unicode::Normalize::NFD($w); $w =~ s/\p{M}//g;
+    $w =~ s/ου/8/g;                 # ου stays apart: Στυλιανού is not Στυλιανή
+    $w =~ tr/ςωηυ/σοιι/;
+    $w =~ s/ει|οι|υι/ι/g; $w =~ s/αι/ε/g;
+    return $w;
+}
+sub _greece_latin_to_greek_key {
+    my $w = lc shift;
+    $w =~ s/^x/χ/;
+    my $key = _greece_sound_key(_greece_translit_word($w, 0));
+    return $key;
+}
+my %GR_LATIN_PAIR = (ou => 'ου', oy => 'ου', th => 'θ', ps => 'ψ', ks => 'ξ', ch => 'χ', kh => 'χ', gk => 'γκ', gg => 'γγ',
+    mp => 'μπ', nt => 'ντ', ai => 'αι', ei => 'ει', oi => 'οι', ui => 'υι', ee => 'ει', ph => 'φ', dh => 'δ', tz => 'τζ', ts => 'τσ');
+my %GR_LATIN_ONE = (a => 'α', b => 'μπ', c => 'κ', d => 'δ', e => 'ε', f => 'φ', g => 'γ', h => 'η', i => 'ι', k => 'κ',
+    l => 'λ', m => 'μ', n => 'ν', o => 'ο', p => 'π', r => 'ρ', s => 'σ', t => 'τ', u => 'υ', v => 'β', w => 'ω', y => 'υ', z => 'ζ');
+# One lower-case Latin word in Greek letters, no accents; undef if it has a letter with no Greek counterpart.
+sub _greece_translit_word {
+    my ($w, $at_start) = @_;
+    my $out = '';
+    my $i = 0;
+    while ($i < length $w) {
+        my $two = substr($w, $i, 2);
+        my $c = substr($w, $i, 1);
+        if (length($two) == 2 && $GR_LATIN_PAIR{$two}) { $out .= $GR_LATIN_PAIR{$two}; $i += 2; next; }
+        if ($c eq 'x') { $out .= ($i == 0 || substr($w, $i - 1, 1) !~ /[aeiouy]/) ? 'χ' : 'ξ'; $i++; next; }
+        if ($c eq 'y' && $i == 0 && substr($w, 1, 1) =~ /[aeiou]/) { $out .= 'γι'; $i++; next; }
+        return undef unless $GR_LATIN_ONE{$c};
+        $out .= $GR_LATIN_ONE{$c};
+        $i++;
+    }
+    $out =~ s/σ$/ς/;
+    return $out;
+}
+# The suffixes that make a Latin word a Greek surname for certain, with their accented Greek endings.
+my @GR_SURNAME_ENDINGS = (
+    [qr/opoulos$/ => 'όπουλος'], [qr/opoulou$/ => 'όπουλου'], [qr/poulos$/ => 'πουλος'], [qr/poulou$/ => 'πουλου'],
+    [qr/iadis$/ => 'ιάδης'], [qr/iadou$/ => 'ιάδου'], [qr/idis$/ => 'ίδης'], [qr/idou$/ => 'ίδου'],
+    [qr/akis$/ => 'άκης'], [qr/akou$/ => 'άκου'], [qr/oglou$/ => 'όγλου'], [qr/ellis$/ => 'έλλης'],
+    [qr/atos$/ => 'άτος'], [qr/atou$/ => 'άτου'], [qr/akos$/ => 'άκος'], [qr/iou$/ => 'ίου'],
+);
+my $GR_WEAK_ENDING = qr/(?:os|is|as|es|ou|ias|ios|eas|aios|ikos|a|i|o)$/;
+sub _greece_first_names_ready {
+    return if %GR_PHONETIC;
+    for my $row (@GR_FIRST_NAMES) {
+        my ($greek, @latin) = @$row;
+        $GR_PHONETIC{_greece_sound_key($greek)} //= $greek;
+        for my $l (@latin) {
+            my $g = $l =~ /\p{Greek}/ ? $l : _greece_translit_word($l, 1);
+            $GR_PHONETIC{_greece_sound_key($g)} //= $greek if defined $g;
+        }
+    }
+}
+# A name's words with the Greek first names known, for either script.
+sub _greece_known_first_name {
+    my $word = shift;
+    _greece_first_names_ready();
+    my $plain = Unicode::Normalize::NFD(lc $word); $plain =~ s/\p{M}//g;
+    my @tries = $plain =~ /\p{Greek}/ ? ($plain) : do {
+        my @t;
+        for my $x ($plain, ($plain =~ /x/ ? do { (my $y = $plain) =~ s/x/ch/g; $y } : ())) {
+            my $g = _greece_translit_word($x, 1);
+            push @t, $g if defined $g;
+        }
+        @t;
+    };
+    for my $t (@tries) {
+        my $hit = $GR_PHONETIC{_greece_sound_key($t)};
+        return $hit if $hit;
+    }
+    return undef;
+}
+# The name with Greek letters where it is greeklish; the name itself otherwise.
+sub greece_name_normalise {
+    my ($self, $name) = @_;
+    $name = $name // '';
+    $name =~ s/\s+/ /g; $name =~ s/^ | $//g;
+    return $name unless $name =~ /^[A-Za-z]+(?:[ '\-][A-Za-z]+)*\.?$/;   # Latin letters only
+    require Unicode::Normalize;
+    my @words = split /([ \-])/, $name;
+    my (@out, $sure, $all_ok);
+    $all_ok = 1;
+    my $caps = $name eq uc $name && $name =~ /[A-Z]{2}/;
+    for my $w (@words) {
+        if ($w =~ /^[ \-]$/) { push @out, $w; next; }
+        (my $bare = $w) =~ s/[.']//g;
+        next unless length $bare;
+        my $lower = lc $bare;
+        my $first = _greece_known_first_name($lower);
+        if ($first) { push @out, $first; $sure = 1; next; }
+        my $greek = _greece_translit_word($lower, 1);
+        if (!defined $greek) { $all_ok = 0; last; }
+        $greek =~ s/^γεοργ/γεωργ/;   # Georgiou
+        my $strong;
+        for my $e (@GR_SURNAME_ENDINGS) {
+            next unless $lower =~ $e->[0];
+            my $stem = $lower; $stem =~ s/$e->[0]//;
+            my $g = _greece_translit_word($stem, 1);
+            if (defined $g) { $g =~ s/^γεοργ/γεωργ/; $greek = $g . $e->[1]; $strong = 1; last; }
+        }
+        if ($strong) { $sure = 1; }
+        elsif ($lower !~ $GR_WEAK_ENDING) { $all_ok = 0; last; }
+        push @out, $greek;
+    }
+    return $name unless $all_ok && $sure && @out;
+    my $result = join '', @out;
+    if ($caps) {
+        $result = Unicode::Normalize::NFD($result); $result =~ s/\p{M}//g; $result = uc $result;   # capitals carry no accents
+    } else {
+        $result = join '', map { /^[ \-]$/ ? $_ : ucfirst $_ } split /([ \-])/, $result;
+    }
+    return Unicode::Normalize::NFC($result);
+}
+my %GR_KEY_ROWS = map { $_ => 1 } qw(qwertyuiop asdfghjkl zxcvbnm ερτυθιοπ ασδφγηξκλ ζχψωβνμ);
+# Why a name is not a real one, or '' when it may be.
+sub greece_name_nonsense {
+    my ($self, $name) = @_;
+    require Unicode::Normalize;
+    return 1 if $name =~ /[^\p{L}\p{M} .'\-]/;     # digits, symbols
+    return 0 if $GREECE_NO_NAME{lc $name} || lc $name eq 'ανώνυμος πολίτης';
+    my @words = grep { length } split /[ \-]+/, $name;
+    my $long = grep { (my $b = $_) =~ s/[^\p{L}]//g; length $b >= 3 } @words;
+    return 1 unless $long || (@words == 1 && length($words[0]) >= 4);
+    for my $w (@words) {
+        (my $b = $w) =~ s/[^\p{L}\p{M}]//g;
+        next if length($b) <= 1 && @words > 1;
+        my $plain = Unicode::Normalize::NFD(lc $b); $plain =~ s/\p{M}//g; $plain =~ tr/ς/σ/;
+        next if _greece_known_first_name($b);
+        return 1 if $plain =~ /(.)\1\1/;                              # aaa
+        my $len = length $plain;
+        return 1 if $len >= 4 && $plain !~ /[αεηιουωaeiouy]/;           # no vowel
+        return 1 if $plain =~ /[^αεηιουωaeiouy]{5,}/;                    # five consonants in a row
+        my %distinct = map { $_ => 1 } split //, $plain;
+        return 1 if $len >= 6 && keys %distinct <= $len / 2;             # asdfasdf
+        if ($len >= 6) {
+            for my $row (keys %GR_KEY_ROWS) {
+                return 1 unless grep { index($row, $_) < 0 } keys %distinct;   # all letters from one keyboard row
+            }
+        }
+    }
+    return 0;
 }
 
 # The text on one line, cut at a word to at most $max characters, with "…" if cut.
@@ -1176,9 +1366,8 @@ sub greece_address {
     (my $postcode = $osm->{postcode} || $parts->{postcode} || '') =~ s/^(\d{3})\s*(\d{2})$/$1 $2/;
     (my $region = $osm->{state} || '') =~ s/^Περιφέρεια\s+//;
     $region = $REGION{$region} || $region;
-    my $num = $self->greece_street_number($address);
-    my $street = join ' ', grep { $_ } $parts->{street},
-        $num->{number} ? ($num->{near} ? "(κοντά στο $num->{number})" : $num->{number}) : ();
+    my $sp = $self->greece_street_parts($address);
+    my $street = join ' ', grep { $_ } $sp->{street}, $sp->{number};
     return join ', ', grep { $_ } $street, join(' ', grep { $_ } $postcode, $place), $region;
 }
 
@@ -1212,91 +1401,124 @@ sub greece_recipients {
 }
 
 
-# The street number of the spot, for the police text: { number, near }. First the one the reporter gave
-# (question "arithmos"); then the one the map gives; failing that the nearest numbered address on the same
-# street in OpenStreetMap (Overpass), as `near` since it is not the spot itself. Empty hash if none.
+# The street number of the spot, for the police text: { number }. Found automatically first: the one the map
+# gives (Nominatim), else the one Apple Maps gives for the spot where an Apple Maps key is set (APPLE_MAPS_*
+# in the configuration); only if neither has one, the one the reporter wrote (question "arithmos"). Empty
+# hash if none.
 sub greece_street_number {
     my ($self, $address) = @_;
+    my $parts = $address ? $address->parts : {};
+    return { number => $parts->{number} } if $parts->{number};
+    if (my $street = $parts->{street}) {
+        my $number = __PACKAGE__->greece_apple_number($self->latitude, $self->longitude, $street);
+        return { number => $number } if $number;
+    }
     my $given = $self->get_extra_field_value('arithmos') // '';
     $given =~ s/^\s+|\s+$//g;
     $given =~ s/^(?:αρ(?:ιθμ[οό]ς)?|no|n)\.?\s*//i;
     return { number => $given } if $given =~ /^\d{1,4}(?:\s*[-\/]\s*\d{1,4})?\s*[A-Za-zΑ-Ωα-ω]?$/;
+    return {};
+}
+
+# The street and number to write for the spot: { street, number }. For an entrance or double parking the
+# building at the spot is what counts, so there the address Apple Maps gives (street and number) is used when
+# it has one; otherwise the street the map gives, with the number from greece_street_number.
+sub greece_street_parts {
+    my ($self, $address) = @_;
     my $parts = $address ? $address->parts : {};
-    return { number => $parts->{number} } if $parts->{number};
-    my $cached = $self->get_extra_metadata('greece_near_number');
-    return $cached ? { number => $cached, near => 1 } : {} if defined $cached;
-    my $street = $parts->{street} or return {};
-    # One try per report (a failed lookup is kept as "none"), so a slow server never holds a page up twice.
-    # The public Overpass servers can accept a connection and never answer, and neither HTTP::Tiny's timeout
-    # nor alarm() stops that (the page hung), so the lookup runs in a child process that is killed after 6 s.
-    my $near = $self->_greece_near_number_limited($street, 6);
-    if ($self->in_storage) {
-        $self->set_extra_metadata(greece_near_number => $near);
-        eval { $self->update };
+    if (($self->get_extra_field_value('paravasi') // '') =~ /^(?:eisodos|diplo)$/) {
+        my $ap = __PACKAGE__->greece_apple_address($self->latitude, $self->longitude);
+        return { street => $ap->{street}, number => $ap->{number} } if $ap && $ap->{street} && $ap->{number};
     }
-    return length $near ? { number => $near, near => 1 } : {};
+    return { street => $parts->{street}, number => $self->greece_street_number($address)->{number} };
 }
-sub _greece_near_number_limited {
-    my ($self, $street, $seconds) = @_;
-    require IO::Select; require POSIX;
-    pipe(my $r, my $w) or return '';
-    my $pid = fork;
-    return '' unless defined $pid;
-    if (!$pid) {
-        close $r;
-        my $n = eval { $self->_greece_near_number($street) };
-        binmode $w, ':utf8';
-        print $w defined $n ? "ok:$n" : 'fail';
-        close $w;
-        POSIX::_exit(0);
-    }
-    close $w;
-    my $out = '';
-    my $sel = IO::Select->new($r);
-    my $end = time + $seconds;
-    while (time < $end && $sel->can_read($end - time)) {
-        my $got = sysread($r, my $buf, 256);
-        last unless $got;
-        $out .= $buf;
-    }
-    close $r;
-    kill 9, $pid;
-    waitpid $pid, 0;
-    return $out =~ /^ok:(\S*)$/ ? $1 : '';
+
+# Apple Maps Server API (https://developer.apple.com/documentation/applemapsserverapi): the house number
+# Apple gives for a point, when its street is the one we have. Apple's terms allow only temporary use of
+# the results, so nothing is stored: the answer is kept for a minute in this process (the SMS and the email
+# of one report come close together) and asked again later. Needs APPLE_MAPS_TEAM_ID, APPLE_MAPS_KEY_ID and
+# APPLE_MAPS_PRIVATE_KEY (the .p8 text) in the configuration; without them this returns nothing.
+my (%APPLE_SEEN, $APPLE_TOKEN, $APPLE_TOKEN_UNTIL);
+sub greece_apple_address {
+    my ($class, $lat, $lon) = @_;
+    my $team = FixMyStreet->config('APPLE_MAPS_TEAM_ID');
+    my $kid = FixMyStreet->config('APPLE_MAPS_KEY_ID');
+    my $pem = FixMyStreet->config('APPLE_MAPS_PRIVATE_KEY');
+    return undef unless $team && $kid && $pem && defined $lat && defined $lon;
+    my $key = sprintf('%.5f,%.5f', $lat, $lon);
+    delete @APPLE_SEEN{ grep { $APPLE_SEEN{$_}[0] < time } keys %APPLE_SEEN };
+    return $APPLE_SEEN{$key}[1] if $APPLE_SEEN{$key};
+    my $address = eval { _greece_apple_lookup($team, $kid, $pem, $key) };
+    warn "Apple Maps lookup failed: $@" if $@;
+    $APPLE_SEEN{$key} = [ time + 60, $address ] if defined $address;   # a failure is tried again
+    return $address;
 }
-sub _greece_near_number {
-    my ($self, $street) = @_;
-    require HTTP::Tiny; require Unicode::Normalize;
+# The number Apple gives for the point, when its street is the given one (else nothing).
+sub greece_apple_number {
+    my ($class, $lat, $lon, $street) = @_;
+    my $a = $class->greece_apple_address($lat, $lon) or return '';
+    require Unicode::Normalize;
     my $plain = sub {
-        my $s = Unicode::Normalize::NFD(uc(shift // ''));
-        $s =~ s/\p{M}//g; $s =~ s/[^\p{L}\p{N}]+//g;
-        $s =~ s/^(?:ΣΤΡ(?:ΑΤΗΓΟΥ)?|ΛΕΩΦ(?:ΟΡΟΣ)?|ΟΔΟΣ|ΠΛΑΤΕΙΑ|ΠΛ)//;
-        return $s;
+        my $x = Unicode::Normalize::NFD(uc(shift // ''));
+        $x =~ s/\p{M}//g; $x =~ s/[^\p{L}\p{N}]+//g;
+        $x =~ s/^(?:ΣΤΡ(?:ΑΤΗΓΟΥ)?|ΛΕΩΦ(?:ΟΡΟΣ)?|ΟΔΟΣ|ΠΛΑΤΕΙΑ|ΠΛ)//;
+        $x;
     };
-    my ($lat, $lon) = ($self->latitude, $self->longitude);
-    my $query = sprintf('[out:json][timeout:8];nwr(around:60,%.6f,%.6f)["addr:housenumber"]["addr:street"];out center 40;', $lat, $lon);
-    # Public Overpass servers are often full; try the next one. Once per report (the answer is kept).
-    my $data;
-    for my $url ('https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter') {
-        my $res = HTTP::Tiny->new(timeout => 4, agent => 'FixMyStreets/1.0 (fixmystreets.gr)')
-            ->post_form($url, { data => $query });
-        my $got = $res->{success} && $res->{content} =~ /^\s*\{/ ? eval { JSON::MaybeXS->new->decode($res->{content}) } : undef;
-        # a busy server answers 200 with a "remark" about a timeout and no elements
-        if ($got && !$got->{remark}) { $data = $got; last; }
+    my ($have, $want) = ($plain->($a->{street}), $plain->($street));
+    return '' unless length $have && length $want && (index($want, $have) >= 0 || index($have, $want) >= 0);
+    return $a->{number} // '';
+}
+sub _greece_b64url { require MIME::Base64; (my $b = MIME::Base64::encode_base64(shift, '')) =~ tr{+/}{-_}; $b =~ s/=+$//; $b }
+# The JWT Apple asks for, signed ES256 with the .p8 key (openssl does the signing, as no Perl module for it is
+# installed; its DER signature is turned into the raw r||s a JWT carries).
+sub _greece_apple_jwt {
+    my ($team, $kid, $pem) = @_;
+    require JSON::MaybeXS; require File::Temp; require IPC::Open3; require Symbol;
+    my $json = JSON::MaybeXS->new(canonical => 1);
+    my $now = time;
+    my $input = _greece_b64url($json->encode({ alg => 'ES256', kid => $kid, typ => 'JWT' })) . '.'
+        . _greece_b64url($json->encode({ iss => $team, iat => $now, exp => $now + 600 }));
+    my $file = File::Temp->new(DIR => '/dev/shm', SUFFIX => '.pem');   # mode 0600, removed with the object
+    print $file $pem; close $file;
+    my $pid = IPC::Open3::open3(my $in, my $out, my $err = Symbol::gensym(), 'openssl', 'dgst', '-sha256', '-sign', $file->filename);
+    binmode $in; binmode $out;
+    print $in $input; close $in;
+    my $der = do { local $/; <$out> };
+    waitpid $pid, 0;
+    die "openssl signing failed\n" unless $? == 0 && length $der > 8;
+    my @b = unpack 'C*', $der;
+    my $i = ($b[1] & 0x80) ? 2 + ($b[1] & 0x7f) : 2;   # past the SEQUENCE header
+    my @parts;
+    for (1 .. 2) {
+        die "bad signature\n" unless $b[$i] == 0x02;
+        my $len = $b[$i + 1];
+        my @n = @b[$i + 2 .. $i + 1 + $len];
+        shift @n while @n > 32 && $n[0] == 0;
+        unshift @n, 0 while @n < 32;
+        push @parts, @n;
+        $i += 2 + $len;
     }
-    return undef unless $data;
-    my $want = $plain->($street);
-    my ($best, $best_d);
-    for my $el (@{ $data->{elements} || [] }) {
-        my $t = $el->{tags} || {};
-        my ($elat, $elon) = ($el->{lat} // $el->{center}{lat}, $el->{lon} // $el->{center}{lon});
-        next unless defined $elat && defined $elon && $t->{'addr:housenumber'} =~ /^\d{1,4}[A-Za-zΑ-Ωα-ω]?$/;
-        my $has = $plain->($t->{'addr:street'});
-        next unless length $has && length $want && (index($want, $has) >= 0 || index($has, $want) >= 0);
-        my $d = sqrt((($elat - $lat) * 111_200) ** 2 + (($elon - $lon) * 111_200 * cos($lat * 3.14159265 / 180)) ** 2);
-        ($best, $best_d) = ($t->{'addr:housenumber'}, $d) if !defined $best_d || $d < $best_d;
+    return $input . '.' . _greece_b64url(pack 'C*', @parts);
+}
+sub _greece_apple_lookup {
+    my ($team, $kid, $pem, $loc) = @_;
+    require HTTP::Tiny; require JSON::MaybeXS;
+    my $http = HTTP::Tiny->new(timeout => 5, agent => 'FixMyStreets/1.0 (fixmystreets.gr)');
+    my $json = JSON::MaybeXS->new(utf8 => 1);   # the body is UTF-8 bytes
+    if (!$APPLE_TOKEN || $APPLE_TOKEN_UNTIL < time + 30) {
+        my $res = $http->get('https://maps-api.apple.com/v1/token',
+            { headers => { Authorization => 'Bearer ' . _greece_apple_jwt($team, $kid, $pem) } });
+        die "token: $res->{status}\n" unless $res->{success};
+        my $t = $json->decode($res->{content});
+        ($APPLE_TOKEN, $APPLE_TOKEN_UNTIL) = ($t->{accessToken}, time + ($t->{expiresInSeconds} || 300));
     }
-    return defined $best ? $best : '';
+    my $res = $http->get('https://maps-api.apple.com/v1/reverseGeocode?lang=el&loc=' . $loc,
+        { headers => { Authorization => "Bearer $APPLE_TOKEN" } });
+    if ($res->{status} == 401) { $APPLE_TOKEN = undef; die "reverseGeocode: 401\n"; }
+    die "reverseGeocode: $res->{status}\n" unless $res->{success};
+    my $a = $json->decode($res->{content})->{results}[0]{structuredAddress} or return {};
+    my $n = $a->{subThoroughfare} // '';
+    return { street => $a->{thoroughfare} // '', number => ($n =~ /^\d{1,4}[A-Za-zΑ-Ωα-ω]?$/ ? $n : '') };
 }
 # For a police complaint, the SMS the reporter can send from their phone: { number, body }, e.g.
 #   Όχημα με πινακίδα ΙΚΧ-1234 κλείνει είσοδο οχημάτων (γκαράζ) στη διεύθυνση Φαβιέρου 15, 124 61 Χαϊδάρι, Αττική.
@@ -1312,7 +1534,7 @@ sub greece_sms {
     # Where the map gives the street without a house number (OpenStreetMap has none there), a blank
     # "αρ. ..." stands in its place for the reporter to fill in before sending (no coordinates).
     my $closest = $cobrand && $cobrand->find_closest($self);
-    my $number = $self->greece_street_number($closest)->{number};
+    my $number = $self->greece_street_parts($closest)->{number};
     $address =~ s/^([^,]+)/$1 αρ. .../ if $address && !$number;
     my $where = $address ? "στη διεύθυνση $address" : 'στο σημείο της αναφοράς';
     my $what;

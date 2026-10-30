@@ -14,9 +14,9 @@ paravasi_texts = {
 };
 paravasi_text = paravasi ? paravasi_texts.$paravasi : '';
 
-street = closest_address ? closest_address.parts.street : '';
-num = report.greece_street_number(closest_address);
-number = num.number;
+sp = report.greece_street_parts(closest_address);
+street = sp.street;
+number = sp.number;
 place = '';
 IF closest_address;
     addr = closest_address.address;
@@ -30,7 +30,7 @@ subject_place = street ? 'επί της οδού ' _ street : 'στην περι
 subject = 'Καταγγελία για Παράνομη Στάθμευση σε Θέση ΑμεΑ, Ράμπα, Πεζοδρόμιο ή Διάβαση ' _ subject_place;
 purpose = 'τη στάθμευση και τη διέλευση ατόμων με αναπηρία και πεζών';
 
-location = street ? 'Επί της οδού ' _ street _ (number ? (num.near ? ', κοντά στο ' : ' ') _ number : '') : 'Στο σημείο του χάρτη';
+location = street ? 'Επί της οδού ' _ street _ (number ? ' ' _ number : '') : 'Στο σημείο του χάρτη';
 location = location _ (area.size ? ', στην περιοχή ' _ area.join(', ') : '');
 
 # The police get the photos with the plates readable (PhotoStorage::Greece).

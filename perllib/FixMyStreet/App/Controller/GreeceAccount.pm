@@ -33,6 +33,7 @@ sub details : Path('/greece/account') : Args(0) {
     $name =~ s/^\s+|\s+$//g;
     $name =~ s/\s+/ /g;
     $name = substr($name, 0, 100);
+    $name = $c->cobrand->greece_name_normalise($name);
     my $phone = $c->get_param('phone') // '';
     $phone =~ s/^\s+|\s+$//g;
 

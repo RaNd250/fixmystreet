@@ -1665,3 +1665,17 @@ body.gr-launch-open { overflow: hidden; }
 .gr-about-home__list li.gr-about-home__xe { padding: 0.85em 1em; border: 2px solid var(--gr-accent); border-radius: var(--gr-radius); background: var(--gr-accent-soft); box-shadow: 0 8px 22px -16px rgba(0, 55, 115, 0.5); }
 .gr-about-home__xe .gr-xe-link { display: inline-block; margin: 0.15em 0; padding: 0.15em 0.7em; border: 1.5px solid var(--gr-accent); border-radius: var(--gr-pill); font-weight: 650; color: var(--gr-accent-ink); background: var(--gr-surface); text-decoration: none; }
 .gr-about-home__xe .gr-xe-link:hover, .gr-about-home__xe .gr-xe-link:focus-visible { background: var(--gr-accent); color: #fff; outline: none; }
+
+/* Contact page in the privacy look (2026-10-30): the form sits in the page card, so no card of its own. */
+body.gr-terms .gr-cform { padding: 0 !important; border: 0 !important; box-shadow: none !important; background: transparent !important; }
+body.gr-terms .gr-contact__email { margin: 0 0 1.1em; padding: 0; background: transparent; }
+body.gr-terms .gr-cform__send { float: none !important; margin: 6px 0 0; }
+
+/* Recent reports in a frame (2026-10-30): the home page list as a card, rows divided by a thin line. */
+body #front-recently { box-sizing: border-box; margin: 0 0 1.2em !important; padding: clamp(14px, 2.6vw, 26px) !important; background: var(--gr-surface); border: 1px solid var(--gr-line); border-radius: var(--gr-radius-l);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 18px 40px -26px rgba(15, 23, 42, 0.3); }
+#front-recently h2 { margin: 0 0 0.7em; padding-bottom: 0.55em; border-bottom: 3px solid transparent; border-image: linear-gradient(90deg, var(--gr-accent), var(--gr-warm)) 1; font-size: clamp(1.2rem, 1.05rem + 0.6vw, 1.5rem); letter-spacing: -0.01em; }
+#front-recently .item-list--reports { margin: 0; padding: 0; }
+#front-recently .item-list--reports__item { margin: 0; border-radius: var(--gr-radius); }
+#front-recently .item-list--reports__item + .item-list--reports__item { border-top: 1px solid var(--gr-line); }
+body #front-recently .full-width { margin: 0 !important; }

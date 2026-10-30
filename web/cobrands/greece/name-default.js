@@ -33,7 +33,8 @@
         if (hint) { hint.textContent = EN ? ' (optional with a photo)' : ' (προαιρετικό με φωτογραφία)'; }
         form.addEventListener('submit', function(e) {
             var v = box.value.trim();
-            if (hasPhoto(form) || (v !== '' && v !== box.dataset.grDefault)) { return; }
+            // A police complaint (the name box is locked to «Ανώνυμος») is anonymous and needs no photo.
+            if (box.readOnly || hasPhoto(form) || (v !== '' && v !== box.dataset.grDefault)) { return; }
             e.preventDefault();
             e.stopImmediatePropagation();
             var p = form.querySelector('.gr-name-need');
@@ -69,6 +70,31 @@
         if (box.id !== 'form_name' || !box.dataset.grDefault || box.value.trim() !== '') { return; }
         box.value = box.dataset.grDefault;
         box.classList.add('gr-name-default');
+    });
+    // When the name field is left: greeklish becomes Greek letters, and a name that is not one is said so at once
+    // (the same checks the server makes, /greece/name-check).
+    document.addEventListener('change', function(e) {
+        var box = e.target;
+        if (box.id !== 'form_name' || box.readOnly || !window.fetch) { return; }
+        var v = box.value.trim();
+        var old = box.parentNode.querySelector('.gr-name-bad');
+        if (old) { old.parentNode.removeChild(old); }
+        if (v === '' || v === box.dataset.grDefault) { return; }
+        var body = new URLSearchParams(); body.set('name', v);
+        window.fetch('/greece/name-check', { method: 'POST', body: body, credentials: 'same-origin' })
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(d) {
+                if (!d || box.value.trim() !== v) { return; }
+                if (d.name && d.name !== v) { box.value = d.name; }
+                if (d.error) {
+                    var p = document.createElement('p');
+                    p.className = 'form-error gr-name-bad';
+                    p.setAttribute('role', 'alert');
+                    p.textContent = d.error;
+                    box.parentNode.insertBefore(p, box);
+                }
+            })
+            .catch(function() { /* the server checks again when the form is sent */ });
     });
     var queued = false;
     function start() {

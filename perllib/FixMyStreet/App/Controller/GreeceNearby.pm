@@ -57,6 +57,17 @@ sub nearby_private : Path('/greece/nearby-private') : Args(0) {
     });
 }
 
+# POST /greece/name-check (name=..) answers { name, error }: the name as it will be taken (greeklish written in Greek
+# letters, Greece.pm greece_name_normalise) and why it is refused, if it is (greece_name_error). The forms call it
+# when the name field is left, so the person sees it at once. Nothing is stored or logged (a POST body).
+sub name_check : Path('/greece/name-check') : Args(0) {
+    my ( $self, $c ) = @_;
+    return $self->answer($c, 404, 'not found') unless $c->cobrand->moniker eq 'greece';
+    return $self->answer($c, 405, 'POST') unless $c->req->method eq 'POST';
+    my $name = substr($c->get_param('name') // '', 0, 100);
+    $name = $c->cobrand->greece_name_normalise($name);
+    return $self->answer($c, 200, { name => $name, error => ($c->cobrand->greece_name_error($name) // '') });
+}
 sub _metres {
     my ($la1, $lo1, $la2, $lo2) = map { deg2rad($_) } @_;
     my $a = sin(($la2 - $la1) / 2) ** 2 + cos($la1) * cos($la2) * sin(($lo2 - $lo1) / 2) ** 2;
